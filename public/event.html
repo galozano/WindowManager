@@ -1,0 +1,10 @@
+<div class="event" id="{{event.eventName}}">
+    <div class="content">
+        {{event.eventName}} <br/>
+        Arriving Time: {{event.arrivingTime}} <br/>
+        Duration: {{event.duration}} hours
+    </div>
+    <div class="modifier"><span class="glyphicon glyphicon-cog" ng-click="editEventModal(event)" data-toggle="modal" data-target="#myModal"></span></div>
+    <div class="remover"><span class="glyphicon glyphicon-remove" ng-click="deleteEvent(event)" ></span></div>
+</div>
+

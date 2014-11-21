@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Login - Service Manager</title>
+
+    <script type="text/javascript" src="/jquery/dist/jquery.js"></script>
+    <script type="text/javascript" src="/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="/css/login.css"/>
+</head>
+<body>
+<div class="jumbotron">
+    <div class="container">
+        <span class="glyphicon glyphicon-list-alt"></span>
+        <h2>Colobri Service Manager</h2>
+        <div class="box">
+            <span>
+              <% if (message) { %>
+                <%= message %>
+               <% } %>
+            </span>
+            <form action="/login" method="post">
+                <input type="text" name="email" placeholder="email">
+                <input type="password" name="password" placeholder="password">
+                <button type="submit" class="btn btn-default full-width"><span class="glyphicon glyphicon-ok"></span></button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+

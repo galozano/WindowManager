@@ -1,0 +1,83 @@
+.table>thead>tr>th, .table>tbody>tr>th, .table>tfoot>tr>th, .table>thead>tr>td, .table>tbody>tr>td, .table>tfoot>tr>td
+{
+    padding: 3px;
+    text-align: center;
+}
+
+.calendar
+{
+    position: absolute;
+    width: 1100px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.event
+{
+    position: absolute;
+    border: 1px solid #3a87ad;
+    color: #ffffff;
+    background: #00A3D6;
+    cursor: move;
+}
+
+.event .content
+{
+    position: relative;
+    float: left;
+    padding: 5px 0px 0px 5px;
+    font-size: 11px;
+    overflow: hidden;
+}
+
+.event .modifier
+{
+    position: absolute;
+    z-index: 3;
+    right: 15px;
+    top: 0;
+    padding: 3px;
+    height: 20px;
+    overflow: hidden;
+    font-size: 11px;
+    text-align: center;
+    color: black;
+    cursor: pointer;
+}
+
+.event .remover
+{
+    position: absolute;
+    z-index: 3;
+    right: 0;
+    top: 0;
+    padding: 3px;
+    height: 20px;
+    overflow: hidden;
+    font-size: 11px;
+    text-align: center;
+    color: black;
+    cursor: pointer;
+}
+
+.event .resizer
+{
+    position: absolute;
+    z-index: 3;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 8px;
+    overflow: hidden;
+    line-height: 8px;
+    font-size: 11px;
+    font-family: monospace;
+    text-align: center;
+    cursor: s-resize;
+    background: black;
+}
+
+.nav  li
+{
+    padding-left:10px ;
+}
