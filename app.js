@@ -11,6 +11,7 @@ var path = require('path');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var session = require('express-session');
+var mysql = require('mysql');
 
 var app = express();
 
@@ -31,17 +32,24 @@ app.use(session({secret: '65736583GGHUYTFGJI8',
 // Connections
 //-------------------------------------------------------------
 
-//Mongoose
-mongoose.connect(app.get('mongoConnection'), function(err)
-{
-    if(!err)
-    {
-        console.log("Connected to Mongo");
-    }
-    else
-        throw err;
-});
+////Mongoose
+//mongoose.connect(app.get('mongoConnection'), function(err)
+//{
+//    if(!err)
+//    {
+//        console.log("Connected to Mongo");
+//    }
+//    else
+//        throw err;
+//});
 
+//Mysql var
+connection = mysql.createConnection({
+    host    : 'localhost',
+    user    : 'csm',
+    password: 'CSM.2014',
+    database: 'CSM'
+});
 
 //-------------------------------------------------------------
 // Mongoose Schema Model
@@ -112,32 +120,40 @@ app.post('/login',function(req,res)
     var email = req.param('email');
     var password = req.param('password');
 
-    User.findOne( { email: email} ,function(err,user) {
+    var query = "SELECT email FROM User WHERE email=" + connection.escape(email) + " AND password="+ connection.escape(password)  +"";
 
-        //Manage any error from the query
-        if(err) {
-            console.log(err);
-            res.render('login.html', { message: 'There was an unexpected error'});
-        }
+    console.log(query);
 
-        if(!user) {
-            //User does not exist
-            res.render('login.html', { message: 'Username is incorrect'});
-        }
-        else if(!user.validPassword(password)) {
-            //Password does not match
-            res.render('login.html', { message: 'Password is incorrect'});
-        }
-        else {
-            //User is Ok.. Set session and redirect to main page
-            session.user = user._id;
-            res.redirect('/');
+    connection.query(query, function(err, rows) {
+         //Manage any error from the query
+         if(err) {
 
-        }
+             console.log(err);
+             res.render('login.html', { message: 'There was an unexpected error'});
+         }
+         else {
+
+             if(rows != null && rows.length === 1) {
+
+                 console.log("User OK");
+
+                 //User is Ok.. Set session and redirect to main page
+                 session.user = rows[0].userId;
+                 res.redirect("/");
+             }
+             else {
+                 //User does not exist
+                 console.log("Error login");
+                 res.render('login.html', { message: 'Email is incorrect'});
+             }
+
+             console.log(rows.length);
+             console.log("OK!");
+         }
     });
 });
 
-app.get('/',authenticationMiddleware, function (req,res) {
+app.get('/', function (req,res) {
 
     res.render('index2.html');
 });
@@ -148,9 +164,21 @@ app.get('/',authenticationMiddleware, function (req,res) {
 
 app.get('/events', function (req, res) {
 
-    //Find all events and returns them as a JSON
-    Event.find().exec(function(error, data) {
-        res.json(data);
+    var query = "SELECT eventId,arrivingTime,day,duration,eventLength,eventName,eventStart FROM Events";
+    console.log(query);
+
+    connection.query(query, function(err, rows) {
+        if(err) {
+            console.log(err);
+            res.json("{ message: 'There was an unexpected error'}");
+
+        }
+        else
+        {
+            console.log(rows);
+            res.json(rows);
+        }
+
     });
 });
 
