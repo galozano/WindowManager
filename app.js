@@ -51,43 +51,15 @@ connection = mysql.createConnection({
     database: 'CSM'
 });
 
-//-------------------------------------------------------------
-// Mongoose Schema Model
-//-------------------------------------------------------------
-
-//Events
-var eventsSchema = new mongoose.Schema({
-
-    eventName: {type:String, required:true},
-    arrivingTime: {type:String, required:true},
-    duration: {type:Number, required:true},
-    eventStart: {type:Number, required:true},
-    eventLength: {type:Number, required:true},
-    day: {type:Number, required:true},
-    created: {type: Date, default: Date.now}
-});
-
-var Event = mongoose.model('Event',eventsSchema);
-
-
-//User
-var userSchema = new mongoose.Schema({
-
-    name: {type:String, required:true, trim:true},
-    email: {type:String, required: true, trim: true, lowercase:true, unique: true},
-    password: {type:String, required: true },
-    created: {type: Date, default: Date.now}
-});
-
-userSchema.methods.validPassword = function(password) {
-
-    if (this.password == password){
-        return true;
-    }
-    return false;
+connection.config.queryFormat = function (query, values) {
+    if (!values) return query;
+    return query.replace(/\:(\w+)/g, function (txt, key) {
+        if (values.hasOwnProperty(key)) {
+            return this.escape(values[key]);
+        }
+        return txt;
+    }.bind(this));
 };
-
-var User = mongoose.model('User', userSchema);
 
 //-------------------------------------------------------------
 // Middleware
@@ -173,33 +145,48 @@ app.get('/events', function (req, res) {
             res.json("{ message: 'There was an unexpected error'}");
 
         }
-        else
-        {
+        else {
             console.log(rows);
             res.json(rows);
         }
-
     });
 });
 
 app.post('/addEvent',function(req,res) {
 
-    console.log("Add event");
+    console.log("==================Add event========================");
     console.log(req.body);
 
     var newEvent = req.body;
-    var event = new Event(newEvent);
+    var insertedId = {eventId:-1};
 
-    event.save(function(error,data)
-    {
-        if(error)
-        {
-            console.log(error);
-            res.json({error:"SME01:Could not saved the new event"});
+    var insertQuery = "INSERT INTO Events (eventName,arrivingTime,duration,eventStart,eventLength,day) VALUES (:eventName,:arrivingTime,:duration,:eventStart,:eventLength,:day)";
+    var selectQuery = "SELECT eventId,arrivingTime,day,duration,eventLength,eventName,eventStart FROM Events WHERE eventId = :eventId";
+
+    connection.query(insertQuery, newEvent, function(err, result) {
+
+        if(err) {
+            console.log(err);
+            res.json("{ message: 'There was an unexpected error'}");
         }
         else
         {
-            res.json(data);
+            console.log(result.insertId);
+            console.log(result);
+            insertedId.eventId = result.insertId;
+
+            connection.query(selectQuery,insertedId, function(err, result) {
+
+                if(err) {
+                    console.log(err);
+                    res.json("{ message: 'There was an unexpected error'}");
+                }
+                else
+                {
+                    console.log(result);
+                    res.json(result[0]);
+                }
+            });
         }
     });
 });
@@ -210,13 +197,19 @@ app.post('/editEvent', function(req,res) {
     console.log(req.body);
 
     var editEvent = req.body;
-    var eventId = editEvent.id;
 
-    Event.findByIdAndUpdate(eventId,editEvent,function(err,doc) {
+    var updateQuery = "UPDATE Events SET    WHERE eventId = :eventId";
 
-        if(err)
+    connection.query(updateQuery, editEvent, function(err, result) {
+
+        if(err) {
             console.log(err);
+            res.json("{ message: 'There was an unexpected error'}");
+        }
+        else {
 
+            console.log(result);
+        }
     });
 });
 
@@ -228,10 +221,18 @@ app.post('/deleteEvent',function(req,res) {
     var deleteEvent = req.param("id");
     console.log("Delete:" + deleteEvent);
 
-    Event.findByIdAndRemove(deleteEvent,function(err,doc) {
+    var deleteQuery = "DELETE FROM Events WHERE eventId = :eventId";
 
-        if(err)
+    connection.query(deleteEvent, deleteEvent, function(err, result) {
+
+        if(err) {
             console.log(err);
+            res.json("{ message: 'There was an unexpected error'}");
+        }
+        else {
+
+            console.log(result);
+        }
     });
 });
 
