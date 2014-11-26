@@ -8,7 +8,6 @@
 
 var express = require('express');
 var path = require('path');
-var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var mysql = require('mysql');
@@ -32,18 +31,6 @@ app.use(session({secret: '65736583GGHUYTFGJI8',
 // Connections
 //-------------------------------------------------------------
 
-////Mongoose
-//mongoose.connect(app.get('mongoConnection'), function(err)
-//{
-//    if(!err)
-//    {
-//        console.log("Connected to Mongo");
-//    }
-//    else
-//        throw err;
-//});
-
-//Mysql var
 connection = mysql.createConnection({
     host    : 'localhost',
     user    : 'csm',
@@ -154,7 +141,6 @@ app.get('/events', function (req, res) {
 
 app.post('/addEvent',function(req,res) {
 
-    console.log("==================Add event========================");
     console.log(req.body);
 
     var newEvent = req.body;
