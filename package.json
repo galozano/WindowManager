@@ -5,13 +5,19 @@
   "main": "app.js",
   "dependencies": {
     "bower": "~1.3.12",
-    "express": "5.10.3",
-    "jade": "*"
+    "express": "5.10.3"
+  },
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*"
   },
   "scripts": {
-    "start":"node app.js",
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Gustavo Lozano",
-  "license": "ISC"
+  "license": "ISC",
+  "directories": {
+    "test": "test"
+  }
 }

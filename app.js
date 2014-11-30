@@ -114,33 +114,43 @@ app.post('/login',function(req,res)
 
 app.get('/', function (req,res) {
 
-    res.render('index2.html');
+    res.render('index.html');
 });
 
 //-------------------------------------------------------------
 // Web Services
 //-------------------------------------------------------------
 
-app.get('/events', function (req, res) {
+
+function getEvents(result)
+{
+    console.log("Obtaining Events");
 
     var query = "SELECT eventId,arrivingTime,day,duration,eventLength,eventName,eventStart FROM Events";
     console.log(query);
 
     connection.query(query, function(err, rows) {
         if(err) {
-            console.log(err);
-            res.json("{ message: 'There was an unexpected error'}");
-
+            console.log("ERROR:" + err);
+            result({ message: 'There was an unexpected error'});
         }
         else {
             console.log(rows);
-            res.json(rows);
+            result(rows);
         }
+    });
+}
+
+app.get('/events', function (req, res) {
+
+    var result = getEvents(function(result) {
+        res.json(result);
     });
 });
 
 app.post('/addEvent',function(req,res) {
 
+    console.log("Add Event");
     console.log(req.body);
 
     var newEvent = req.body;
@@ -149,11 +159,12 @@ app.post('/addEvent',function(req,res) {
     var insertQuery = "INSERT INTO Events (eventName,arrivingTime,duration,eventStart,eventLength,day) VALUES (:eventName,:arrivingTime,:duration,:eventStart,:eventLength,:day)";
     var selectQuery = "SELECT eventId,arrivingTime,day,duration,eventLength,eventName,eventStart FROM Events WHERE eventId = :eventId";
 
+
     connection.query(insertQuery, newEvent, function(err, result) {
 
         if(err) {
             console.log(err);
-            res.json("{ message: 'There was an unexpected error'}");
+            res.json({ message: 'There was an unexpected error'});
         }
         else
         {
@@ -165,7 +176,7 @@ app.post('/addEvent',function(req,res) {
 
                 if(err) {
                     console.log(err);
-                    res.json("{ message: 'There was an unexpected error'}");
+                    res.json({ message: 'There was an unexpected error'});
                 }
                 else
                 {
@@ -184,17 +195,19 @@ app.post('/editEvent', function(req,res) {
 
     var editEvent = req.body;
 
-    var updateQuery = "UPDATE Events SET    WHERE eventId = :eventId";
+    var updateQuery = "UPDATE Events SET arrivingTime = :arrivingTime, day = :day, duration = :duration, eventLength = :eventLength, eventName = :eventName ,eventStart = :eventStart" +
+        "  WHERE eventId = :eventId";
 
     connection.query(updateQuery, editEvent, function(err, result) {
 
         if(err) {
             console.log(err);
-            res.json("{ message: 'There was an unexpected error'}");
+            res.json({ message: 'There was an unexpected error'});
         }
         else {
 
             console.log(result);
+            res.json(result);
         }
     });
 });
@@ -204,20 +217,21 @@ app.post('/deleteEvent',function(req,res) {
     console.log("Delete event");
     console.log(req.body);
 
-    var deleteEvent = req.param("id");
+    var deleteEvent = req.body;
     console.log("Delete:" + deleteEvent);
 
     var deleteQuery = "DELETE FROM Events WHERE eventId = :eventId";
 
-    connection.query(deleteEvent, deleteEvent, function(err, result) {
+    connection.query(deleteQuery, deleteEvent, function(err, result) {
 
         if(err) {
             console.log(err);
-            res.json("{ message: 'There was an unexpected error'}");
+            res.json({ message: 'There was an unexpected error'});
         }
         else {
 
             console.log(result);
+            res.json(result);
         }
     });
 });
@@ -231,5 +245,5 @@ var server = app.listen(app.get('port'), function() {
     var host = server.address().address;
     var port = server.address().port;
 
-    console.log('App listening at http://%s:%s', host, port);
+    console.log('App listening at http://%s:%s \n', host, port);
 });
