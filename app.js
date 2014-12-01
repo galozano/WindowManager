@@ -2,6 +2,11 @@
  * Created by gal on 11/9/14.
  */
 
+
+    //TODO: Organizar los routes en otro archivo y servicio en otro
+    //TODO: Documentar todo para que quede bie
+    //TODO: poner un logger bueno --Morgan
+
 //-------------------------------------------------------------
 // Module dependencies  & Configuration
 //-------------------------------------------------------------
@@ -15,8 +20,6 @@ var mysql = require('mysql');
 var app = express();
 
 app.set('port', 3000);
-app.set('mongoConnection', 'mongodb://localhost/ServiceManager');
-
 app.engine('html', require('ejs').renderFile);
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -86,7 +89,7 @@ app.post('/login',function(req,res)
     connection.query(query, function(err, rows) {
          //Manage any error from the query
          if(err) {
-
+             //TODO:Poner los codigos de los errores en las respuestas de los mensajes
              console.log(err);
              res.render('login.html', { message: 'There was an unexpected error'});
          }
@@ -103,6 +106,7 @@ app.post('/login',function(req,res)
              else {
                  //User does not exist
                  console.log("Error login");
+                 //TODO:Poner los codigos de los errores en las respuestas de los mensajes
                  res.render('login.html', { message: 'Email is incorrect'});
              }
 
@@ -131,6 +135,8 @@ function getEvents(result)
 
     connection.query(query, function(err, rows) {
         if(err) {
+
+            //TODO:Poner los codigos de los errores en las respuestas de los mensajes
             console.log("ERROR:" + err);
             result({ message: 'There was an unexpected error'});
         }
@@ -159,10 +165,10 @@ app.post('/addEvent',function(req,res) {
     var insertQuery = "INSERT INTO Events (eventName,arrivingTime,duration,eventStart,eventLength,day) VALUES (:eventName,:arrivingTime,:duration,:eventStart,:eventLength,:day)";
     var selectQuery = "SELECT eventId,arrivingTime,day,duration,eventLength,eventName,eventStart FROM Events WHERE eventId = :eventId";
 
-
     connection.query(insertQuery, newEvent, function(err, result) {
 
         if(err) {
+            //TODO:Poner los codigos de los errores en las respuestas de los mensajes
             console.log(err);
             res.json({ message: 'There was an unexpected error'});
         }
@@ -175,6 +181,7 @@ app.post('/addEvent',function(req,res) {
             connection.query(selectQuery,insertedId, function(err, result) {
 
                 if(err) {
+                    //TODO:Poner los codigos de los errores en las respuestas de los mensajes
                     console.log(err);
                     res.json({ message: 'There was an unexpected error'});
                 }
@@ -201,6 +208,7 @@ app.post('/editEvent', function(req,res) {
     connection.query(updateQuery, editEvent, function(err, result) {
 
         if(err) {
+            //TODO:Poner los codigos de los errores en las respuestas de los mensajes
             console.log(err);
             res.json({ message: 'There was an unexpected error'});
         }
@@ -225,6 +233,7 @@ app.post('/deleteEvent',function(req,res) {
     connection.query(deleteQuery, deleteEvent, function(err, result) {
 
         if(err) {
+            //TODO:Poner los codigos de los errores en las respuestas de los mensajes
             console.log(err);
             res.json({ message: 'There was an unexpected error'});
         }

@@ -2,6 +2,8 @@
  * Created by gal on 11/30/14.
  */
 
+//TODO:Falta poner el CSS en la carpeta events
+
 (function() {
 
     var eventModule = angular.module("eventsDirectives",[ ]);
@@ -10,6 +12,7 @@
     // Globar Variables
     //--------------------------------------------------------------------
 
+    //Estas variables deben quedar como configuracion en algun lado
     var tableDayHeight = 84;
     var tableDayHeightNoBorder = 83;
     var tableTopHeaderHeight = 29;
@@ -22,6 +25,8 @@
     //--------------------------------------------------------------------
     // Model
     //--------------------------------------------------------------------
+
+    //TODO:Hay que quitar esto y ponerlo normal
 
     function EventCSS() {
 
@@ -169,6 +174,7 @@
         };
     }]);
 
+    //TODO:Falta terminar esto para que funcione
     eventModule.directive('resizer', function($document,$log) {
         return {
             restrict: 'A',

@@ -2,15 +2,26 @@
  * Created by gal on 10/11/14.
  */
 
+//TODO: Poner comentarios en todo lados
+//
+
 
 (function() {
 
-    var app = angular.module("myAPP",["eventsDirectives"]);
+    var app = angular.module("myAPP",["ngRoute","eventsDirectives"]);
 
     //--------------------------------------------------------------------
     // Routes
     //--------------------------------------------------------------------
 
+    app.config(['$routeProvider', function($routeProvider) {
+        $routeProvider.when('/', {
+            templateUrl: 'app/events.html',
+            controller: 'EventController'
+        }).otherwise({
+            redirectTo: '/'
+        });
+    }]);
 
     //--------------------------------------------------------------------
     // Controllers
@@ -31,6 +42,7 @@
                 }).
                 error(function(data, status, headers, config) {
 
+                    //TODO:Manage the error and send a message to the scope
                     $log.log('Error');
                 });
         }
@@ -38,6 +50,8 @@
         $scope.addNewEvent = function(newEvent) {
 
             $log.log("New Event");
+
+            //TODO:Poner validaciones de lo que ingrese la gente
 
             var eventJSON =
             {
@@ -58,6 +72,7 @@
                 }).
                 error(function(data, status, headers, config) {
 
+                    //TODO:Manage the error and send a message to the scope
                     $log.log('Error');
                 });
 
@@ -73,6 +88,9 @@
             $log.log("Edit Event");
             $log.log(newEvent);
 
+
+            //TODO:Poner validaciones de lo que ingrese la gente en edicion
+
             var eventJSON = {
                 "eventName":newEvent.eventName,
                 "arrivingTime":newEvent.arrivingTime,
@@ -86,10 +104,12 @@
             $http.post('/editEvent', eventJSON).
                 success(function(data, status, headers, config) {
 
+                    //TODO:Mostar un mensaje de que funciono en algun lado
                     $log.log(data);
                 }).
                 error(function(data, status, headers, config) {
 
+                    //TODO:Manage the error and send a message to the scope
                     $log.log('Error');
                 });
 
@@ -121,11 +141,13 @@
             $http.post('/deleteEvent', {eventId:event.eventId}).
                 success(function(data, status, headers, config) {
 
+                    //TODO:Mostar un mensaje de que funciono en algun lado
                     $log.log(data);
 
                 }).
                 error(function(data, status, headers, config) {
 
+                    //TODO:Manage the error and send a message to the scope
                     $log.log('Error');
                 });
 
@@ -162,6 +184,7 @@
                 }).
                 error(function(data, status, headers, config) {
 
+                    //TODO:Manage the error and send a message to the scope
                     $log.log('Error');
                 });
         };

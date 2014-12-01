@@ -2,6 +2,9 @@
  * Created by gal on 11/26/14.
  */
 
+    //TODO:Organizar las pruebas bien y terminarlas
+    //TODO: Que queden completamente automaticas con la generacion de scenario - problemas el id con edit y delete
+
 var assert = require('assert');
 var server =  require('../app.js');
 var scenarioCreator = require("./scenarioCreator.js");
@@ -84,7 +87,6 @@ describe('Test Events', function() {
 
         it('Edit Event 1', function(done) {
             request.post({url:url, form:eventJSON},function(err, resp, body) {
-
 
                 console.log(body);
                 done();
