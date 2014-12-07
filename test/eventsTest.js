@@ -3,7 +3,6 @@
  */
 
     //TODO:Organizar las pruebas bien y terminarlas
-    //TODO: Que queden completamente automaticas con la generacion de scenario - problemas el id con edit y delete
 
 var assert = require('assert');
 var server =  require('../app.js');
@@ -11,19 +10,22 @@ var scenarioCreator = require("./scenarioCreator.js");
 var expect = require('chai').expect;
 var request = require('request');
 
-
 describe('Test Events', function() {
+
+    var eventsCreated = [];
 
     before(function(done){
 
         console.log("Before");
 
-        //scenarioCreator.clearDatabase();
-        //scenarioCreator.insertEvents();
+        scenarioCreator.prepareScenario(function(events) {
+
+            console.log('Creating Scenario');
+            eventsCreated = events;
+            done();
+        });
 
         //setTimeout(done, 1000);
-
-        done();
     });
 
 
@@ -72,20 +74,24 @@ describe('Test Events', function() {
 
     describe('Edit Events', function() {
 
-        var eventJSON =
-        {
-            "eventName":"Nuevo Evento Editado",
-            "arrivingTime":"11:00",
-            "duration":50,
-            "eventStart":300,
-            "eventLength":400,
-            "day":3,
-            "eventId":53
-        };
-
         var url = 'http://localhost:3000/editEvent';
 
         it('Edit Event 1', function(done) {
+
+            console.log(eventsCreated);
+            var editEventId = eventsCreated[1].eventId;
+
+            var eventJSON =
+            {
+                "eventName":"Nuevo Evento Editado",
+                "arrivingTime":"11:00",
+                "duration":50,
+                "eventStart":300,
+                "eventLength":400,
+                "day":3,
+                "eventId":editEventId
+            };
+
             request.post({url:url, form:eventJSON},function(err, resp, body) {
 
                 console.log(body);
@@ -99,12 +105,14 @@ describe('Test Events', function() {
 
         var url = 'http://localhost:3000/deleteEvent';
 
-        var eventJSON =
-        {
-            "eventId":53
-        };
+        it('Delete Event 1', function(done) {
 
-        it.only('Delete Event 1', function(done) {
+            var editEventId = eventsCreated[1].eventId;
+
+            var eventJSON =
+            {
+                "eventId":editEventId
+            };
 
             request.post({url:url, form:eventJSON},function(err, resp, body) {
 
@@ -112,7 +120,6 @@ describe('Test Events', function() {
                 done();
             });
         });
-
     });
 });
 

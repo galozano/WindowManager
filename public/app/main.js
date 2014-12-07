@@ -5,7 +5,6 @@
 //TODO: Poner comentarios en todo lados
 //
 
-
 (function() {
 
     var app = angular.module("myAPP",["ngRoute","eventsDirectives"]);
@@ -16,7 +15,10 @@
 
     app.config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/', {
-            templateUrl: 'app/events.html',
+            templateUrl: 'app/events/events.html',
+            controller: 'EventController'
+        }).when('/terminals',{
+            templateUrl: 'app/terminals.html',
             controller: 'EventController'
         }).otherwise({
             redirectTo: '/'
@@ -30,6 +32,11 @@
     app.controller("EventController", function($http,$log,$scope) {
 
         $scope.editable = false;
+
+        $scope.showError = false;
+        $scope.errorMessage = "";
+
+
         init();
 
         function init() {
@@ -38,9 +45,19 @@
                 success(function(data, status, headers, config) {
 
                     $log.log(data);
-                    $scope.events = data;
+
+                    if(data.message) {
+                        console.log("Error getting events");
+                        $scope.errorMessage = data.message;
+                        $scope.showError = true;
+                    }
+                    else
+                        $scope.events = data;
+
                 }).
                 error(function(data, status, headers, config) {
+
+                    $scope.showError = true;
 
                     //TODO:Manage the error and send a message to the scope
                     $log.log('Error');
@@ -81,7 +98,7 @@
 
         $scope.changeButton = function() {
             $scope.editable = false;
-        }
+        };
 
         $scope.editEvent = function(newEvent) {
 
@@ -120,7 +137,7 @@
 
             $scope.newEvent = "";
 
-        }
+        };
 
         $scope.editEventModal = function(event) {
 
@@ -188,6 +205,24 @@
                     $log.log('Error');
                 });
         };
+
+    });
+
+
+    app.controller("AlertController", function($scope){
+
+
+
+
+    });
+
+    app.controller('TerminalController', function($scope) {
+
+        //Get all terminals
+
+        //Get terminal configuration
+
+        //Delete Terminal
 
     });
 

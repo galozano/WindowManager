@@ -4,8 +4,12 @@
 
 
     //TODO: Organizar los routes en otro archivo y servicio en otro
-    //TODO: Documentar todo para que quede bie
-    //TODO: poner un logger bueno --Morgan
+    //TODO: Documentar todo para que quede bien
+    //TODO: poner un logger bueno --Morga
+    //TODO:Hacer config file con NODE_ENV
+    //TODO:Terminar de organizar todas las dependencies de package.json
+    //TODO: Crear function que crea el mensaje del error
+    //TODO: No enviar la informacion como la da la base de datos, tener una servicio de cambio de informacion
 
 //-------------------------------------------------------------
 // Module dependencies  & Configuration
@@ -16,6 +20,11 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var mysql = require('mysql');
+var logger = require('./server/conf/logger.js');
+
+//-------------------------------------------------------------
+// Initial Configuration
+//-------------------------------------------------------------
 
 var app = express();
 
@@ -29,6 +38,7 @@ app.use(bodyParser.json());
 app.use(session({secret: '65736583GGHUYTFGJI8',
     saveUninitialized: true,
     resave: true}));
+
 
 //-------------------------------------------------------------
 // Connections
@@ -68,181 +78,22 @@ function authenticationMiddleware(req,res,next)
 }
 
 //-------------------------------------------------------------
-// Routes
+// Module local dependencies
 //-------------------------------------------------------------
 
-app.get('/login', function(req,res) {
+var eventServerController = require('./server/EventServerController.js')(express,connection,logger);
+var loginServerController = require('./server/LoginServerController.js')(express,connection);
 
-    res.render('login.html', { message: ''});
-});
+app.use('/',eventServerController);
+app.use('/',loginServerController);
 
-app.post('/login',function(req,res)
-{
-    var session = req.session;
-    var email = req.param('email');
-    var password = req.param('password');
-
-    var query = "SELECT email FROM User WHERE email=" + connection.escape(email) + " AND password="+ connection.escape(password)  +"";
-
-    console.log(query);
-
-    connection.query(query, function(err, rows) {
-         //Manage any error from the query
-         if(err) {
-             //TODO:Poner los codigos de los errores en las respuestas de los mensajes
-             console.log(err);
-             res.render('login.html', { message: 'There was an unexpected error'});
-         }
-         else {
-
-             if(rows != null && rows.length === 1) {
-
-                 console.log("User OK");
-
-                 //User is Ok.. Set session and redirect to main page
-                 session.user = rows[0].userId;
-                 res.redirect("/");
-             }
-             else {
-                 //User does not exist
-                 console.log("Error login");
-                 //TODO:Poner los codigos de los errores en las respuestas de los mensajes
-                 res.render('login.html', { message: 'Email is incorrect'});
-             }
-
-             console.log(rows.length);
-             console.log("OK!");
-         }
-    });
-});
+//-------------------------------------------------------------
+// Routes
+//-------------------------------------------------------------
 
 app.get('/', function (req,res) {
 
     res.render('index.html');
-});
-
-//-------------------------------------------------------------
-// Web Services
-//-------------------------------------------------------------
-
-
-function getEvents(result)
-{
-    console.log("Obtaining Events");
-
-    var query = "SELECT eventId,arrivingTime,day,duration,eventLength,eventName,eventStart FROM Events";
-    console.log(query);
-
-    connection.query(query, function(err, rows) {
-        if(err) {
-
-            //TODO:Poner los codigos de los errores en las respuestas de los mensajes
-            console.log("ERROR:" + err);
-            result({ message: 'There was an unexpected error'});
-        }
-        else {
-            console.log(rows);
-            result(rows);
-        }
-    });
-}
-
-app.get('/events', function (req, res) {
-
-    var result = getEvents(function(result) {
-        res.json(result);
-    });
-});
-
-app.post('/addEvent',function(req,res) {
-
-    console.log("Add Event");
-    console.log(req.body);
-
-    var newEvent = req.body;
-    var insertedId = {eventId:-1};
-
-    var insertQuery = "INSERT INTO Events (eventName,arrivingTime,duration,eventStart,eventLength,day) VALUES (:eventName,:arrivingTime,:duration,:eventStart,:eventLength,:day)";
-    var selectQuery = "SELECT eventId,arrivingTime,day,duration,eventLength,eventName,eventStart FROM Events WHERE eventId = :eventId";
-
-    connection.query(insertQuery, newEvent, function(err, result) {
-
-        if(err) {
-            //TODO:Poner los codigos de los errores en las respuestas de los mensajes
-            console.log(err);
-            res.json({ message: 'There was an unexpected error'});
-        }
-        else
-        {
-            console.log(result.insertId);
-            console.log(result);
-            insertedId.eventId = result.insertId;
-
-            connection.query(selectQuery,insertedId, function(err, result) {
-
-                if(err) {
-                    //TODO:Poner los codigos de los errores en las respuestas de los mensajes
-                    console.log(err);
-                    res.json({ message: 'There was an unexpected error'});
-                }
-                else
-                {
-                    console.log(result);
-                    res.json(result[0]);
-                }
-            });
-        }
-    });
-});
-
-app.post('/editEvent', function(req,res) {
-
-    console.log("Edit event");
-    console.log(req.body);
-
-    var editEvent = req.body;
-
-    var updateQuery = "UPDATE Events SET arrivingTime = :arrivingTime, day = :day, duration = :duration, eventLength = :eventLength, eventName = :eventName ,eventStart = :eventStart" +
-        "  WHERE eventId = :eventId";
-
-    connection.query(updateQuery, editEvent, function(err, result) {
-
-        if(err) {
-            //TODO:Poner los codigos de los errores en las respuestas de los mensajes
-            console.log(err);
-            res.json({ message: 'There was an unexpected error'});
-        }
-        else {
-
-            console.log(result);
-            res.json(result);
-        }
-    });
-});
-
-app.post('/deleteEvent',function(req,res) {
-
-    console.log("Delete event");
-    console.log(req.body);
-
-    var deleteEvent = req.body;
-    console.log("Delete:" + deleteEvent);
-
-    var deleteQuery = "DELETE FROM Events WHERE eventId = :eventId";
-
-    connection.query(deleteQuery, deleteEvent, function(err, result) {
-
-        if(err) {
-            //TODO:Poner los codigos de los errores en las respuestas de los mensajes
-            console.log(err);
-            res.json({ message: 'There was an unexpected error'});
-        }
-        else {
-
-            console.log(result);
-            res.json(result);
-        }
-    });
 });
 
 //-------------------------------------------------------------
@@ -254,5 +105,5 @@ var server = app.listen(app.get('port'), function() {
     var host = server.address().address;
     var port = server.address().port;
 
-    console.log('App listening at http://%s:%s \n', host, port);
+    logger.info('App listening at http://%s:%s \n', host, port);
 });
