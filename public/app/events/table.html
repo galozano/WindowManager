@@ -1,0 +1,40 @@
+<table class="table table-bordered">
+<thead>
+<tr>
+    <td style="width: 100px"></td>
+    <td ng-repeat="berth in terminal.berths" style="width: {{berth.pixelLength}}px">{{berth.berthName}}</td>
+</tr>
+</thead>
+<tbody>
+
+<tr ng-repeat="h in hours">
+    <td rowspan="12" ng-if="h=='1'" >Monday</td>
+    <td ng-repeat="berth in terminal.berths"></td>
+</tr>
+<tr ng-repeat="h in hours">
+    <td rowspan="12" ng-if="h=='1'" >Tuesday</td>
+    <td ng-repeat="berth in terminal.berths"></td>
+</tr>
+<tr ng-repeat="h in hours">
+    <td rowspan="12" ng-if="h=='1'" >Wednesday</td>
+    <td ng-repeat="berth in terminal.berths"></td>
+</tr>
+<tr ng-repeat="h in hours">
+    <td rowspan="12" ng-if="h=='1'" >Thursday</td>
+    <td ng-repeat="berth in terminal.berths"></td>
+</tr>
+<tr ng-repeat="h in hours">
+    <td rowspan="12" ng-if="h=='1'" >Friday</td>
+    <td ng-repeat="berth in terminal.berths"></td>
+</tr>
+<tr ng-repeat="h in hours">
+    <td rowspan="12" ng-if="h=='1'" >Saturday</td>
+    <td ng-repeat="berth in terminal.berths"></td>
+</tr>
+<tr ng-repeat="h in hours">
+    <td rowspan="12" ng-if="h=='1'" >Sunday</td>
+    <td ng-repeat="berth in terminal.berths"></td>
+</tr>
+
+</tbody>
+</table>

@@ -3,7 +3,7 @@
  */
 
 
-module.exports = function(express,connection) {
+module.exports = function(express,connection,configCSM) {
 
     var loginRouter = express.Router();
 
@@ -25,6 +25,7 @@ module.exports = function(express,connection) {
         connection.query(query, function(err, rows) {
             //Manage any error from the query
             if(err) {
+
                 //TODO:Poner los codigos de los errores en las respuestas de los mensajes
                 console.log(err);
                 res.render('login.html', { message: 'There was an unexpected error'});

@@ -1,0 +1,48 @@
+{
+    "urls": {
+        "events": {
+            "main": "/events",
+            "getEvents": "/getEvents",
+            "addEvent": "/addEvent",
+            "deleteEvent": "/deleteEvent",
+            "editEvent": "/editEvent"
+        },
+        "terminals": {
+            "main": "/terminals",
+            "getTerminals":"/getTerminals",
+            "getTerminal":"/getTerminal",
+            "deleteTerminal":"/deleteTerminal"
+        }
+    },
+    "errors": {
+        "TERMINAL_INVALID_ID": {
+            "userMessage": "Invalid Terminal ID",
+            "message": "Invalid Terminal ID",
+            "type": "ERROR",
+            "code":"TERMINAL_INVALID_ID"
+        },
+        "DATABASE_ERROR": {
+            "userMessage": "Error connecting to database, please contact administrator",
+            "message": "Error connecting to database, please contact administrator",
+            "type": "ERROR",
+            "code":"DATABASE_ERROR"
+        }
+    },
+    "dbConn":{
+        "test":{
+            "host":"localhost",
+            "user":"csm",
+            "password":"CSM.2014",
+            "database": "CSM"
+        },
+        "prod":{
+            "host":"localhost",
+            "user":"csm",
+            "password":"CSM.2014",
+            "database": "CSM"
+        }
+    },
+    "server":{
+        "port":3000
+    }
+}

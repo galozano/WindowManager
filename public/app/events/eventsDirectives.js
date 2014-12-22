@@ -1,12 +1,9 @@
 /**
  * Created by gal on 11/30/14.
  */
-
-//TODO:Falta poner el CSS en la carpeta events
-
 (function() {
 
-    var eventModule = angular.module("eventsDirectives",[ ]);
+    var eventDirectiveModule = angular.module("EventsDirectives",[ ]);
 
     //--------------------------------------------------------------------
     // Globar Variables
@@ -20,13 +17,10 @@
     var tableTotalWidth = 1099;
 
     var hoursInDay = 24;
-    var berthLengthMeters = 1000;
 
     //--------------------------------------------------------------------
     // Model
     //--------------------------------------------------------------------
-
-    //TODO:Hay que quitar esto y ponerlo normal
 
     function EventCSS() {
 
@@ -50,7 +44,16 @@
     // General Functions
     //--------------------------------------------------------------------
 
-    function eventToCSS(event) {
+    function eventToCSS(event,terminal) {
+
+        console.log("Main Event:" + JSON.stringify(event));
+
+        var berthLengthMeters = terminal.totalLength;
+
+        //Dependending on the main berths add the other berths to add
+        event.eventStart = event.eventStart +  terminal.mainBerths[event.berthId].sumLength;
+
+        console.log("Modified Event:" + JSON.stringify(event));
 
         //TODO: Falta que lo calcule por minuto tambien
         var splitArray = event.arrivingTime.split(":");
@@ -71,12 +74,13 @@
         return eventCSS;
     }
 
-    function CSSToEvent(eventCSS) {
+    function CSSToEvent(eventCSS,terminal) {
 
         //TODO:falta considerar los minutos en todo
 
         var x = eventCSS.left;
         var y = eventCSS.top;
+        var berthLengthMeters = terminal.totalLength;
 
         var eventStart = (x - tableLeftHeaderWidth) * (berthLengthMeters/(tableTotalWidth-tableLeftHeaderWidth));
         var eventDay = (Math.ceil((y - tableTopHeaderHeight)/tableDayHeight));
@@ -84,17 +88,41 @@
 
         var arrivingTimeFormat = parseInt(arrivingTime) + ":00";
 
-        var movedEvent =
-        {
+        //Calculate which is the berth in which is over
+        var berthId = '';
+        for (var berth in terminal.mainBerths) {
+
+            var length = terminal.mainBerths[berth].sumLength;
+
+            if(eventStart >= length)
+                berthId = berth;
+        }
+
+        console.log("Berth Id: " + berthId);
+
+        eventStart = eventStart - terminal.mainBerths[berthId].sumLength;
+
+        console.log("Event Start After: " + eventStart);
+
+        var movedEvent = {
             eventStart:eventStart,
             eventDay:eventDay,
-            arrivingTime: arrivingTimeFormat
+            arrivingTime: arrivingTimeFormat,
+            berthId:berthId
         };
 
         return movedEvent;
     }
 
-    eventModule.directive('event', ['$log','$document',function($log,$document) {
+    eventDirectiveModule.directive('tableGen', function( ) {
+        return {
+            restrict: 'E',
+            templateUrl: './app/events/table.html',
+            replace: true
+        }
+    });
+
+    eventDirectiveModule.directive('event', ['$log','$document',function($log,$document) {
 
         return {
             restrict: 'E',
@@ -112,7 +140,10 @@
 
                     $log.log("Event Change:" + JSON.stringify(scope.event));
 
-                    var eventCSS = eventToCSS(scope.event);
+                    var eventCopy = angular.copy(scope.event);
+                    var eventCSS = eventToCSS(eventCopy,scope.terminal);
+
+                    $log.log("AFTER CSS SCOPE EVENT:" + JSON.stringify(scope.event));
 
                     elem.css({
                         width: eventCSS.width,
@@ -158,16 +189,17 @@
                         top:y
                     };
 
-                    var changedEvent = CSSToEvent(eventCSS);
+                    var changedEvent = CSSToEvent(eventCSS,scope.terminal);
 
                     scope.event.day = changedEvent.eventDay;
                     scope.event.eventStart = parseInt(changedEvent.eventStart);
                     scope.event.arrivingTime = changedEvent.arrivingTime;
+                    scope.event.berthId = changedEvent.berthId;
 
                     scope.moveEvent(scope.event);
                     scope.$apply();
 
-                    $log.log(scope.event);
+                    $log.log("New scope event:" + JSON.stringify(scope.event));
 
                 }
             }
@@ -175,7 +207,7 @@
     }]);
 
     //TODO:Falta terminar esto para que funcione
-    eventModule.directive('resizer', function($document,$log) {
+    eventDirectiveModule.directive('resizer', function($document,$log) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {

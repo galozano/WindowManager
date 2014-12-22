@@ -2,15 +2,6 @@
  * Created by gal on 11/9/14.
  */
 
-
-    //TODO: Organizar los routes en otro archivo y servicio en otro
-    //TODO: Documentar todo para que quede bien
-    //TODO: poner un logger bueno --Morga
-    //TODO:Hacer config file con NODE_ENV
-    //TODO:Terminar de organizar todas las dependencies de package.json
-    //TODO: Crear function que crea el mensaje del error
-    //TODO: No enviar la informacion como la da la base de datos, tener una servicio de cambio de informacion
-
 //-------------------------------------------------------------
 // Module dependencies  & Configuration
 //-------------------------------------------------------------
@@ -21,6 +12,7 @@ var bodyParser = require('body-parser');
 var session = require('express-session');
 var mysql = require('mysql');
 var logger = require('./server/conf/logger.js');
+var configCSM = require('./server/conf/config.json');
 
 //-------------------------------------------------------------
 // Initial Configuration
@@ -28,7 +20,7 @@ var logger = require('./server/conf/logger.js');
 
 var app = express();
 
-app.set('port', 3000);
+app.set('port', configCSM.server.port);
 app.engine('html', require('ejs').renderFile);
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -44,12 +36,7 @@ app.use(session({secret: '65736583GGHUYTFGJI8',
 // Connections
 //-------------------------------------------------------------
 
-connection = mysql.createConnection({
-    host    : 'localhost',
-    user    : 'csm',
-    password: 'CSM.2014',
-    database: 'CSM'
-});
+connection = mysql.createConnection(configCSM.dbConn.test);
 
 connection.config.queryFormat = function (query, values) {
     if (!values) return query;
@@ -81,10 +68,12 @@ function authenticationMiddleware(req,res,next)
 // Module local dependencies
 //-------------------------------------------------------------
 
-var eventServerController = require('./server/EventServerController.js')(express,connection,logger);
-var loginServerController = require('./server/LoginServerController.js')(express,connection);
+var eventServerController = require('./server/EventServerController.js')(express,connection,logger,configCSM);
+var terminalServerController = require('./server/TerminalServerController.js')(express,connection,logger,configCSM);
+var loginServerController = require('./server/LoginServerController.js')(express,connection,configCSM);
 
-app.use('/',eventServerController);
+app.use(configCSM.urls.events.main,eventServerController);
+app.use(configCSM.urls.terminals.main,terminalServerController);
 app.use('/',loginServerController);
 
 //-------------------------------------------------------------

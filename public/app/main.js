@@ -3,25 +3,38 @@
  */
 
 //TODO: Poner comentarios en todo lados
-//
 
 (function() {
 
-    var app = angular.module("myAPP",["ngRoute","eventsDirectives"]);
+    var app = angular.module("myAPP",["ngRoute","EventsController","EventsDirectives","TerminalController"]);
+
+    app.constant('config',{
+        getEventURL:'/events/getEvents',
+        addEventURL:'/events/addEvent',
+        editEventURL:'/events/editEvent',
+        deleteEventURL:'/events/deleteEvent',
+        getTerminalsURL:'/terminals/getTerminals',
+        getTerminalURL:'/terminals/getTerminal'
+
+    });
+
+    app.config(function($logProvider){
+        $logProvider.debugEnabled(true);
+    });
 
     //--------------------------------------------------------------------
     // Routes
     //--------------------------------------------------------------------
 
     app.config(['$routeProvider', function($routeProvider) {
-        $routeProvider.when('/', {
+        $routeProvider.when('/events/:terminalId', {
             templateUrl: 'app/events/events.html',
             controller: 'EventController'
         }).when('/terminals',{
-            templateUrl: 'app/terminals.html',
-            controller: 'EventController'
+            templateUrl: 'app/terminals/terminals.html',
+            controller: 'TerminalController'
         }).otherwise({
-            redirectTo: '/'
+            redirectTo: '/terminals'
         });
     }]);
 
@@ -29,209 +42,21 @@
     // Controllers
     //--------------------------------------------------------------------
 
-    app.controller("EventController", function($http,$log,$scope) {
+    app.controller("AlertController", function($scope,$log){
 
-        $scope.editable = false;
-
-        $scope.showError = false;
         $scope.errorMessage = "";
+        $scope.showError = false;
 
+        $scope.$on('AlertEvent', function (event, message) {
 
-        init();
+            $log.log("AlertEvent Call");
+            $log.log(message);
 
-        function init() {
+            $scope.showError = false;
+            $scope.showError = true;
+            $scope.errorMessage = message;
+        });
 
-            $http.get('/events').
-                success(function(data, status, headers, config) {
-
-                    $log.log(data);
-
-                    if(data.message) {
-                        console.log("Error getting events");
-                        $scope.errorMessage = data.message;
-                        $scope.showError = true;
-                    }
-                    else
-                        $scope.events = data;
-
-                }).
-                error(function(data, status, headers, config) {
-
-                    $scope.showError = true;
-
-                    //TODO:Manage the error and send a message to the scope
-                    $log.log('Error');
-                });
-        }
-
-        $scope.addNewEvent = function(newEvent) {
-
-            $log.log("New Event");
-
-            //TODO:Poner validaciones de lo que ingrese la gente
-
-            var eventJSON =
-            {
-                "eventName":newEvent.eventName,
-                "arrivingTime":newEvent.arrivingTime,
-                "duration":newEvent.duration,
-                "eventStart":newEvent.eventStart,
-                "eventLength":newEvent.eventLength,
-                "day":newEvent.day
-            };
-
-            $http.post('/addEvent', eventJSON).
-                success(function(data, status, headers, config) {
-
-                    $log.log(data);
-                    $scope.events.push(data);
-
-                }).
-                error(function(data, status, headers, config) {
-
-                    //TODO:Manage the error and send a message to the scope
-                    $log.log('Error');
-                });
-
-            $scope.newEvent = "";
-        };
-
-        $scope.changeButton = function() {
-            $scope.editable = false;
-        };
-
-        $scope.editEvent = function(newEvent) {
-
-            $log.log("Edit Event");
-            $log.log(newEvent);
-
-
-            //TODO:Poner validaciones de lo que ingrese la gente en edicion
-
-            var eventJSON = {
-                "eventName":newEvent.eventName,
-                "arrivingTime":newEvent.arrivingTime,
-                "duration":newEvent.duration,
-                "eventStart":newEvent.eventStart,
-                "eventLength":newEvent.eventLength,
-                "day":newEvent.day,
-                "eventId":newEvent.eventId
-            };
-
-            $http.post('/editEvent', eventJSON).
-                success(function(data, status, headers, config) {
-
-                    //TODO:Mostar un mensaje de que funciono en algun lado
-                    $log.log(data);
-                }).
-                error(function(data, status, headers, config) {
-
-                    //TODO:Manage the error and send a message to the scope
-                    $log.log('Error');
-                });
-
-            if( $scope.eventChange)
-                $scope.eventChange = false;
-            else
-                $scope.eventChange = true;
-
-            $scope.newEvent = "";
-
-        };
-
-        $scope.editEventModal = function(event) {
-
-            $log.log("Edit Event");
-            console.log(event);
-
-            //var tempEvent = angular.copy(event);
-
-            $scope.newEvent = event;
-            $scope.editable = true;
-        };
-
-        $scope.deleteEvent = function(event) {
-
-            $log.log("Delete Event");
-            $log.log(event);
-
-            $http.post('/deleteEvent', {eventId:event.eventId}).
-                success(function(data, status, headers, config) {
-
-                    //TODO:Mostar un mensaje de que funciono en algun lado
-                    $log.log(data);
-
-                }).
-                error(function(data, status, headers, config) {
-
-                    //TODO:Manage the error and send a message to the scope
-                    $log.log('Error');
-                });
-
-            init();
-        };
-
-        $scope.updateEvents = function() {
-
-            $log.log("Update Events");
-            init();
-        };
-
-        $scope.moveEvent = function(newEvent) {
-
-            $log.log("Move Event");
-            $log.log(newEvent);
-
-            var eventJSON =
-            {
-                "eventName":newEvent.eventName,
-                "arrivingTime":newEvent.arrivingTime,
-                "duration":newEvent.duration,
-                "eventStart":newEvent.eventStart,
-                "eventLength":newEvent.eventLength,
-                "day":newEvent.day,
-                "eventId":newEvent.eventId
-            };
-
-            $http.post('/editEvent', eventJSON).
-                success(function(data, status, headers, config) {
-
-                    $log.log(data);
-
-                }).
-                error(function(data, status, headers, config) {
-
-                    //TODO:Manage the error and send a message to the scope
-                    $log.log('Error');
-                });
-        };
-
-    });
-
-
-    app.controller("AlertController", function($scope){
-
-
-
-
-    });
-
-    app.controller('TerminalController', function($scope) {
-
-        //Get all terminals
-
-        //Get terminal configuration
-
-        //Delete Terminal
-
-    });
-
-    app.directive('tableGen', function( ) {
-        return {
-            restrict: 'E',
-            templateUrl: './app/table.html',
-            replace: true
-        }
     });
 
 })();

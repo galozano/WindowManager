@@ -1,0 +1,43 @@
+<div class="container">
+    <div>
+        <h1>Terminals</h1>
+        <div><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#terminalModal" ng-show="false">New Terminal</button></div>
+    </div>
+    <div class="list-group">
+        <div id="terminalList" ng-repeat="terminal in terminals">
+            <a href="#/events/{{terminal.terminalId}}" class="list-group-item">
+                <h4 class="list-group-item-heading">{{terminal.terminalName}}</h4>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Create Terminal modal -->
+<div class="modal fade" id="terminalModal" tabindex="-1" role="dialog" aria-labelledby="terminalModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="terminalModalLabel">Create New Terminal</h4>
+            </div>
+            <div class="modal-body">
+                <div>{{formError}}</div>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="inputTerminalName" class="col-sm-2 control-label">Terminal Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" ng-model="newTerminal.terminalName" class="form-control" id="inputTerminalName" placeholder="Terminal Name">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-hide="editable" ng-click="">Create Terminal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

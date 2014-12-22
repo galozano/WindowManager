@@ -4,7 +4,6 @@
 
     //TODO:Organizar las pruebas bien y terminarlas
 
-var assert = require('assert');
 var server =  require('../app.js');
 var scenarioCreator = require("./scenarioCreator.js");
 var expect = require('chai').expect;
@@ -25,21 +24,43 @@ describe('Test Events', function() {
             done();
         });
 
-        //setTimeout(done, 1000);
+        //done();
+
     });
 
 
     describe('Get Events', function() {
 
         // The URL we are testing
-        var url = 'http://localhost:3000/events';
-        var options = { json: true };
+        var url = 'http://localhost:3000/events/getEvents';
 
-        it('should work first', function(done) {
+        it('Get events by specific terminal', function(done) {
 
-            request.get(url, options, function (err, resp, body) {
+            var finalURL = url + "/1";
 
-                expect(body).to.have.length(4);
+            console.log(finalURL);
+
+            request.get(finalURL, function (err, resp, body) {
+
+                console.log(JSON.parse(body));
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body)).to.have.length(2);
+
+                expect(JSON.parse(body)[0].berthId).to.equals(6);
+                expect(JSON.parse(body)[0].day).to.equals(3);
+
+
+                done();
+            });
+        });
+
+        it('Get Error Invalid Id', function(done) {
+
+            request.get(url+"/ABC", function (err, resp, body) {
+
+
+                expect(JSON.parse(body).code).to.eql("TERMINAL_INVALID_ID");
 
                 done();
             });
@@ -49,23 +70,26 @@ describe('Test Events', function() {
 
     describe('Add Events', function() {
 
-        var eventJSON =
-        {
-            "eventName":"Nuevo Evento",
-            "arrivingTime":"11:00",
-            "duration":50,
-            "eventStart":300,
-            "eventLength":400,
-            "day":3
+        var eventJSON = {
+            eventName:"Nuevo Evento",
+            arrivingTime:"11:00",
+            duration:50,
+            eventStart:300,
+            eventLength:400,
+            day:3,
+            terminalId:1,
+            berthId:4
         };
 
-        var url = 'http://localhost:3000/addEvent';
+        var url = 'http://localhost:3000/events/addEvent';
 
-        it('Add 1 Event', function(done){
+        it('Add One Event', function(done){
 
             request.post({url:url, form:eventJSON},function(err, resp, body) {
 
-                expect(body).to.have.length(5);
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).eventName).to.eq("Nuevo Evento");
+                expect(JSON.parse(body).terminalId).to.eq(1);
                 done();
             });
         });
@@ -74,7 +98,7 @@ describe('Test Events', function() {
 
     describe('Edit Events', function() {
 
-        var url = 'http://localhost:3000/editEvent';
+        var url = 'http://localhost:3000/events/editEvent';
 
         it('Edit Event 1', function(done) {
 
@@ -89,12 +113,17 @@ describe('Test Events', function() {
                 "eventStart":300,
                 "eventLength":400,
                 "day":3,
-                "eventId":editEventId
+                "eventId":editEventId,
+                "berthId":1
             };
 
             request.post({url:url, form:eventJSON},function(err, resp, body) {
 
-                console.log(body);
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).arrivingTime).to.equals("11:00");
+                expect(JSON.parse(body).day).to.equals(3);
+                expect(JSON.parse(body).berthId).to.equals(1);
+
                 done();
             });
         });
@@ -103,7 +132,7 @@ describe('Test Events', function() {
 
     describe('Delete Event', function (){
 
-        var url = 'http://localhost:3000/deleteEvent';
+        var url = 'http://localhost:3000/events/deleteEvent';
 
         it('Delete Event 1', function(done) {
 
@@ -116,7 +145,8 @@ describe('Test Events', function() {
 
             request.post({url:url, form:eventJSON},function(err, resp, body) {
 
-                console.log(body);
+                expect(resp.statusCode).to.equals(200);
+                console.log(JSON.parse(body));
                 done();
             });
         });
