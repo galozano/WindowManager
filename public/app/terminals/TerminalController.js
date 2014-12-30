@@ -7,6 +7,7 @@
 
     var terminalsControllerModule = angular.module("TerminalController",[ ]);
 
+    //TODO:poner los textos de los Injectors
     terminalsControllerModule.controller('TerminalController', function($http,$log,$scope,$routeParams,config,$rootScope) {
 
         $scope.terminals = [];

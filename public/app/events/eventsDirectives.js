@@ -6,7 +6,7 @@
     var eventDirectiveModule = angular.module("EventsDirectives",[ ]);
 
     //--------------------------------------------------------------------
-    // Globar Variables
+    // Global Variables
     //--------------------------------------------------------------------
 
     //Estas variables deben quedar como configuracion en algun lado
@@ -33,11 +33,11 @@
     function Event() {
 
         var eventName;
-        var arrivingTime;
-        var duration;
+        var eventArrivingTime;
+        var eventDuration;
         var eventStart;
         var eventLength;
-        var day;
+        var eventDay;
     }
 
     //--------------------------------------------------------------------
@@ -47,6 +47,7 @@
     function eventToCSS(event,terminal) {
 
         console.log("Main Event:" + JSON.stringify(event));
+        console.log("Terminal:" + JSON.stringify(terminal));
 
         var berthLengthMeters = terminal.totalLength;
 
@@ -56,11 +57,11 @@
         console.log("Modified Event:" + JSON.stringify(event));
 
         //TODO: Falta que lo calcule por minuto tambien
-        var splitArray = event.arrivingTime.split(":");
+        var splitArray = event.eventArrivingTime.split(":");
         var arrivingTime = parseInt(splitArray[0],10);
 
-        var top = ((event.day - 1) * tableDayHeight)  +  ((tableDayHeightNoBorder/hoursInDay) * arrivingTime) +  tableTopHeaderHeight;
-        var bottom = ((event.day - 1) * tableDayHeight)  +  ((tableDayHeightNoBorder/hoursInDay) * (arrivingTime + event.duration)) +  tableTopHeaderHeight;
+        var top = ((event.eventDay - 1) * tableDayHeight)  +  ((tableDayHeightNoBorder/hoursInDay) * arrivingTime) +  tableTopHeaderHeight;
+        var bottom = ((event.eventDay - 1) * tableDayHeight)  +  ((tableDayHeightNoBorder/hoursInDay) * (arrivingTime + event.eventDuration)) +  tableTopHeaderHeight;
 
         var left = (event.eventStart * (tableTotalWidth-tableLeftHeaderWidth)/berthLengthMeters) + tableLeftHeaderWidth;
         var right = ((event.eventStart + event.eventLength) * (tableTotalWidth-tableLeftHeaderWidth)/berthLengthMeters) + tableLeftHeaderWidth;
@@ -84,9 +85,9 @@
 
         var eventStart = (x - tableLeftHeaderWidth) * (berthLengthMeters/(tableTotalWidth-tableLeftHeaderWidth));
         var eventDay = (Math.ceil((y - tableTopHeaderHeight)/tableDayHeight));
-        var arrivingTime = ((y - tableTopHeaderHeight) % tableDayHeight) * (hoursInDay/tableDayHeightNoBorder) ;
+        var eventArrivingTime = ((y - tableTopHeaderHeight) % tableDayHeight) * (hoursInDay/tableDayHeightNoBorder) ;
 
-        var arrivingTimeFormat = parseInt(arrivingTime) + ":00";
+        var arrivingTimeFormat = parseInt(eventArrivingTime) + ":00";
 
         //Calculate which is the berth in which is over
         var berthId = '';
@@ -107,7 +108,7 @@
         var movedEvent = {
             eventStart:eventStart,
             eventDay:eventDay,
-            arrivingTime: arrivingTimeFormat,
+            eventArrivingTime: arrivingTimeFormat,
             berthId:berthId
         };
 
@@ -129,8 +130,7 @@
             templateUrl: './app/events/event.html',
             replace: true,
             transclude:true,
-            link:function(scope, elem, attrs)
-            {
+            link:function(scope, elem, attrs) {
                 var startX = 0;
                 var startY = 0;
                 var x = 0;
@@ -191,9 +191,9 @@
 
                     var changedEvent = CSSToEvent(eventCSS,scope.terminal);
 
-                    scope.event.day = changedEvent.eventDay;
+                    scope.event.eventDay = changedEvent.eventDay;
                     scope.event.eventStart = parseInt(changedEvent.eventStart);
-                    scope.event.arrivingTime = changedEvent.arrivingTime;
+                    scope.event.eventArrivingTime = changedEvent.eventArrivingTime;
                     scope.event.berthId = changedEvent.berthId;
 
                     scope.moveEvent(scope.event);
@@ -205,6 +205,7 @@
             }
         };
     }]);
+
 
     //TODO:Falta terminar esto para que funcione
     eventDirectiveModule.directive('resizer', function($document,$log) {

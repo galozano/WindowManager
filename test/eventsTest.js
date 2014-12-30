@@ -1,17 +1,13 @@
 /**
  * Created by gal on 11/26/14.
  */
-
-    //TODO:Organizar las pruebas bien y terminarlas
-
 var server =  require('../app.js');
 var scenarioCreator = require("./scenarioCreator.js");
 var expect = require('chai').expect;
 var request = require('request');
+var configCSM = require('../server/conf/config.json');
 
-describe('Test Events', function() {
-
-    var eventsCreated = [];
+describe.only('Test Events', function() {
 
     before(function(done){
 
@@ -20,36 +16,32 @@ describe('Test Events', function() {
         scenarioCreator.prepareScenario(function(events) {
 
             console.log('Creating Scenario');
-            eventsCreated = events;
             done();
         });
 
-        //done();
-
     });
 
-
-    describe('Get Events', function() {
+    describe('Get Events of Terminal 1', function() {
 
         // The URL we are testing
         var url = 'http://localhost:3000/events/getEvents';
 
         it('Get events by specific terminal', function(done) {
 
+            //Terminal 1
             var finalURL = url + "/1";
 
-            console.log(finalURL);
+            console.log("URL:" + finalURL);
 
             request.get(finalURL, function (err, resp, body) {
-
-                console.log(JSON.parse(body));
 
                 expect(resp.statusCode).to.equals(200);
                 expect(JSON.parse(body)).to.have.length(2);
 
                 expect(JSON.parse(body)[0].berthId).to.equals(6);
-                expect(JSON.parse(body)[0].day).to.equals(3);
+                expect(JSON.parse(body)[0].eventDay).to.equals(3);
 
+                expect(JSON.parse(body)[0].eventCranes).to.have.length(2);
 
                 done();
             });
@@ -59,8 +51,8 @@ describe('Test Events', function() {
 
             request.get(url+"/ABC", function (err, resp, body) {
 
-
-                expect(JSON.parse(body).code).to.eql("TERMINAL_INVALID_ID");
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body)).to.eql(configCSM.errors.TERMINAL_INVALID_ID);
 
                 done();
             });
@@ -72,11 +64,11 @@ describe('Test Events', function() {
 
         var eventJSON = {
             eventName:"Nuevo Evento",
-            arrivingTime:"11:00",
-            duration:50,
+            eventArrivingTime:"11:00",
+            eventDuration:50,
             eventStart:300,
             eventLength:400,
-            day:3,
+            eventDay:3,
             terminalId:1,
             berthId:4
         };
@@ -88,8 +80,17 @@ describe('Test Events', function() {
             request.post({url:url, form:eventJSON},function(err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
+
                 expect(JSON.parse(body).eventName).to.eq("Nuevo Evento");
+                expect(JSON.parse(body).eventArrivingTime).to.eq("11:00");
+                expect(JSON.parse(body).eventDuration).to.eq(50);
+                expect(JSON.parse(body).eventStart).to.eq(300);
+                expect(JSON.parse(body).eventLength).to.eq(400);
+                expect(JSON.parse(body).eventDay).to.eq(3);
                 expect(JSON.parse(body).terminalId).to.eq(1);
+                expect(JSON.parse(body).berthId).to.eq(4);
+                expect(JSON.parse(body).eventCranes).to.have.length(0);
+
                 done();
             });
         });
@@ -102,27 +103,32 @@ describe('Test Events', function() {
 
         it('Edit Event 1', function(done) {
 
-            console.log(eventsCreated);
-            var editEventId = eventsCreated[1].eventId;
 
             var eventJSON =
             {
                 "eventName":"Nuevo Evento Editado",
-                "arrivingTime":"11:00",
-                "duration":50,
+                "eventArrivingTime":"11:00",
+                "eventDuration":50,
                 "eventStart":300,
-                "eventLength":400,
-                "day":3,
-                "eventId":editEventId,
+                "eventLength":100,
+                "eventDay":3,
+                "eventId":2,
                 "berthId":1
             };
 
             request.post({url:url, form:eventJSON},function(err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
-                expect(JSON.parse(body).arrivingTime).to.equals("11:00");
-                expect(JSON.parse(body).day).to.equals(3);
-                expect(JSON.parse(body).berthId).to.equals(1);
+
+                expect(JSON.parse(body).eventName).to.eq("Nuevo Evento Editado");
+                expect(JSON.parse(body).eventArrivingTime).to.eq("11:00");
+                expect(JSON.parse(body).eventDuration).to.eq(50);
+                expect(JSON.parse(body).eventStart).to.eq(300);
+                expect(JSON.parse(body).eventLength).to.eq(100);
+                expect(JSON.parse(body).eventDay).to.eq(3);
+                expect(JSON.parse(body).terminalId).to.eq(1);
+                expect(JSON.parse(body).berthId).to.eq(1);
+                expect(JSON.parse(body).eventCranes).to.have.length(0);
 
                 done();
             });
@@ -136,22 +142,19 @@ describe('Test Events', function() {
 
         it('Delete Event 1', function(done) {
 
-            var editEventId = eventsCreated[1].eventId;
+            var editEventId = 1;
 
-            var eventJSON =
-            {
+            var eventJSON = {
                 "eventId":editEventId
             };
 
             request.post({url:url, form:eventJSON},function(err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
-                console.log(JSON.parse(body));
+
+                console.log(JSON.parse(body)).to.eq("OK");
                 done();
             });
         });
     });
 });
-
-
-

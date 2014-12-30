@@ -12,6 +12,10 @@
             "getTerminals":"/getTerminals",
             "getTerminal":"/getTerminal",
             "deleteTerminal":"/deleteTerminal"
+        },
+        "cranes":{
+            "main": "/cranes",
+            "editCranes":"/editEventCranes"
         }
     },
     "errors": {
@@ -20,6 +24,12 @@
             "message": "Invalid Terminal ID",
             "type": "ERROR",
             "code":"TERMINAL_INVALID_ID"
+        },
+        "EVENT_INVALID_ID": {
+            "userMessage": "Invalid Event ID",
+            "message": "Invalid Event ID",
+            "type": "ERROR",
+            "code":"EVENT_INVALID_ID"
         },
         "DATABASE_ERROR": {
             "userMessage": "Error connecting to database, please contact administrator",

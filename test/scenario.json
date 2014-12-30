@@ -1,0 +1,145 @@
+{
+  "berths": [{
+      "berthId":1,
+      "berthName": "Berth 1",
+      "berthLength":200,
+      "terminalConfigSchemaId":1,
+      "sequence":5,
+      "berthStart":false
+    }, {
+      "berthId":2,
+      "berthName": "Berth 2",
+      "berthLength":200,
+      "terminalConfigSchemaId":1,
+      "sequence":2,
+      "berthStart":false
+    }, {
+      "berthId":3,
+      "berthName": "Berth 3",
+      "berthLength":200,
+      "terminalConfigSchemaId":1,
+      "sequence":3,
+      "berthStart":false
+    }, {
+      "berthId":4,
+      "berthName": "Berth 4",
+      "berthLength":200,
+      "terminalConfigSchemaId":1,
+      "sequence":1,
+      "berthStart":true
+    }, {
+      "berthId":5,
+      "berthName": "Berth 5",
+      "berthLength":200,
+      "terminalConfigSchemaId":1,
+      "sequence":4,
+      "berthStart":false
+    }, {
+      "berthId":6,
+      "berthName": "Marginal 1",
+      "berthLength":800,
+      "terminalConfigSchemaId":2,
+      "sequence":1,
+      "berthStart":true
+    }, {
+      "berthId":7,
+      "berthName": "Espigon 1",
+      "berthLength":200,
+      "terminalConfigSchemaId":2,
+      "sequence":2,
+      "berthStart":true
+    }, {
+      "berthId":8,
+      "berthName": "Espigon 2",
+      "berthLength":200,
+      "terminalConfigSchemaId":2,
+      "sequence":3,
+      "berthStart":true
+    }
+  ],
+  "terminalConfigurationsSchemas": [{
+      "terminalConfigSchemaId":1,
+      "terminalConfigSchemaName": "Config 1"
+    }, {
+      "terminalConfigSchemaId":2,
+      "terminalConfigSchemaName": "Config 2"
+  }],
+  "terminals": [{
+      "terminalName":"SPRC",
+      "terminalId":1,
+      "terminalConfigSchemaId":2,
+      "craneConfigSchemaId":1
+    }, {
+      "terminalName":"Contecar",
+      "terminalId":2,
+      "terminalConfigSchemaId":1,
+      "craneConfigSchemaId":1
+    }
+  ],
+  "cranes": [{
+      "craneId":1,
+      "craneName":"G1",
+      "craneConfigSchemaId":1
+    },{
+      "craneId":2,
+      "craneName":"G2",
+      "craneConfigSchemaId":1
+    }
+  ],
+  "events" :[{
+      "eventId":1,
+      "eventName":"Servicio Longanisa",
+      "eventArrivingTime":"07:00",
+      "eventDuration":50,
+      "eventStart":300,
+      "eventLength":100,
+      "eventDay":3,
+      "terminalId":1,
+      "berthId":6
+    }, {
+      "eventId":2,
+      "eventName":"Servicio el huerto",
+      "eventArrivingTime":"11:00",
+      "eventDuration":20,
+      "eventStart":500,
+      "eventLength":200,
+      "eventDay":5,
+      "terminalId":1,
+      "berthId":6
+    }, {
+      "eventId":3,
+      "eventName":"Servicio Noche",
+      "eventArrivingTime":"20:00",
+      "eventDuration":20,
+      "eventStart":200,
+      "eventLength":400,
+      "eventDay":1,
+      "terminalId":2,
+      "berthId":4
+    }, {
+      "eventId":4,
+      "eventName":"Servicio Prueba 5",
+      "eventArrivingTime":"14:00",
+      "eventDuration":80,
+      "eventStart":500,
+      "eventLength":600,
+      "eventDay":4,
+      "terminalId":2,
+      "berthId":4
+    }
+  ],
+  "craneConfigurationSchema": [{
+      "craneConfigSchemaId":1,
+      "craneConfigSchemaName":"SPRC Schema"
+    }
+  ],
+  "eventsCranes": [
+    {
+      "eventId": 1,
+      "craneId": 1
+    },{
+      "eventId":1,
+      "craneId":2
+    }
+  ]
+}

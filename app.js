@@ -3,7 +3,7 @@
  */
 
 //-------------------------------------------------------------
-// Module dependencies  & Configuration
+// Module Dependencies & Configurations
 //-------------------------------------------------------------
 
 var express = require('express');
@@ -11,6 +11,8 @@ var path = require('path');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var mysql = require('mysql');
+var q = require('q');
+
 var logger = require('./server/conf/logger.js');
 var configCSM = require('./server/conf/config.json');
 
@@ -68,12 +70,18 @@ function authenticationMiddleware(req,res,next)
 // Module local dependencies
 //-------------------------------------------------------------
 
-var eventServerController = require('./server/EventServerController.js')(express,connection,logger,configCSM);
-var terminalServerController = require('./server/TerminalServerController.js')(express,connection,logger,configCSM);
+var eventServerService  = require('./server/events/EventServerService.js')(connection,logger,configCSM,q);
+var eventServerController = require('./server/events/EventServerController.js')(express,connection,logger,configCSM,eventServerService);
+
+var craneServerController = require('./server/CraneServerController.js')(express,connection,logger,configCSM,q,eventServerService);
+
+var terminalServerController = require('./server/TerminalServerController.js')(express,connection,logger,configCSM,q);
+
 var loginServerController = require('./server/LoginServerController.js')(express,connection,configCSM);
 
-app.use(configCSM.urls.events.main,eventServerController);
-app.use(configCSM.urls.terminals.main,terminalServerController);
+app.use(configCSM.urls.events.main, eventServerController);
+app.use(configCSM.urls.terminals.main, terminalServerController);
+app.use(configCSM.urls.cranes.main, craneServerController);
 app.use('/',loginServerController);
 
 //-------------------------------------------------------------

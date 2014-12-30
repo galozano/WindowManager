@@ -14,12 +14,21 @@
         editEventURL:'/events/editEvent',
         deleteEventURL:'/events/deleteEvent',
         getTerminalsURL:'/terminals/getTerminals',
-        getTerminalURL:'/terminals/getTerminal'
-
+        getTerminalURL:'/terminals/getTerminal',
+        editCranesURL:'/cranes/editEventCranes'
     });
 
+    //TODO:poner los textos de los Injectors
     app.config(function($logProvider){
         $logProvider.debugEnabled(true);
+    });
+
+    //--------------------------------------------------------------------
+    // Factories
+    //--------------------------------------------------------------------
+
+    app.factory('_', function() {
+        return window._; // assumes underscore has already been loaded on the page
     });
 
     //--------------------------------------------------------------------
@@ -42,7 +51,8 @@
     // Controllers
     //--------------------------------------------------------------------
 
-    app.controller("AlertController", function($scope,$log){
+    //TODO:poner los textos de los Injectors
+    app.controller("AlertController", ['$scope', '$log', function($scope,$log){
 
         $scope.errorMessage = "";
         $scope.showError = false;
@@ -57,6 +67,6 @@
             $scope.errorMessage = message;
         });
 
-    });
+    }]);
 
 })();

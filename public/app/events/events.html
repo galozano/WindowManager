@@ -1,9 +1,17 @@
 <link type="text/css" rel="stylesheet" href="/app/events/main.css"/>
 
-<ul>
-    <li><button type="button" class="btn btn-primary navbar-btn"  ng-click="updateEvents()">Update</button></li>
-    <li><button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#eventModal" ng-click="changeButton()">Create Event</button></li>
-</ul>
+<div class="container">
+    <div class="row">
+        <div class="pull-left">
+            <h2>{{terminal.terminalName}}</h2>
+        </div>
+        <div class="pull-right">
+            <button type="button" class="btn btn-primary navbar-btn"  ng-click="updateEvents()">Update</button>
+            <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#eventModal" ng-click="changeButton()">Create Event</button>
+        </div>
+    </div>
+</div>
+
 <div class="container">
     <div class="calendar">
         <div ng-repeat="event in events">
@@ -13,7 +21,7 @@
     </div>
 </div>
 
-<!-- Create Event modal -->
+<!-- Create Event and Edit modal -->
 <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -21,25 +29,27 @@
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="eventModalLabel">Create New Event</h4>
             </div>
+            <form name="eventForm" class="css-form" novalidate>
             <div class="modal-body">
                 <div>{{formError}}</div>
                 <div class="form-horizontal">
                     <div class="form-group">
                         <label for="inputEventName" class="col-sm-2 control-label">Service Name</label>
                         <div class="col-sm-10">
-                            <input type="text" ng-model="newEvent.eventName" class="form-control" id="inputEventName" placeholder="Service Name">
+                            <input type="text" name="eventName" ng-model="newEvent.eventName" class="form-control" id="inputEventName" placeholder="Service Name" required>
+                            <span class="error" ng-show="eventForm.eventName.$error.required">Require!</span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="inputArrivingTime" class="col-sm-2 control-label">Arrival Time:</label>
+                        <label for="inputEventArrivingTime" class="col-sm-2 control-label">Arrival Time:</label>
                         <div class="col-sm-10">
-                            <input type="text" ng-model="newEvent.arrivingTime" class="form-control" id="inputArrivingTime" placeholder="Arriving Time" >
+                            <input type="text" ng-model="newEvent.eventArrivingTime" class="form-control" id="inputEventArrivingTime" placeholder="Arriving Time" >
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="duration" class="col-sm-2 control-label">Duration:</label>
+                        <label for="eventDuration" class="col-sm-2 control-label">Duration:</label>
                         <div class="col-sm-10">
-                            <input type="number" ng-model="newEvent.duration" class="form-control" id="duration" placeholder="Duration Hours">
+                            <input type="number" ng-model="newEvent.eventDuration" class="form-control" id="eventDuration" placeholder="Duration Hours">
                         </div>
                     </div>
                     <div class="form-group">
@@ -57,7 +67,7 @@
                     <div class="form-group">
                         <label for="inputEventDay" class="col-sm-2 control-label">Day:</label>
                         <div class="col-sm-10">
-                            <select id="inputEventDay" ng-model="newEvent.day" class="form-control">
+                            <select id="inputEventDay" ng-model="newEvent.eventDay" class="form-control">
                                 <option value="{{day.dayId}}" ng-repeat="day in days">{{day.dayName}}</option>
                             </select>
                         </div>
@@ -66,7 +76,7 @@
                         <label for="inputBerthId" class="col-sm-2 control-label">Berth:</label>
                         <div class="col-sm-10">
                             <select id="inputBerthId" ng-model="newEvent.berthId" class="form-control">
-                                <option value="{{berth.berthId}}" ng-repeat="berth in terminal.mainBerths">{{berth.berthName}}</option>
+                                <option ng-repeat="berth in terminal.mainBerths" value="{{berth.berthId}}">{{berth.berthName}}</option>
                             </select>
                         </div>
                     </div>
@@ -76,6 +86,33 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" ng-hide="editable" ng-click="addNewEvent(newEvent)">Create Event</button>
                 <button type="button" class="btn btn-primary" data-dismiss="modal" ng-show="editable" ng-click="editEvent(newEvent)">Edit Event</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Crane Modal -->
+<div class="modal fade" id="craneModal" tabindex="-1" role="dialog" aria-labelledby="craneModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="craneModalLabel">Edit Crane</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" ng-repeat="crane in cranesList">
+                    <div class="col-md-1">
+                        <input type="checkbox" ng-model="crane.value" />
+                    </div>
+                    <div class="col-md-1">
+                        <span>{{crane.craneName}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" ng-click="editCranes(cranesList)">Edit Cranes</button>
             </div>
         </div>
     </div>
