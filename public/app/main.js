@@ -6,7 +6,7 @@
 
 (function() {
 
-    var app = angular.module("myAPP",["ngRoute","EventsController","EventsDirectives","TerminalController"]);
+    var app = angular.module("myAPP",["ngRoute","EventController","EventDirectives","TerminalController"]);
 
     app.constant('config',{
         getEventURL:'/events/getEvents',
@@ -17,6 +17,8 @@
         getTerminalURL:'/terminals/getTerminal',
         editCranesURL:'/cranes/editEventCranes'
     });
+
+
 
     //TODO:poner los textos de los Injectors
     app.config(function($logProvider){

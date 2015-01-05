@@ -30,34 +30,27 @@ connection.config.queryFormat = function (query, values) {
 function clearDatabase( ) {
     return q.Promise(function(resolve, reject, notify) {
 
-        var deleteEventsCranes = "DELETE FROM EventsCranes"
-        var deleteEvents = "DELETE FROM Events";
-        var deleteTerminals = "DELETE FROM Terminals";
-        var deleteBerths = "DELETE FROM Berths";
-        var deleteTerminalConfigSchema = "DELETE FROM TerminalConfigSchema";
-        var deleteCranes = "DELETE FROM Cranes";
-        var deleteCraneConfigSchema = "DELETE FROM CraneConfigSchema";
+        var deleteQueries = {
+            deleteEventsCranes: "DELETE FROM EventsCranes",
+            deleteEvents:"DELETE FROM Events",
+            deleteTerminals:"DELETE FROM Terminals",
+            deleteBerths: "DELETE FROM Berths",
+            deleteTerminalConfigSchema:"DELETE FROM TerminalConfigSchema",
+            deleteCranes: "DELETE FROM Cranes",
+            deleteCraneConfigSchema: "DELETE FROM CraneConfigSchema",
+            deleteDayName: "DELETE FROM Day",
+            deleteUsers: "DELETE FROM Users",
+            deleteRol:"DELETE FROM Rol",
+            deleteRolType:"DELETE FROM RolType"
+        };
 
-        q.ninvoke(connection, "query", deleteEventsCranes).then(function(){
-            console.log("Events Cranes Deleted");
-            return q.ninvoke(connection, "query", deleteEvents);
-        }).then(function(result){
-            console.log("Events Deleted");
-            return  q.ninvoke(connection, "query", deleteTerminals);
-        }).then(function(result){
-            console.log("Terminals Deleted");
-            return  q.ninvoke(connection, "query", deleteBerths);
-        }).then(function(result){
-            console.log("Berths Deleted");
-            return  q.ninvoke(connection, "query", deleteTerminalConfigSchema);
-        }).then(function(result){
-            console.log("Terminal Config Deleted");
-            return  q.ninvoke(connection, "query", deleteCranes);
-        }).then(function(result){
-            console.log("Cranes Deleted");
-            return  q.ninvoke(connection, "query", deleteCraneConfigSchema);
-        }).then(function(result){
-            console.log("Crane Config Schema Deleted");
+        var deletePromises = [];
+
+        for(var deleteQuery in deleteQueries){
+            deletePromises.push(q.ninvoke(connection, "query", deleteQueries[deleteQuery]));
+        }
+
+        q.all(deletePromises).then(function(){
             resolve("===========ALL TABLES DELETED==========");
         }).fail(function(err){
             console.log(err);
@@ -87,43 +80,65 @@ function insertInformation ( ) {
     return q.Promise(function(resolve, reject, notify) {
         console.log("========Inserting Information to Database========");
 
+        var insertQueries = {
+            insertDayName: {
+                query:"INSERT INTO Day (dayId,dayName) VALUES (:dayId,:dayName)",
+                value:scenario.day
+            },
+            insertTerminalSchema: {
+                query:"INSERT INTO TerminalConfigSchema (terminalConfigSchemaId,terminalConfigSchemaName) VALUES (:terminalConfigSchemaId,:terminalConfigSchemaName)",
+                value:scenario.terminalConfigurationsSchemas
+            },
+            insertCraneSchema:{
+                query:"INSERT INTO CraneConfigSchema (craneConfigSchemaId,craneConfigSchemaName) VALUES (:craneConfigSchemaId,:craneConfigSchemaName)",
+                value:scenario.craneConfigurationSchemas
+            },
+            insertBerth:{
+                query:"INSERT INTO Berths (berthId,berthName,berthLength,terminalConfigSchemaId,berthSequence,berthStart) VALUES (:berthId,:berthName,:berthLength,:terminalConfigSchemaId,:berthSequence,:berthStart)",
+                value:scenario.berths
+            },
+            insertTerminals:{
+                query:"INSERT INTO Terminals (terminalId,terminalName,terminalConfigSchemaId,craneConfigSchemaId) VALUES (:terminalId,:terminalName,:terminalConfigSchemaId,:craneConfigSchemaId)",
+                value:scenario.terminals
+            },
+            insertEvents: {
+                query:"INSERT INTO Events (eventId,eventName,eventArrivingTime,eventDuration,eventStart,eventLength,eventDay,terminalId,berthId) " +
+                    "VALUES (:eventId,:eventName,:eventArrivingTime,:eventDuration,:eventStart,:eventLength,:eventDay,:terminalId,:berthId)",
+                value:scenario.events
+            },
+            insertCranes: {
+                query:"INSERT INTO Cranes (craneId,craneName,craneConfigSchemaId) VALUES (:craneId,:craneName,:craneConfigSchemaId)",
+                value:scenario.cranes
+            },
+            insertCranesEvents: {
+                query:"INSERT INTO EventsCranes (craneId,eventId) VALUES (:craneId,:eventId)",
+                value:scenario.eventsCranes
+            },
+            insertRolType: {
+                query:"INSERT INTO RolType (rolTypeId,rolTypeName) VALUES (:rolTypeId,:rolTypeName)",
+                value:scenario.rolType
+            },
+            insertRol: {
+                query:"INSERT INTO Rol (rolId,rolTypeId) VALUES (:rolId,:rolTypeId)",
+                value:scenario.rol
+            },
+            insertUsers: {
+                query:"INSERT INTO Users (userId,userFirstName,userLastName,userEmail,userPassword,userToken,rolId) VALUES (:userId,:userFirstName,:userLastName,:userEmail,:userPassword,:userToken,:rolId)",
+                value:scenario.users
+            }
+        };
+
         connection.beginTransaction(function(err) {
 
-            var insertConfSchema = "INSERT INTO TerminalConfigSchema (terminalConfigSchemaId,terminalConfigSchemaName) VALUES (:terminalConfigSchemaId,:terminalConfigSchemaName)"
-            var insertPromises = generalInsertion(insertConfSchema,scenario.terminalConfigurationsSchemas,"Inserting Terminal Config Schema");;
+            var insertPromises = [];
+
+            for(var insertInfo in insertQueries) {
+
+                var promises = generalInsertion(insertQueries[insertInfo].query,insertQueries[insertInfo].value,insertInfo);
+                insertPromises = insertPromises.concat(promises);
+            }
 
             q.all(insertPromises).then(function(){
-
-                var insertConfSchema = "INSERT INTO CraneConfigSchema (craneConfigSchemaId,craneConfigSchemaName) VALUES (:craneConfigSchemaId,:craneConfigSchemaName)";
-                return generalInsertion(insertConfSchema,scenario.craneConfigurationSchema,"Inserting Crane Config");
-
-            }).then(function(){
-                //Insert all the Berths
-                var insertBerth = "INSERT INTO Berths (berthId,berthName,berthLength,terminalConfigSchemaId,sequence,berthStart) VALUES (:berthId,:berthName,:berthLength,:terminalConfigSchemaId,:sequence,:berthStart)";
-                return generalInsertion(insertBerth,scenario.berths,"Inserting Berths");
-
-            }).then(function(){
-                //Insert all the Terminals
-                var insertTerminals = "INSERT INTO Terminals (terminalId,terminalName,terminalConfigSchemaId,craneConfigSchemaId) VALUES (:terminalId,:terminalName,:terminalConfigSchemaId,:craneConfigSchemaId)";
-                return generalInsertion(insertTerminals,scenario.terminals,"Inserting Terminals");
-
-            }).then(function(){
-
-                var insertEvents = "INSERT INTO Events (eventId,eventName,eventArrivingTime,eventDuration,eventStart,eventLength,eventDay,terminalId,berthId) " +
-                    "VALUES (:eventId,:eventName,:eventArrivingTime,:eventDuration,:eventStart,:eventLength,:eventDay,:terminalId,:berthId)";
-                return generalInsertion(insertEvents,scenario.events,"Inserting Events");
-
-            }).then(function(){
-
-                var insertCranes = "INSERT INTO Cranes (craneId,craneName,craneConfigSchemaId) VALUES (:craneId,:craneName,:craneConfigSchemaId)";
-                return generalInsertion(insertCranes,scenario.cranes,"Inserting Crane");
-
-            }).then(function(){
-
-                var insertCranesEvents = "INSERT INTO EventsCranes (craneId,eventId) VALUES (:craneId,:eventId)";
-                return generalInsertion(insertCranesEvents,scenario.eventsCranes,"Inserting Crane Events");
-
-            }).then(function(){
                 connection.commit(function(err) {
                     if (err) {
                         connection.rollback(function () {
@@ -134,8 +149,11 @@ function insertInformation ( ) {
                 });
             }).fail(function(err){
                 console.log(err);
+                connection.rollback(function () {
+                    throw err;
+                });
                 reject(err);
-            }).done();
+            });
         });
     });
 };
@@ -150,7 +168,7 @@ exports.prepareScenario = function(callback) {
     });
 };
 
-exports.prepareScenario(function( ) {
-
-    console.log("OK");
-});
+//exports.prepareScenario(function( ) {
+//
+//    console.log("OK");
+//});

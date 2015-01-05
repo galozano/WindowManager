@@ -3,7 +3,7 @@
  */
 (function() {
 
-    var eventDirectiveModule = angular.module("EventsDirectives",[ ]);
+    var eventDirectiveModule = angular.module("EventDirectives",[ ]);
 
     //--------------------------------------------------------------------
     // Global Variables

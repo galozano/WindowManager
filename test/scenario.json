@@ -4,56 +4,56 @@
       "berthName": "Berth 1",
       "berthLength":200,
       "terminalConfigSchemaId":1,
-      "sequence":5,
+      "berthSequence":5,
       "berthStart":false
     }, {
       "berthId":2,
       "berthName": "Berth 2",
       "berthLength":200,
       "terminalConfigSchemaId":1,
-      "sequence":2,
+      "berthSequence":2,
       "berthStart":false
     }, {
       "berthId":3,
       "berthName": "Berth 3",
       "berthLength":200,
       "terminalConfigSchemaId":1,
-      "sequence":3,
+      "berthSequence":3,
       "berthStart":false
     }, {
       "berthId":4,
       "berthName": "Berth 4",
       "berthLength":200,
       "terminalConfigSchemaId":1,
-      "sequence":1,
+      "berthSequence":1,
       "berthStart":true
     }, {
       "berthId":5,
       "berthName": "Berth 5",
       "berthLength":200,
       "terminalConfigSchemaId":1,
-      "sequence":4,
+      "berthSequence":4,
       "berthStart":false
     }, {
       "berthId":6,
       "berthName": "Marginal 1",
       "berthLength":800,
       "terminalConfigSchemaId":2,
-      "sequence":1,
+      "berthSequence":1,
       "berthStart":true
     }, {
       "berthId":7,
       "berthName": "Espigon 1",
       "berthLength":200,
       "terminalConfigSchemaId":2,
-      "sequence":2,
+      "berthSequence":2,
       "berthStart":true
     }, {
       "berthId":8,
       "berthName": "Espigon 2",
       "berthLength":200,
       "terminalConfigSchemaId":2,
-      "sequence":3,
+      "berthSequence":3,
       "berthStart":true
     }
   ],
@@ -128,7 +128,7 @@
       "berthId":4
     }
   ],
-  "craneConfigurationSchema": [{
+  "craneConfigurationSchemas": [{
       "craneConfigSchemaId":1,
       "craneConfigSchemaName":"SPRC Schema"
     }
@@ -141,5 +141,44 @@
       "eventId":1,
       "craneId":2
     }
-  ]
+  ],
+  "day":[{
+      "dayId":1,
+      "dayName":"Monday"
+    },{
+      "dayId":2,
+      "dayName":"Tuesday"
+    },{
+      "dayId":3,
+      "dayName":"Wednesday"
+    },{
+      "dayId":4,
+      "dayName":"Thursday"
+    },{
+      "dayId":5,
+      "dayName":"Friday"
+    },{
+      "dayId":6,
+      "dayName":"Saturday"
+    },{
+      "dayId":7,
+      "dayName":"Friday"
+  }],
+  "rolType":[{
+     "rolTypeId":1,
+     "rolTypeName":"User"
+  }],
+  "rol":[{
+     "rolId":1,
+     "rolTypeId":1
+  }],
+  "users":[{
+      "userId":1,
+      "userFirstName":"Gustavo",
+      "userLastName":"Lozano",
+      "userEmail":"gustavo@gmail.com",
+      "userPassword":"754bd9fce61ff2b32dbb1071ed6f813fd5a8d940d36f4fe4f66829268cb492d3",
+      "userToken":"",
+      "rolId":1
+  }]
 }

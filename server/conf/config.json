@@ -16,6 +16,12 @@
         "cranes":{
             "main": "/cranes",
             "editCranes":"/editEventCranes"
+        },
+        "users":{
+            "main":"/users",
+            "login":"/login",
+            "createUser":"/createUser",
+            "changePassword":"/password"
         }
     },
     "errors": {
@@ -36,6 +42,18 @@
             "message": "Error connecting to database, please contact administrator",
             "type": "ERROR",
             "code":"DATABASE_ERROR"
+        },
+        "INVALID_USER":{
+            "userMessage": "email/password is not correct, please try again",
+            "message": "Invalid user",
+            "type": "WARNING",
+            "code":"INVALID_USER"
+        },
+        "INVALID_INPUT": {
+            "userMessage": "Invalid input, please provide good information",
+            "message": "Invalid input",
+            "type": "ERROR",
+            "code": "INVALID_INPUT"
         }
     },
     "dbConn":{
@@ -53,6 +71,7 @@
         }
     },
     "server":{
-        "port":3000
+        "port":3000,
+        "JWTSecret":"$112358F.colibri.1989$"
     }
 }

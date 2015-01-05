@@ -9,9 +9,10 @@
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
-var session = require('express-session');
 var mysql = require('mysql');
 var q = require('q');
+var validator = require('validator');
+var jwt = require('jsonwebtoken');
 
 var logger = require('./server/conf/logger.js');
 var configCSM = require('./server/conf/config.json');
@@ -29,10 +30,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use(session({secret: '65736583GGHUYTFGJI8',
-    saveUninitialized: true,
-    resave: true}));
-
 
 //-------------------------------------------------------------
 // Connections
@@ -54,8 +51,7 @@ connection.config.queryFormat = function (query, values) {
 // Middleware
 //-------------------------------------------------------------
 
-function authenticationMiddleware(req,res,next)
-{
+function authenticationMiddleware(req,res,next) {
     var session = req.session;
 
     //Check if the user is logged in
@@ -77,12 +73,12 @@ var craneServerController = require('./server/CraneServerController.js')(express
 
 var terminalServerController = require('./server/TerminalServerController.js')(express,connection,logger,configCSM,q);
 
-var loginServerController = require('./server/LoginServerController.js')(express,connection,configCSM);
+var loginServerController = require('./server/LoginServerController.js')(express,connection,configCSM,logger,q,validator,jwt);
 
 app.use(configCSM.urls.events.main, eventServerController);
 app.use(configCSM.urls.terminals.main, terminalServerController);
 app.use(configCSM.urls.cranes.main, craneServerController);
-app.use('/',loginServerController);
+app.use(configCSM.urls.users.main,loginServerController);
 
 //-------------------------------------------------------------
 // Routes

@@ -3,34 +3,39 @@
  */
 (function(){
 
-    var eventControllerModule = angular.module("EventsController",[ ]);
+    var eventControllerModule = angular.module("EventController",[ ]);
 
     /**
      * Event Controller to handle all Events logic
      */
     eventControllerModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','$rootScope','_', function($http,$log,$scope,$routeParams,config,$rootScope,_) {
 
-        var terminalId = $routeParams.terminalId;
+        //------------------------------------------------------------------------
+        // Router Params
+        //------------------------------------------------------------------------
 
+        var terminalId = $routeParams.terminalId;
         $log.debug("TERMINAL ID:" + terminalId);
 
-        $scope.editable = false;
+        //------------------------------------------------------------------------
+        // Scope Variables
+        //------------------------------------------------------------------------
 
-        $scope.formError = "";
-        $scope.newEvent = "";
-
-        //All the events of the specific terminal
+        //All the events of the specific terminal selected
         $scope.events = [];
 
-        //Information about the terminal
+        //Information about the terminal being analyzed
         $scope.terminal = "";
-
-        //Show current crane list of an specific event when selected
-        $scope.cranesList = [];
 
         $scope.hours = ['1','2','3','4','5','6','7','8','9','10','11','12'];
         $scope.days = [{dayId:1,dayName:"Monday"},{dayId:2,dayName:"Tuesday"},{dayId:3,dayName:"Wednesday"},{dayId:4,dayName:"Thursday"},{dayId:5,dayName:"Friday"},{dayId:6,dayName:"Saturday"},{dayId:7,dayName:"Sunday"}];
 
+        //Form Elements
+
+        $scope.editable = false;
+        $scope.newEvent = "";
+        //Show current crane list of an specific event when selected
+        $scope.cranesList = [];
 
         //------------------------------------------------------------------------
         // Initialization
@@ -78,8 +83,6 @@
             }
 
             $scope.terminal.mainBerths = berthsMainLength;
-            //$scope.mainBerths = berthsMainLength;
-            //$log.log("Berths Main Length:" + JSON.stringify(berthsMainLength));
             $log.log("Modified Terminal:" + JSON.stringify($scope.terminal));
         }
 
@@ -136,28 +139,26 @@
         }
 
         //------------------------------------------------------------------------
-        // Methods
+        // Private Functions
+        //------------------------------------------------------------------------
+
+
+        //------------------------------------------------------------------------
+        // Scope Functions
         //------------------------------------------------------------------------
 
         $scope.addNewEvent = function(newEvent) {
 
             $log.log("New Event");
 
-            if(!newEvent)
-                $scope.formError = "No information to submit"
-            else if(!newEvent.eventName || newEvent.eventName.length > 20)
-                $scope.formError = "Event name is invalid";
-            else if(!newEvent.eventArrivingTime  || !(/[0-9][0-9]:[0-9][0-9]/.test(newEvent.eventArrivingTime)) || newEvent.eventArrivingTime.length > 5)
-                $scope.formError = "Please digit a valid time";
-            else if(!newEvent.eventDuration || !(/[0-9]+/.test(newEvent.eventDuration)))
-                $scope.formError = "Please digit a valid duration";
-            else if(!newEvent.eventStart || !(/[0-9]+/.test(newEvent.eventStart)))
-                $scope.formError = "Please digit a valid berth start";
-            else if(!newEvent.eventLength || !(/[0-9]+/.test(newEvent.eventLength)))
-                $scope.formError = "Please digit a valid length";
-            else if(!newEvent.eventDay || !(/[0-9]/.test(newEvent.eventDay)))
-                $scope.formError = "Invalid day";
+            if ($scope.eventForm.$invalid) {
+                $log.debug("Invalid Form");
+                $scope.eventForm.showValidation = true;
+                return;
+            }
 
+            var eventToAdd = angular.copy(newEvent);
+            $log.debug("Event to Add:" + JSON.stringify(eventToAdd));
 
             var eventJSON = {
                 "eventName":newEvent.eventName,
@@ -177,7 +178,7 @@
 
                     if(data.message) {
                         $log.error("Error adding events");
-                        $scope.formError = data.message;
+
                     }
                     else {
                         $scope.events.push(data);
@@ -195,8 +196,12 @@
         };
 
         $scope.changeButton = function() {
+
+            $log.debug("Changing Form button");
             $scope.editable = false;
+            $scope.eventForm.$setPristine();
             $scope.newEvent = "";
+
         };
 
         $scope.editEvent = function(newEvent) {
@@ -204,7 +209,11 @@
             $log.log("Edit Event");
             $log.log("Edited Event:" + JSON.stringify(newEvent));
 
-            //TODO:Poner validaciones de lo que ingrese la gente en edicion
+            if ($scope.eventForm.$invalid) {
+                $log.debug("Invalid Form");
+                $scope.eventForm.showValidation = true;
+                return;
+            }
 
             var eventJSON = {
                 "eventName":newEvent.eventName,
@@ -244,8 +253,6 @@
             $log.log("Edit Event Modal");
             $log.log("Event to edit:" + JSON.stringify(event));
 
-            //var tempEvent = angular.copy(event);
-            //$scope.newEvent = event;
             $scope.newEvent = angular.copy(event);
             $scope.editable = true;
         };
@@ -282,8 +289,7 @@
             $log.debug("Move Event");
             $log.debug("Moved Event: " + JSON.stringify(newEvent));
 
-            var eventJSON =
-            {
+            var eventJSON = {
                 "eventName":newEvent.eventName,
                 "eventArrivingTime":newEvent.eventArrivingTime,
                 "eventDuration":newEvent.eventDuration,

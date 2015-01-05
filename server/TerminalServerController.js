@@ -110,14 +110,10 @@ module.exports = function(express,connection,logger,configCSM,q) {
 
     terminalsRouter.get('/getConfigSchemas', function(req,res) {
 
-
-
     });
 
     //Create terminal configuration Schema
     terminalsRouter.post('/newConfigSchema', function (req,res) {
-
-
 
     });
 
