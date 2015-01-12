@@ -46,15 +46,15 @@
 
     function eventToCSS(event,terminal) {
 
-        console.log("Main Event:" + JSON.stringify(event));
-        console.log("Terminal:" + JSON.stringify(terminal));
+        //console.log("Main Event:" + JSON.stringify(event));
+        //console.log("Terminal:" + JSON.stringify(terminal));
 
         var berthLengthMeters = terminal.totalLength;
 
         //Dependending on the main berths add the other berths to add
         event.eventStart = event.eventStart +  terminal.mainBerths[event.berthId].sumLength;
 
-        console.log("Modified Event:" + JSON.stringify(event));
+        //console.log("Modified Event:" + JSON.stringify(event));
 
         //TODO: Falta que lo calcule por minuto tambien
         var splitArray = event.eventArrivingTime.split(":");
@@ -138,12 +138,12 @@
 
                 scope.$watch('eventChange', function (val) {
 
-                    $log.log("Event Change:" + JSON.stringify(scope.event));
+                    $log.debug("Event Change:" + JSON.stringify(scope.event));
 
                     var eventCopy = angular.copy(scope.event);
                     var eventCSS = eventToCSS(eventCopy,scope.terminal);
 
-                    $log.log("AFTER CSS SCOPE EVENT:" + JSON.stringify(scope.event));
+                    $log.debug("AFTER CSS SCOPE EVENT:" + JSON.stringify(scope.event));
 
                     elem.css({
                         width: eventCSS.width,
@@ -199,7 +199,7 @@
                     scope.moveEvent(scope.event);
                     scope.$apply();
 
-                    $log.log("New scope event:" + JSON.stringify(scope.event));
+                    $log.debug("New scope event:" + JSON.stringify(scope.event));
 
                 }
             }
@@ -233,7 +233,7 @@
 
                     var newHeight = (event.pageY-startY) + parentHeight;
 
-                    $log.log('New Height:' + newHeight);
+                    $log.debug('New Height:' + newHeight);
 
 //                     element.css({
 //                         height: y + 'px'

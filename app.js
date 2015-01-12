@@ -47,7 +47,6 @@ connection.config.queryFormat = function (query, values) {
     }.bind(this));
 };
 
-
 //-------------------------------------------------------------
 // Module local dependencies
 //-------------------------------------------------------------

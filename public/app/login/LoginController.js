@@ -9,10 +9,13 @@
         function($http,$log,$scope,$routeParams,config,$rootScope,_,$location,$localStorage){
 
         $scope.loginUser = "";
+        $scope.showPage = false;
 
         if($localStorage.userToken && $localStorage.userToken != "") {
             $location.path('/terminals');
         }
+        else
+            $scope.showPage = true;
 
         $scope.login = function(loginUser) {
 

@@ -1,6 +1,7 @@
 <link type="text/css" rel="stylesheet" href="/app/events/event.css"/>
 
 <navigation-bar></navigation-bar>
+<alerts-display></alerts-display>
 
 <div class="container">
     <div class="row">
@@ -18,7 +19,7 @@
     </div>
 </div>
 
-<div class="container">
+<div class="container" ng-show="calendarLoaded">
     <div class="calendar">
         <div ng-repeat="event in events">
             <event event="event"></event>

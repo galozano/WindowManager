@@ -8,8 +8,8 @@
     /**
      * Event Controller to handle all Events logic
      */
-    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','$rootScope','_',
-        function($http,$log,$scope,$routeParams,config,$rootScope,_) {
+    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','alertService','_',
+        function($http,$log,$scope,$routeParams,config,alertService,_) {
 
         //------------------------------------------------------------------------
         // Router Params
@@ -39,6 +39,8 @@
         //Show current crane list of an specific event when selected
         $scope.cranesList = [];
 
+        $scope.calendarLoaded = false;
+
         //------------------------------------------------------------------------
         // Initialization
         //------------------------------------------------------------------------
@@ -49,20 +51,20 @@
             $http.get(config.getEventURL+"/"+terminalId).
                 success(function(data, status, headers, config) {
 
-                    $log.log("Received Events:" + JSON.stringify(data));
+                    $log.debug("Received Events:" + JSON.stringify(data));
 
                     if(data.message) {
-                        $log.log("Error getting events");
-                        $rootScope.$broadcast('AlertEvent', data.message);
+                        $log.debug("Error getting events");
+                        alertService.pushMessage(data);
                     }
-                    else
+                    else {
                         $scope.events = data;
+                    }
 
                 }).
                 error(function(data, status, headers, config) {
 
-                    $log.log('Error obtaining event');
-                    $rootScope.$broadcast('AlertEvent', "Error obtaining events");
+                    alertService.pushMessage("Connection Error");
                 });
         }
 
@@ -85,7 +87,7 @@
             }
 
             $scope.terminal.mainBerths = berthsMainLength;
-            $log.log("Modified Terminal:" + JSON.stringify($scope.terminal));
+            $log.debug("Modified Terminal:" + JSON.stringify($scope.terminal));
         }
 
         function createTerminalViewObject(data) {
@@ -101,7 +103,7 @@
                 berth.pixelLength = (totalPixelLength/totalBerthLength) * berth.berthLength;
             }
 
-            console.log("New Terminal Data:" + JSON.stringify(data));
+            $log.debug("New Terminal Data:" + JSON.stringify(data));
         }
 
         function getTerminalInformation( ) {
@@ -109,12 +111,11 @@
             $http.get(config.getTerminalURL+"/"+terminalId).
                 success(function(data, status, headers, config) {
 
-                    $log.log("Terminal Info Received:" + JSON.stringify(data));
+                    $log.debug("Terminal Info Received:" + JSON.stringify(data));
 
                     //Validate is message is an error
                     if(data.type) {
-                        $log.log("Error getting events");
-                        $rootScope.$broadcast('AlertEvent', data.message);
+                        alertService.pushMessage(data);
                     }
                     else {
 
@@ -124,15 +125,14 @@
                         if(data.berths) {
                             constructMainBerths(data.berths);
                             getEvents();
+                            $scope.calendarLoaded = true;
                         }
                         else
-                            $rootScope.$broadcast('AlertEvent', "Unable to load events");
+                            alertService.pushMessage("Unable to load events");
                     }
                 }).
                 error(function(data, status, headers, config) {
-
-                    //TODO:Manage the error and send a message to the scope
-                    $log.log('Error');
+                    alertService.pushMessage("Connection Error");
                 });
         }
 
@@ -151,7 +151,7 @@
 
         $scope.addNewEvent = function(newEvent) {
 
-            $log.log("New Event");
+            $log.debug("New Event");
 
             if ($scope.eventForm.$invalid) {
                 $log.debug("Invalid Form");
@@ -176,11 +176,10 @@
             $http.post(config.addEventURL, eventJSON).
                 success(function(data, status, headers, config) {
 
-                    $log.log(data);
+                    $log.debug("Add Event Received Data:" + JSON.stringify(data));
 
                     if(data.message) {
-                        $log.error("Error adding events");
-
+                        alertService.pushMessage(data);
                     }
                     else {
                         $scope.events.push(data);
@@ -189,9 +188,7 @@
 
                 }).
                 error(function(data, status, headers, config) {
-
-                    //TODO:Manage the error and send a message to the scope
-                    $log.log('Error');
+                    alertService.pushMessage("Connection Error");
                 });
 
             $scope.newEvent = "";
@@ -208,11 +205,11 @@
 
         $scope.editEvent = function(newEvent) {
 
-            $log.log("Edit Event");
-            $log.log("Edited Event:" + JSON.stringify(newEvent));
+            $log.debug("Edit Event");
+            $log.debug("Edited Event:" + JSON.stringify(newEvent));
 
             if ($scope.eventForm.$invalid) {
-                $log.debug("Invalid Form");
+                $log.debug("Form is Invalid");
                 $scope.eventForm.showValidation = true;
                 return;
             }
@@ -233,12 +230,12 @@
                 success(function(data, status, headers, config) {
 
                     //TODO:Mostar un mensaje de que funciono en algun lado
-                    $log.log("Received Edit Data:" + JSON.stringify(data));
+                    $log.debug("Received Edit Data:" + JSON.stringify(data));
                 }).
                 error(function(data, status, headers, config) {
 
                     //TODO:Manage the error and send a message to the scope
-                    $log.log('Error');
+                    alertService.pushMessage("Connection Error");
                 });
 
             if( $scope.eventChange)
@@ -252,8 +249,8 @@
 
         $scope.editEventModal = function(event) {
 
-            $log.log("Edit Event Modal");
-            $log.log("Event to edit:" + JSON.stringify(event));
+            $log.debug("Edit Event Modal");
+            $log.debug("Event to edit:" + JSON.stringify(event));
 
             $scope.newEvent = angular.copy(event);
             $scope.editable = true;
@@ -261,28 +258,26 @@
 
         $scope.deleteEvent = function(event) {
 
-            $log.log("Delete Event");
-            $log.log(event);
+            $log.debug("Delete Event");
+            $log.debug(event);
 
             $http.post(config.deleteEventURL, {eventId:event.eventId}).
                 success(function(data, status, headers, config) {
 
                     //TODO:Mostar un mensaje de que funciono en algun lado
-                    $log.log("Received Delete Data:" + JSON.stringify(data));
+                    $log.debug("Received Delete Data:" + JSON.stringify(data));
+                    getEvents();
 
                 }).
                 error(function(data, status, headers, config) {
 
-                    //TODO:Manage the error and send a message to the scope
-                    $log.log('Error');
+                    alertService.pushMessage("Connection Error");
                 });
-
-            init();
         };
 
         $scope.updateEvents = function() {
 
-            $log.log("Update Events");
+            $log.debug("Update Events");
             getEvents();
         };
 
@@ -304,14 +299,12 @@
 
             $http.post(config.editEventURL, eventJSON).
                 success(function(data, status, headers, config) {
-
-                    $log.log("Received Edit Data:" + JSON.stringify(data));
+                    $log.debug("Received Edit Data:" + JSON.stringify(data));
 
                 }).
                 error(function(data, status, headers, config) {
 
-                    //TODO:Manage the error and send a message to the scope
-                    $log.log('Error');
+                    alertService.pushMessage("Connection Error");
                 });
         };
 
@@ -386,8 +379,7 @@
                 }).
                 error(function(data, status, headers, config) {
 
-                    //TODO:Manage the error and send a message to the scope
-                    $log.error('Error');
+                    alertService.pushMessage("Connection Error");
                 });
         };
     }]);

@@ -5,10 +5,18 @@
 
     var terminalModule = angular.module("TerminalModule");
 
-    //TODO:poner los textos de los Injectors
-    terminalModule.controller('TerminalController', function($http,$log,$scope,$routeParams,config,$rootScope) {
+    terminalModule.controller('TerminalController', ['$http','$log','$scope','$routeParams','config','alertService', function($http,$log,$scope,$routeParams,config,alertService) {
+
+        //------------------------------------------------------------------------
+        // Scope Variables
+        //------------------------------------------------------------------------
 
         $scope.terminals = [];
+
+        //------------------------------------------------------------------------
+        // Initialization
+        //------------------------------------------------------------------------
+
 
         init();
 
@@ -18,13 +26,10 @@
             $http.get(config.getTerminalsURL).
                 success(function(data, status, headers, config) {
 
-                    $log.log("Received Terminals:" + JSON.stringify(data));
-
-                    //TODO:validar que el data llega bien como es --no es undefined
+                    $log.debug("Received Terminals:" + JSON.stringify(data));
 
                     if(data.type) {
-                        $log.log("Error getting events");
-                        $rootScope.$broadcast('AlertEvent', data.message);
+                        alertService.pushMessage(data);
                     }
                     else {
                         $scope.terminals = data;
@@ -33,15 +38,9 @@
                 }).
                 error(function(data, status, headers, config) {
 
-                    //TODO:Manage the error and send a message to the scope
-                    $log.log('Error');
+                    alertService.pushMessage("Connexion Refused");
                 });
         };
-
-        //Add new Terminal
-
-        //Delete Terminal
-
-    });
+    }]);
 
 })();

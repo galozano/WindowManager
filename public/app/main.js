@@ -6,15 +6,17 @@
 
 (function() {
 
-    angular.module("NavigationModule",[]);
+    angular.module("AlertModule",[ ]);
+    angular.module("NavigationModule",[ ]);
     angular.module("LoginModule",[ ]);
-    angular.module("EventModule",[]);
+    angular.module("EventModule",[ ]);
     angular.module("TerminalModule",[ ]);
 
     var app = angular.module("myAPP",[
         "ngRoute",
         "ngStorage",
         "720kb.tooltips",
+        "AlertModule",
         "LoginModule",
         "EventModule",
         "TerminalModule",
@@ -31,14 +33,13 @@
         loginUserURL:'/users/login'
     });
 
-    //TODO:poner los textos de los Injectors
-    app.config(function($logProvider){
-        $logProvider.debugEnabled(true);
-    });
-
     //--------------------------------------------------------------------
     // Interceptors
     //--------------------------------------------------------------------
+
+    app.config(function($logProvider){
+        $logProvider.debugEnabled(true);
+    });
 
     app.config(['$httpProvider',function($httpProvider) {
         $httpProvider.interceptors.push(['$q', '$location','$log','$localStorage', function($q, $location,$log,$localStorage) {
@@ -91,27 +92,6 @@
             controller: 'LoginController'
         }).otherwise({
             redirectTo: '/'
-        });
-    }]);
-
-    //--------------------------------------------------------------------
-    // Controllers
-    //--------------------------------------------------------------------
-
-    //TODO:poner los textos de los Injectors
-    app.controller("AlertController", ['$scope', '$log', function($scope,$log){
-
-        $scope.errorMessage = "";
-        $scope.showError = false;
-
-        $scope.$on('AlertEvent', function (event, message) {
-
-            $log.log("AlertEvent Call");
-            $log.log(message);
-
-            $scope.showError = false;
-            $scope.showError = true;
-            $scope.errorMessage = message;
         });
     }]);
 })();
