@@ -6,7 +6,19 @@
 
 (function() {
 
-    var app = angular.module("myAPP",["ngRoute","EventController","EventDirectives","TerminalController"]);
+    angular.module("NavigationModule",[]);
+    angular.module("LoginModule",[ ]);
+    angular.module("EventModule",[]);
+    angular.module("TerminalModule",[ ]);
+
+    var app = angular.module("myAPP",[
+        "ngRoute",
+        "ngStorage",
+        "720kb.tooltips",
+        "LoginModule",
+        "EventModule",
+        "TerminalModule",
+        "NavigationModule"]);
 
     app.constant('config',{
         getEventURL:'/events/getEvents',
@@ -15,10 +27,9 @@
         deleteEventURL:'/events/deleteEvent',
         getTerminalsURL:'/terminals/getTerminals',
         getTerminalURL:'/terminals/getTerminal',
-        editCranesURL:'/cranes/editEventCranes'
+        editCranesURL:'/cranes/editEventCranes',
+        loginUserURL:'/users/login'
     });
-
-
 
     //TODO:poner los textos de los Injectors
     app.config(function($logProvider){
@@ -26,7 +37,38 @@
     });
 
     //--------------------------------------------------------------------
-    // Factories
+    // Interceptors
+    //--------------------------------------------------------------------
+
+    app.config(['$httpProvider',function($httpProvider) {
+        $httpProvider.interceptors.push(['$q', '$location','$log','$localStorage', function($q, $location,$log,$localStorage) {
+            return {
+                'request': function (config) {
+                    $log.debug("Intersected");
+
+                    config.headers = config.headers || {};
+                    config.headers.Accept = "application/json";
+
+                    if ($localStorage.userToken) {
+                        config.headers.Authorization = 'Bearer ' + $localStorage.userToken;
+                    }
+
+                    $log.debug("Config Headers After:" + JSON.stringify(config.headers));
+
+                    return config;
+                },
+                'responseError': function(response) {
+                    if(response.status === 401 || response.status === 403) {
+                        $location.path('/');
+                    }
+                    return $q.reject(response);
+                }
+            };
+        }]);
+    }]);
+
+    //--------------------------------------------------------------------
+    // General Factories
     //--------------------------------------------------------------------
 
     app.factory('_', function() {
@@ -44,8 +86,11 @@
         }).when('/terminals',{
             templateUrl: 'app/terminals/terminals.html',
             controller: 'TerminalController'
+        }).when('/',{
+            templateUrl: 'app/login/login.html',
+            controller: 'LoginController'
         }).otherwise({
-            redirectTo: '/terminals'
+            redirectTo: '/'
         });
     }]);
 
@@ -68,7 +113,5 @@
             $scope.showError = true;
             $scope.errorMessage = message;
         });
-
     }]);
-
 })();

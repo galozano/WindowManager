@@ -47,20 +47,6 @@ connection.config.queryFormat = function (query, values) {
     }.bind(this));
 };
 
-//-------------------------------------------------------------
-// Middleware
-//-------------------------------------------------------------
-
-function authenticationMiddleware(req,res,next) {
-    var session = req.session;
-
-    //Check if the user is logged in
-    if(!session.user) {
-        res.redirect('/login');
-    }
-
-    next();
-}
 
 //-------------------------------------------------------------
 // Module local dependencies
@@ -75,10 +61,17 @@ var terminalServerController = require('./server/TerminalServerController.js')(e
 
 var loginServerController = require('./server/LoginServerController.js')(express,connection,configCSM,logger,q,validator,jwt);
 
+var authenticationMiddleware = require('./server/AuthenticationMiddleware.js')(express,connection,configCSM,logger,q);
+
+app.use(configCSM.urls.events.main,authenticationMiddleware.ensureAuthorized);
+app.use(configCSM.urls.terminals.main,authenticationMiddleware.ensureAuthorized);
+app.use(configCSM.urls.cranes.main,authenticationMiddleware.ensureAuthorized);
+
 app.use(configCSM.urls.events.main, eventServerController);
 app.use(configCSM.urls.terminals.main, terminalServerController);
 app.use(configCSM.urls.cranes.main, craneServerController);
 app.use(configCSM.urls.users.main,loginServerController);
+
 
 //-------------------------------------------------------------
 // Routes

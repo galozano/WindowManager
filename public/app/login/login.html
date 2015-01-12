@@ -1,0 +1,22 @@
+<link type="text/css" rel="stylesheet" href="/app/login/login.css"/>
+
+<div class="jumbotron">
+    <div class="container">
+        <span class="glyphicon glyphicon-list-alt"></span>
+        <h2>Colibri Service Manager</h2>
+        <div class="box">
+            <form  name="loginForm" class="css-form" method="post" novalidate>
+                <input type="email" name="email" placeholder="email" ng-model="loginUser.email" required>
+                <div class="formError" ng-show="loginForm.email.$invalid && loginForm.eventName.$dirty || loginForm.$submitted">
+                    <span class="error" ng-show="loginForm.email.$error.required">Email Required</span>
+                    <span class="error" ng-show="loginForm.email.$error.email">Not a valid email</span>
+                </div>
+                <input type="password" name="password" placeholder="password" ng-model="loginUser.password" required>
+                <div class="formError" ng-show="loginForm.password.$invalid && loginForm.password.$dirty || loginForm.$submitted">
+                    <span class="error" ng-show="loginForm.password.$error.required">Password Required</span>
+                </div>
+                <button type="submit" class="btn btn-default full-width" ng-click="login(loginUser)"><span class="glyphicon glyphicon-ok"></span></button>
+            </form>
+        </div>
+    </div>
+</div>

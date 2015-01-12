@@ -41,7 +41,6 @@ describe.only('Test Users', function() {
                 expect(JSON.parse(body).userFirstName).to.eq(newUser.userFirstName);
                 expect(JSON.parse(body).userLastName).to.eq(newUser.userLastName);
                 expect(JSON.parse(body).userEmail).to.eq(newUser.userEmail);
-                expect(JSON.parse(body).userRolId).to.eq(1);
 
                 done();
             });
@@ -50,7 +49,7 @@ describe.only('Test Users', function() {
 
     describe('Login User', function() {
 
-        var url = configCSM.urls.users.main + configCSM.urls.users.login;
+        var url = 'http://localhost:3000' + configCSM.urls.users.main + configCSM.urls.users.login;
 
         it('Login Ok', function(done) {
 
@@ -59,14 +58,13 @@ describe.only('Test Users', function() {
                 "userPassword":"gusti"
             };
 
-            request.get({url:url, params:loginUser}, function (err, resp, body) {
+            request.post({url:url, form:loginUser}, function (err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
 
                 expect(JSON.parse(body).userFirstName).to.eq("Gustavo");
                 expect(JSON.parse(body).userLastName).to.eq("Lozano");
                 expect(JSON.parse(body).userEmail).to.eq("gustavo@gmail.com");
-                expect(JSON.parse(body).userRolId).to.eq(1);
 
                 done();
             });
@@ -79,11 +77,11 @@ describe.only('Test Users', function() {
                 "userPassword":"XXXXXX"
             };
 
-            request.get({url:url, params:loginUser}, function (err, resp, body) {
+            request.post({url:url, form:loginUser}, function (err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
 
-                expect(JSON.parse(body).code).to.eq(configCSM.errors.INVALID_USER);
+                expect(JSON.parse(body).code).to.eq(configCSM.errors.INVALID_USER.code);
 
                 done();
             });
@@ -92,27 +90,45 @@ describe.only('Test Users', function() {
 
     describe('Change User Password', function() {
 
-        var url = configCSM.urls.users.main + configCSM.urls.users.changePassword;
+        var url = 'http://localhost:3000' + configCSM.urls.users.main + configCSM.urls.users.changePassword;
 
         it('Change User Password', function(done) {
 
             var loginUser = {
                 "userEmail":"gustavo@gmail.com",
                 "oldPassword":"gusti",
-                "newPassword":"XXXXXX"
+                "newPassword":"gusti123"
             };
 
-            request.get({url:url, form:loginUser}, function (err, resp, body) {
+            request.post({url:url, form:loginUser}, function (err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
 
                 expect(JSON.parse(body).userFirstName).to.eq("Gustavo");
                 expect(JSON.parse(body).userLastName).to.eq("Lozano");
                 expect(JSON.parse(body).userEmail).to.eq("gustavo@gmail.com");
-                expect(JSON.parse(body).userRolId).to.eq(1);
 
                 done();
             });
+        });
+
+        it('Wrong old Password', function(done) {
+
+            var loginUser = {
+                "userEmail":"gustavo@gmail.com",
+                "oldPassword":"XXXXX",
+                "newPassword":"gusti1234"
+            };
+
+            request.post({url:url, form:loginUser}, function (err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+
+                expect(JSON.parse(body).code).to.eq(configCSM.errors.INVALID_USER.code);
+
+                done();
+            });
+
         });
     });
 });

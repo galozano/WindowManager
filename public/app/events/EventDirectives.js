@@ -3,7 +3,7 @@
  */
 (function() {
 
-    var eventDirectiveModule = angular.module("EventDirectives",[ ]);
+    var eventModule = angular.module("EventModule");
 
     //--------------------------------------------------------------------
     // Global Variables
@@ -115,7 +115,7 @@
         return movedEvent;
     }
 
-    eventDirectiveModule.directive('tableGen', function( ) {
+    eventModule.directive('tableGen', function( ) {
         return {
             restrict: 'E',
             templateUrl: './app/events/table.html',
@@ -123,14 +123,14 @@
         }
     });
 
-    eventDirectiveModule.directive('event', ['$log','$document',function($log,$document) {
-
+    eventModule.directive('event', ['$log','$document',function($log,$document) {
         return {
             restrict: 'E',
             templateUrl: './app/events/event.html',
             replace: true,
             transclude:true,
             link:function(scope, elem, attrs) {
+
                 var startX = 0;
                 var startY = 0;
                 var x = 0;
@@ -206,9 +206,8 @@
         };
     }]);
 
-
     //TODO:Falta terminar esto para que funcione
-    eventDirectiveModule.directive('resizer', function($document,$log) {
+    eventModule.directive('resizer', function($document,$log) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {

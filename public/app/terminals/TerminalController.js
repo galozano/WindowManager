@@ -1,14 +1,12 @@
 /**
  * Created by gal on 12/15/14.
  */
-
-
 (function(){
 
-    var terminalsControllerModule = angular.module("TerminalController",[ ]);
+    var terminalModule = angular.module("TerminalModule");
 
     //TODO:poner los textos de los Injectors
-    terminalsControllerModule.controller('TerminalController', function($http,$log,$scope,$routeParams,config,$rootScope) {
+    terminalModule.controller('TerminalController', function($http,$log,$scope,$routeParams,config,$rootScope) {
 
         $scope.terminals = [];
 

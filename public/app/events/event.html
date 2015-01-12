@@ -5,8 +5,9 @@
         Duration: {{event.eventDuration}} h
     </div>
     <div class="content">
-        <div ng-repeat="crane in event.eventCranes" class="crane"/>
+        <div ng-repeat="crane in event.eventCranes" class="crane" tooltips title="{{crane.craneName}}" tooltip-side="bottom"/>
     </div>
+
     <div class="modifier"><span class="glyphicon glyphicon-pencil" ng-click="editEventModal(event)" data-toggle="modal" data-target="#eventModal"></span></div>
     <div class="remover"><span class="glyphicon glyphicon-remove" ng-click="deleteEvent(event)" ></span></div>
     <div class="craneSelection"><span class="glyphicon glyphicon-tasks" ng-click="editCranesModal(event)" data-toggle="modal" data-target="#craneModal"></span></div>

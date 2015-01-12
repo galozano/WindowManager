@@ -3,12 +3,13 @@
  */
 (function(){
 
-    var eventControllerModule = angular.module("EventController",[ ]);
+    var eventModule = angular.module("EventModule");
 
     /**
      * Event Controller to handle all Events logic
      */
-    eventControllerModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','$rootScope','_', function($http,$log,$scope,$routeParams,config,$rootScope,_) {
+    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','$rootScope','_',
+        function($http,$log,$scope,$routeParams,config,$rootScope,_) {
 
         //------------------------------------------------------------------------
         // Router Params
@@ -27,13 +28,14 @@
         //Information about the terminal being analyzed
         $scope.terminal = "";
 
+        //General Hour and day information to create tables
         $scope.hours = ['1','2','3','4','5','6','7','8','9','10','11','12'];
         $scope.days = [{dayId:1,dayName:"Monday"},{dayId:2,dayName:"Tuesday"},{dayId:3,dayName:"Wednesday"},{dayId:4,dayName:"Thursday"},{dayId:5,dayName:"Friday"},{dayId:6,dayName:"Saturday"},{dayId:7,dayName:"Sunday"}];
 
         //Form Elements
-
         $scope.editable = false;
         $scope.newEvent = "";
+
         //Show current crane list of an specific event when selected
         $scope.cranesList = [];
 
