@@ -15,8 +15,11 @@
     var tableTopHeaderHeight = 29;
     var tableLeftHeaderWidth = 100;
     var tableTotalWidth = 1099;
+    var cellHourHeight = 3.5; //TableDayHeight/12 cells
+
 
     var hoursInDay = 24;
+    var minutesHour = 60;
 
     //--------------------------------------------------------------------
     // Model
@@ -40,6 +43,13 @@
         var eventDay;
     }
 
+    //Add the number of padding number to the number pass
+    function pad(num, size) {
+        var s = num+"";
+        while (s.length < size) s = "0" + s;
+        return s;
+    }
+
     //--------------------------------------------------------------------
     // General Functions
     //--------------------------------------------------------------------
@@ -56,12 +66,22 @@
 
         //console.log("Modified Event:" + JSON.stringify(event));
 
-        //TODO: Falta que lo calcule por minuto tambien
         var splitArray = event.eventArrivingTime.split(":");
         var arrivingTime = parseInt(splitArray[0],10);
+        var arrivingTimeSec = parseInt(splitArray[1],10);
 
         var top = ((event.eventDay - 1) * tableDayHeight)  +  ((tableDayHeightNoBorder/hoursInDay) * arrivingTime) +  tableTopHeaderHeight;
         var bottom = ((event.eventDay - 1) * tableDayHeight)  +  ((tableDayHeightNoBorder/hoursInDay) * (arrivingTime + event.eventDuration)) +  tableTopHeaderHeight;
+
+        //Calculate the amount of px to add to the top and bottom
+        var topSec = (arrivingTimeSec/minutesHour) * cellHourHeight;
+
+        //Add the seconds to the top and bottom CSS
+        top = top + topSec;
+        bottom = bottom + topSec;
+
+        //console.log("arrivingTimeSec:" + arrivingTimeSec);
+        //console.log("Add to Top:"+ topSec);
 
         var left = (event.eventStart * (tableTotalWidth-tableLeftHeaderWidth)/berthLengthMeters) + tableLeftHeaderWidth;
         var right = ((event.eventStart + event.eventLength) * (tableTotalWidth-tableLeftHeaderWidth)/berthLengthMeters) + tableLeftHeaderWidth;
@@ -77,8 +97,6 @@
 
     function CSSToEvent(eventCSS,terminal) {
 
-        //TODO:falta considerar los minutos en todo
-
         var x = eventCSS.left;
         var y = eventCSS.top;
         var berthLengthMeters = terminal.totalLength;
@@ -87,7 +105,14 @@
         var eventDay = (Math.ceil((y - tableTopHeaderHeight)/tableDayHeight));
         var eventArrivingTime = ((y - tableTopHeaderHeight) % tableDayHeight) * (hoursInDay/tableDayHeightNoBorder) ;
 
-        var arrivingTimeFormat = parseInt(eventArrivingTime) + ":00";
+        var difference = parseInt((eventArrivingTime - parseInt(eventArrivingTime)) *100);
+        //console.log("Event Arriving Time:" + difference);
+
+        //Calculate thhe minutes based on the difference of the actual and specific arriving time
+        var arrivingMinutes = (difference/100) * minutesHour;
+        //console.log("Event Arriving Minutes:" + arrivingMinutes);
+
+        var arrivingTimeFormat = pad(parseInt(eventArrivingTime,10),2) + ":" + pad(parseInt(arrivingMinutes,10),2);
 
         //Calculate which is the berth in which is over
         var berthId = '';
@@ -99,11 +124,9 @@
                 berthId = berth;
         }
 
-        console.log("Berth Id: " + berthId);
-
+        //console.log("Berth Id: " + berthId);
         eventStart = eventStart - terminal.mainBerths[berthId].sumLength;
-
-        console.log("Event Start After: " + eventStart);
+        //console.log("Event Start After: " + eventStart);
 
         var movedEvent = {
             eventStart:eventStart,

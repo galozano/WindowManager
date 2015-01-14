@@ -184,14 +184,13 @@
                     else {
                         $scope.events.push(data);
                         $('#eventModal').modal('hide');
+                        $scope.newEvent = "";
                     }
 
                 }).
                 error(function(data, status, headers, config) {
                     alertService.pushMessage("Connection Error");
                 });
-
-            $scope.newEvent = "";
         };
 
         $scope.changeButton = function() {
