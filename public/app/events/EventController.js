@@ -230,6 +230,7 @@
 
                     //TODO:Mostar un mensaje de que funciono en algun lado
                     $log.debug("Received Edit Data:" + JSON.stringify(data));
+                    getEvents();
                 }).
                 error(function(data, status, headers, config) {
 
@@ -374,7 +375,7 @@
 
                     $log.debug("Received Edit Crane Data:" + JSON.stringify(data));
                     $('#craneModal').modal('hide');
-
+                    getEvents();
                 }).
                 error(function(data, status, headers, config) {
 
