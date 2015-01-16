@@ -94,14 +94,18 @@ module.exports = function (connection, logger, configCSM, q) {
         });
     };
 
-    eventServerService.getEvents = function getEvents(terminalId, callback) {
-        logger.debug("Obtaining Events");
+    eventServerService.getEvents = function getEvents(terminalId,rolId, callback) {
+        logger.debug("Obtaining Events:" + terminalId);
 
-        var terminalIdJSON = {terminalId: terminalId};
-        var eventsQuery = "SELECT eventId,eventArrivingTime,eventDay,eventDuration,eventLength,eventName,eventStart,berthId FROM Events WHERE terminalId = :terminalId";
+        var terminalIdJSON = {
+            terminalId: terminalId,
+            rolId:rolId
+        };
+
+        var eventsQuery = "SELECT eventId,eventArrivingTime,eventDay,eventDuration,eventLength,eventName,eventStart,berthId " +
+            "FROM Events WHERE terminalId = (SELECT terminalId FROM TerminalAccess WHERE terminalId = :terminalId AND rolId = :rolId)";
 
         logger.debug("Get Events Query: " + eventsQuery);
-
 
         connection.query(eventsQuery, terminalIdJSON, function (err, result) {
 

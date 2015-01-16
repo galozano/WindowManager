@@ -8,7 +8,7 @@ var expect = require('chai').expect;
 var request = require('request');
 var configCSM = require('../server/conf/config.json');
 
-describe.only('Test Users', function() {
+describe('Test Users', function() {
 
     before(function(done){
 

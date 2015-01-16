@@ -16,7 +16,7 @@ module.exports = function(express, connection, configCSM,logger, q) {
     function verifyUserToken(userToken) {
         var deferred = q.defer();
 
-        var query = "SELECT 1 FROM Users Where userToken = :userToken";
+        var query = "SELECT userId,userEmail,rolId FROM Users WHERE userToken = :userToken";
 
         var tokenJSON = {
            userToken: userToken
@@ -29,6 +29,7 @@ module.exports = function(express, connection, configCSM,logger, q) {
                 deferred.reject(configCSM.errors.DATABASE_ERROR);
             }
             else {
+                logger.debug("Query Result User Token:" + JSON.stringify(result));
                 deferred.resolve(result);
             }
         });
@@ -52,13 +53,14 @@ module.exports = function(express, connection, configCSM,logger, q) {
 
             logger.debug("Token Received:" + JSON.stringify(bearerToken));
 
-            req.token = bearerToken;
-
             //Verify user token
-            verifyUserToken(req.token).then(function(result){
+            verifyUserToken(bearerToken).then(function(result){
 
-                if(result && result.length > 0)
+                if(result && result.length > 0 && result[0]){
+                    req.authUser = result[0];
+                    logger.debug("Auth User:" + JSON.stringify(req.authUser));
                     next();
+                }
                 else
                     res.sendStatus(403);
 

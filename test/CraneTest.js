@@ -7,6 +7,7 @@ var scenarioCreator = require("./scenarioCreator.js");
 var expect = require('chai').expect;
 var request = require('request');
 var configCSM = require('../server/conf/config.json');
+var scenario = require('./scenario.json');
 
 describe('Test Cranes', function() {
 
@@ -34,16 +35,20 @@ describe('Test Cranes', function() {
             };
 
             var editCraneString = JSON.stringify(editCraneJson);
-            console.log(editCraneString);
+            console.log(JSON.stringify(scenario.users[0]));
 
-            var sentJson = {json:editCraneString};
+            var options = {
+                url:url,
+                form:{json:editCraneString},
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            }
 
-            request.post({url:url, form:sentJson},function(err, resp, body) {
+            request.post(options,function(err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
 
                 expect(JSON.parse(body).eventId).to.eq(1);
-                expect(JSON.parse(body).cranes).to.have.length(1);
+                expect(JSON.parse(body).eventCranes).to.have.length(1);
 
                 done();
             });
@@ -59,14 +64,18 @@ describe('Test Cranes', function() {
             var editCraneString = JSON.stringify(editCraneJson);
             console.log(editCraneString);
 
-            var sentJson = {json:editCraneString};
+            var options = {
+                url:url,
+                form:{json:editCraneString},
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            }
 
-            request.post({url:url, form:sentJson},function(err, resp, body) {
+            request.post(options,function(err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
 
                 expect(JSON.parse(body).eventId).to.eq(1);
-                expect(JSON.parse(body).cranes).to.have.length(0);
+                expect(JSON.parse(body).eventCranes).to.have.length(0);
 
                 done();
             });

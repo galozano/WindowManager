@@ -17,10 +17,11 @@ module.exports = function(express,connection,logger,configCSM,eventServerService
 
         logger.info("Terminal Id Received:" + req.params.terminalId);
 
+
         if(req.params.terminalId && /[0-9]+/.test(req.params.terminalId)) {
             terminalId = req.params.terminalId;
 
-            eventServerService.getEvents(terminalId,function(result) {
+            eventServerService.getEvents(terminalId,req.authUser.rolId,function(result) {
                 logger.info("JSON sent:" + JSON.stringify(result));
                 res.json(result);
             });

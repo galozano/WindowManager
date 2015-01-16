@@ -10,6 +10,15 @@ module.exports = function(express,connection,logger,configCSM,q) {
 
         var query = "SELECT terminalId, terminalName FROM Terminals";
 
+        var user = req.authUser;
+        var parameters = {
+            rolId: user.rolId
+        };
+
+        var query2 = "SELECT T.terminalId, T.terminalName " +
+            "FROM Terminals AS T INNER JOIN TerminalAccess AS TA ON TA.terminalId = T.terminalId" +
+            "WHERE TA.rolId = :rolId;";
+
         connection.query(query,function(err, result) {
             if(err) {
                 logger.error("ERROR:" + err);

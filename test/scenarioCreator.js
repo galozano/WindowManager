@@ -32,6 +32,7 @@ function clearDatabase( ) {
 
         var deleteQueries = {
             deleteEventsCranes: "DELETE FROM EventsCranes",
+            deleteTerminalAccess:"DELETE FROM TerminalAccess",
             deleteEvents:"DELETE FROM Events",
             deleteTerminals:"DELETE FROM Terminals",
             deleteBerths: "DELETE FROM Berths",
@@ -125,6 +126,10 @@ function insertInformation ( ) {
             insertUsers: {
                 query:"INSERT INTO Users (userId,userFirstName,userLastName,userEmail,userPassword,userToken,rolId) VALUES (:userId,:userFirstName,:userLastName,:userEmail,:userPassword,:userToken,:rolId)",
                 value:scenario.users
+            },
+            insertTerminalAccess:{
+                query:"INSERT INTO TerminalAccess (terminalAccessId,terminalId,rolId) VALUES (:terminalAccessId,:terminalId, :rolId)",
+                value:scenario.terminalAccess
             }
         };
 
@@ -168,7 +173,7 @@ exports.prepareScenario = function(callback) {
     });
 };
 
-//exports.prepareScenario(function( ) {
-//
-//    console.log("OK");
-//});
+exports.prepareScenario(function( ) {
+
+    console.log("OK");
+});
