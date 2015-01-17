@@ -6,6 +6,7 @@ var scenarioCreator = require("./scenarioCreator.js");
 var expect = require('chai').expect;
 var request = require('request');
 var configCSM = require('../server/conf/config.json');
+var scenario = require('./scenario.json');
 
 describe('Test Events', function() {
 
@@ -33,7 +34,12 @@ describe('Test Events', function() {
 
             console.log("URL:" + finalURL);
 
-            request.get(finalURL, function (err, resp, body) {
+            var options = {
+                url:finalURL,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            };
+
+            request.get(options, function (err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
                 expect(JSON.parse(body)).to.have.length(2);
@@ -49,7 +55,14 @@ describe('Test Events', function() {
 
         it('Get Error Invalid Id', function(done) {
 
-            request.get(url+"/ABC", function (err, resp, body) {
+            var finalURL = url + "/ABC";
+
+            var options = {
+                url:finalURL,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            };
+
+            request.get(options, function (err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
                 expect(JSON.parse(body)).to.eql(configCSM.errors.TERMINAL_INVALID_ID);
@@ -77,7 +90,14 @@ describe('Test Events', function() {
 
         it('Add One Event', function(done){
 
-            request.post({url:url, form:eventJSON},function(err, resp, body) {
+
+            var options = {
+                url:url,
+                form:eventJSON,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            };
+
+            request.post(options,function(err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
 
@@ -116,7 +136,13 @@ describe('Test Events', function() {
                 "berthId":1
             };
 
-            request.post({url:url, form:eventJSON},function(err, resp, body) {
+            var options = {
+                url:url,
+                form:eventJSON,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            };
+
+            request.post(options,function(err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
 
@@ -148,11 +174,17 @@ describe('Test Events', function() {
                 "eventId":editEventId
             };
 
-            request.post({url:url, form:eventJSON},function(err, resp, body) {
+            var options = {
+                url:url,
+                form:eventJSON,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            };
+
+            request.post(options,function(err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
 
-                console.log(JSON.parse(body)).to.eq("OK");
+                expect(JSON.parse(body)).to.eq("OK");
                 done();
             });
         });

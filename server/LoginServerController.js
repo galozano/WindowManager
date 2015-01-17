@@ -148,6 +148,11 @@ module.exports = function(express,connection,configCSM,logger,q,validator,jwt) {
                     });
                 }).fail(function(err){
                     if(err) {
+                        connection.rollback(function() {
+                            logger.error("Error:" + JSON.stringify(err));
+                            res.json(configCSM.errors.DATABASE_ERROR);
+                        });
+
                         logger.error("Error:" + JSON.stringify(err));
                         res.json(configCSM.errors.DATABASE_ERROR);
                     }

@@ -173,7 +173,7 @@ exports.prepareScenario = function(callback) {
     });
 };
 
-exports.prepareScenario(function( ) {
-
-    console.log("OK");
-});
+//exports.prepareScenario(function( ) {
+//
+//    console.log("OK");
+//});

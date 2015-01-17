@@ -1,7 +1,7 @@
 /**
  * Created by gal on 12/5/14.
  */
-module.exports = function(express,connection,logger,configCSM,eventServerService) {
+module.exports = function(express,connection,logger,configCSM,eventServerService,q) {
 
     var eventsRouter = express.Router();
 
@@ -95,21 +95,54 @@ module.exports = function(express,connection,logger,configCSM,eventServerService
         logger.info("JSON received: " + JSON.stringify(req.body));
 
         var deleteEvent = req.body;
-        logger.debug("Delete:" + deleteEvent);
 
-        var deleteQuery = "DELETE FROM Events WHERE eventId = :eventId";
+        var deleteEventJSON = {
+            eventId: deleteEvent.eventId
+        };
 
-        connection.query(deleteQuery, deleteEvent, function(err, result) {
+        logger.debug("Delete:" + JSON.stringify(deleteEvent));
+
+        var deleteEventQuery = "DELETE FROM Events WHERE eventId = :eventId";
+        var deleteEventsCranesQuery = "DELETE FROM EventsCranes WHERE eventId = :eventId";
+
+
+        connection.beginTransaction(function(err){
 
             if(err) {
-                logger.error("ERROR Delete Events:" + JSON.stringify(err));
+                logger.error("Error:" + JSON.stringify(err));
                 res.json(configCSM.errors.DATABASE_ERROR);
             }
-            else {
 
-                logger.info("JSON sent:" + JSON.stringify(result));
+            q.ninvoke(connection,"query",deleteEventsCranesQuery,deleteEventJSON).then(function(result){
+
+                return q.ninvoke(connection,"query",deleteEventQuery,deleteEventJSON)
+
+            }).then(function(result){
+
+                connection.commit(function(err) {
+                    if (err) {
+                        connection.rollback(function() {
+                            logger.error("Error:" + JSON.stringify(err));
+                            res.json(configCSM.errors.DATABASE_ERROR);
+                        });
+                    }
+                });
+
+                logger.info("Query Result:" + JSON.stringify(result));
+                logger.info("JSON Sent:" + JSON.stringify("Ok"));
                 res.json("OK");
-            }
+
+            }).fail(function(err){
+
+                connection.rollback(function() {
+                    logger.error("Error:" + JSON.stringify(err));
+                    res.json(configCSM.errors.DATABASE_ERROR);
+                });
+
+                logger.error("ERROR Delete Events:" + JSON.stringify(err));
+                res.json(configCSM.errors.DATABASE_ERROR);
+            });
+
         });
     });
 

@@ -41,7 +41,7 @@ describe('Test Cranes', function() {
                 url:url,
                 form:{json:editCraneString},
                 headers:{"authorization":"Bearer " + scenario.users[0].userToken}
-            }
+            };
 
             request.post(options,function(err, resp, body) {
 
@@ -68,7 +68,7 @@ describe('Test Cranes', function() {
                 url:url,
                 form:{json:editCraneString},
                 headers:{"authorization":"Bearer " + scenario.users[0].userToken}
-            }
+            };
 
             request.post(options,function(err, resp, body) {
 

@@ -52,7 +52,7 @@ connection.config.queryFormat = function (query, values) {
 //-------------------------------------------------------------
 
 var eventServerService  = require('./server/events/EventServerService.js')(connection,logger,configCSM,q);
-var eventServerController = require('./server/events/EventServerController.js')(express,connection,logger,configCSM,eventServerService);
+var eventServerController = require('./server/events/EventServerController.js')(express,connection,logger,configCSM,eventServerService,q);
 
 var craneServerController = require('./server/CraneServerController.js')(express,connection,logger,configCSM,q,eventServerService);
 
