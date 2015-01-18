@@ -56,22 +56,7 @@
             "code": "INVALID_INPUT"
         }
     },
-    "dbConn":{
-        "test":{
-            "host":"localhost",
-            "user":"csm",
-            "password":"CSM.2014",
-            "database": "CSM"
-        },
-        "prod":{
-            "host":"localhost",
-            "user":"csm",
-            "password":"CSM.2014",
-            "database": "CSM"
-        }
-    },
     "server":{
-        "port":3000,
         "JWTSecret":"$112358F.colibri.1989$"
     }
 }
