@@ -23,7 +23,7 @@ var configCSM = require('./server/conf/config.json');
 
 var app = express();
 
-app.set('port', configCSM.server.port);
+app.set('port', process.env.PORT);
 app.engine('html', require('ejs').renderFile);
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -35,7 +35,13 @@ app.use(bodyParser.json());
 // Connections
 //-------------------------------------------------------------
 
-connection = mysql.createConnection(configCSM.dbConn.test);
+
+connection = mysql.createConnection({
+        "host": process.env.DB_URL,
+        "user":process.env.DB_USER,
+        "password":process.env.DB_PASS,
+        "database": "CSM"
+});
 
 connection.config.queryFormat = function (query, values) {
     if (!values) return query;
