@@ -1,8 +1,13 @@
-body {
+.login{
     background: url(/images/loginBackground.jpg);
+    position:fixed;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
 }
 
-.jumbotron {
+.login .jumbotron {
     text-align: center;
     width: 30rem;
     border-radius: 0.5rem;
@@ -17,13 +22,13 @@ body {
     height: 500px;
 }
 
-.container .glyphicon-list-alt {
+.login .container .glyphicon-list-alt {
     font-size: 10rem;
     margin-top: 3rem;
     color: #f96145;
 }
 
-input {
+.login input {
     width: 100%;
     margin-bottom: 1.4rem;
     padding: 1rem;
@@ -31,19 +36,20 @@ input {
     border-radius: 0.2rem;
     border: none;
 }
-h2 {
+
+.login h2 {
     margin-bottom: 3rem;
     font-weight: bold;
     color: #ababab;
 }
-.btn {
+.login .btn {
     border-radius: 0.2rem;
 }
-.btn .glyphicon {
+.login .btn .glyphicon {
     font-size: 3rem;
     color: #fff;
 }
-.full-width {
+.login .full-width {
     background-color: #8eb5e2;
     width: 100%;
     -webkit-border-top-right-radius: 0;
@@ -54,7 +60,7 @@ h2 {
     border-bottom-right-radius: 0;
 }
 
-.box {
+.login .box {
     position: absolute;
     bottom: 0;
     left: 0;

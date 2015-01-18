@@ -12,7 +12,7 @@
            restrict: 'E',
            templateUrl:'./app/shared/navigation/navigation.html',
            replace: true,
-           controller:function($scope) {
+           controller:['$scope',function($scope) {
 
                $scope.logout = function() {
 
@@ -20,7 +20,7 @@
                    delete $localStorage.userToken;
                    $location.path('/');
                };
-           }
+           }]
        }
     }]);
 })();

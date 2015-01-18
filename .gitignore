@@ -3,3 +3,4 @@ projectFilesBackup
 bower_components
 node_modules
 server/logs
+build

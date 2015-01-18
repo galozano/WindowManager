@@ -1,11 +1,11 @@
 {
-  "name": "LineasCalendario",
-  "version": "0.0.0",
+  "name": "ColibriServiceManager",
+  "version": "1.0.0",
   "authors": [
-    "gustavolozano <gustil@gmail.com>"
+    "gustavolozano <galozano@kelgal.com>"
   ],
   "description": "Service Manager application",
-  "main": "./public/app/main.js",
+  "main": "./public/app/colibri.min.js",
   "license": "MIT",
   "private": true,
   "ignore": [

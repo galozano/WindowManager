@@ -5,7 +5,8 @@
 
     var terminalModule = angular.module("TerminalModule");
 
-    terminalModule.controller('TerminalController', ['$http','$log','$scope','$routeParams','config','alertService', function($http,$log,$scope,$routeParams,config,alertService) {
+    terminalModule.controller('TerminalController', ['$http','$log','$scope','$routeParams','config','alertService',
+        function($http,$log,$scope,$routeParams,config,alertService) {
 
         //------------------------------------------------------------------------
         // Scope Variables
@@ -16,7 +17,6 @@
         //------------------------------------------------------------------------
         // Initialization
         //------------------------------------------------------------------------
-
 
         init();
 
@@ -32,6 +32,7 @@
                         alertService.pushMessage(data);
                     }
                     else {
+
                         $scope.terminals = data;
                     }
 

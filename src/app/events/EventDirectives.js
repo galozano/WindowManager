@@ -230,7 +230,7 @@
     }]);
 
     //TODO:Falta terminar esto para que funcione
-    eventModule.directive('resizer', function($document,$log) {
+    eventModule.directive('resizer', ['$document', '$log',function($document,$log) {
         return {
             restrict: 'A',
             link: function (scope, element, attrs) {
@@ -269,6 +269,5 @@
                 }
             }
         }
-    });
-
+    }]);
 })();

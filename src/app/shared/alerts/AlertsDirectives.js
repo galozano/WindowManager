@@ -10,7 +10,7 @@
             restrict: 'E',
             templateUrl:'./app/shared/alerts/alerts.html',
             replace: true,
-            controller:function($scope) {
+            controller:['$scope', function($scope) {
 
                 $scope.errorMessage = "";
                 $scope.showError = false;
@@ -23,7 +23,7 @@
                     $scope.showError = true;
                     $scope.errorMessage = message;
                 });
-            }
+            }]
         }
     }]);
 })();
