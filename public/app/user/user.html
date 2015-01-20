@@ -1,0 +1,44 @@
+<navigation-bar></navigation-bar>
+<alerts-display></alerts-display>
+
+<div class="container">
+    <div class="page-header">
+       <h4>Change Password</h4>
+    </div>
+    <form name="changePasswordForm" class="css-form" novalidate>
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label for="userOldPassword" class="col-sm-2 control-label">Current Password:</label>
+                <div class="col-sm-10">
+                    <input type="password" id="userOldPassword" name="userOldPassword" ng-model="newUser.oldPassword" placeholder="Old Password" required/>
+                    <div class="formError" ng-show="changePasswordForm.userOldPassword.$invalid && changePasswordForm.userOldPassword.$dirty || changePasswordForm.$submitted">
+                        <span class="error" ng-show="changePasswordForm.userOldPassword.$error.required">Current Password Required</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="userNewPassword" class="col-sm-2 control-label">New Password:</label>
+                <div class="col-sm-10">
+                    <input type="password" id="userNewPassword" name="userNewPassword" ng-model="newUser.newPassword" placeholder="New Password" required/>
+                    <div class="formError" ng-show="changePasswordForm.userNewPassword.$invalid && changePasswordForm.userNewPassword.$dirty || changePasswordForm.$submitted">
+                        <span class="error" ng-show="changePasswordForm.userNewPassword.$error.required">New Password Required</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="userConfirmPassword" class="col-sm-2 control-label">Confirm New Password:</label>
+                <div class="col-sm-10">
+                    <input type="password" id="userConfirmPassword" name="userConfirmPassword" ng-model="newUser.confirmPassword" placeholder="Confirm Password" required/>
+                    <div class="formError" ng-show="changePasswordForm.userConfirmPassword.$invalid && changePasswordForm.userOldPassword.$dirty || changePasswordForm.$submitted">
+                        <span class="error" ng-show="changePasswordForm.userConfirmPassword.$error.required">Confirm Password Required</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-10">
+                    <button type="button" class="btn btn-primary" ng-click="changePassword(newUser)">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
