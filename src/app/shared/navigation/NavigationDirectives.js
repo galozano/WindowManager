@@ -6,8 +6,8 @@
 
     var navigationModule = angular.module("NavigationModule");
 
-    navigationModule.directive('navigationBar', ['$log','$document','$localStorage','$location',
-        function($log,$document,$localStorage,$location) {
+    navigationModule.directive('navigationBar', ['$log','$document','$sessionStorage','$location',
+        function($log,$document,$sessionStorage,$location) {
        return {
            restrict: 'E',
            templateUrl:'./app/shared/navigation/navigation.html',
@@ -17,7 +17,7 @@
                $scope.logout = function() {
 
                    $log.debug("Logout");
-                   delete $localStorage.userToken;
+                   delete $sessionStorage.userToken;
                    $location.path('/');
                };
            }]

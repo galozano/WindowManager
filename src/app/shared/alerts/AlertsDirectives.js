@@ -15,6 +15,9 @@
                 $scope.errorMessage = "";
                 $scope.showError = false;
 
+                $scope.showSuccess = false;
+                $scope.successMessage = "";
+
                 $scope.$on('AlertEvent', function (event, message) {
 
                     $log.debug("AlertEvent Call:" + message);
@@ -22,6 +25,14 @@
                     $scope.showError = false;
                     $scope.showError = true;
                     $scope.errorMessage = message;
+                });
+
+                $scope.$on('SuccessMessage', function (event, message) {
+
+                    $log.debug("Success Message Call:" + message);
+
+                    $scope.showSuccess = true;
+                    $scope.successMessage = message;
                 });
             }]
         }

@@ -8,6 +8,7 @@
     angular.module("LoginModule",[ ]);
     angular.module("EventModule",[ ]);
     angular.module("TerminalModule",[ ]);
+    angular.module("UserModule",[ ]);
 
     var app = angular.module("myAPP",[
         "ngRoute",
@@ -17,7 +18,8 @@
         "LoginModule",
         "EventModule",
         "TerminalModule",
-        "NavigationModule"]);
+        "NavigationModule",
+        "UserModule"]);
 
     app.constant('config',{
         getEventURL:'/events/getEvents',
@@ -27,7 +29,8 @@
         getTerminalsURL:'/terminals/getTerminals',
         getTerminalURL:'/terminals/getTerminal',
         editCranesURL:'/cranes/editEventCranes',
-        loginUserURL:'/users/login'
+        loginUserURL:'/users/login',
+        changePasswordURL:'/users/password'
     });
 
     //--------------------------------------------------------------------
@@ -39,8 +42,8 @@
     }]);
 
     app.config(['$httpProvider',function($httpProvider) {
-        $httpProvider.interceptors.push(['$q','$location','$log','$localStorage',
-            function($q, $location,$log,$localStorage) {
+        $httpProvider.interceptors.push(['$q','$location','$log','$sessionStorage',
+            function($q, $location,$log,$sessionStorage) {
                 return {
                     'request': function (config) {
                         $log.debug("Intersected");
@@ -48,8 +51,8 @@
                         config.headers = config.headers || {};
                         config.headers.Accept = "application/json";
 
-                        if ($localStorage.userToken) {
-                            config.headers.Authorization = 'Bearer ' + $localStorage.userToken;
+                        if ($sessionStorage.userToken) {
+                            config.headers.Authorization = 'Bearer ' + $sessionStorage.userToken;
                         }
 
                         $log.debug("Config Headers After:" + JSON.stringify(config.headers));
@@ -85,6 +88,9 @@
         }).when('/terminals',{
             templateUrl: 'app/terminals/terminals.html',
             controller: 'TerminalController'
+        }).when('/user',{
+            templateUrl: 'app/user/user.html',
+            controller: 'UserController'
         }).when('/',{
             templateUrl: 'app/login/login.html',
             controller: 'LoginController'

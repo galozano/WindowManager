@@ -16,7 +16,13 @@
                 $rootScope.$broadcast('AlertEvent', alertMessage.message);
             else
                 $rootScope.$broadcast('AlertEvent', alertMessage);
+        };
 
-        }
+        this.pushSuccessMessage = function(successMessage) {
+
+            $log.debug("Success Message:" + successMessage);
+            $rootScope.$broadcast('SuccessMessage', successMessage);
+        };
+
     }]);
 })();

@@ -5,13 +5,13 @@
 
     var loginModule = angular.module("LoginModule");
 
-    loginModule.controller("LoginController", ['$http','$log','$scope','$routeParams','config','$rootScope','_','$location','$localStorage',
-        function($http,$log,$scope,$routeParams,config,$rootScope,_,$location,$localStorage){
+    loginModule.controller("LoginController", ['$http','$log','$scope','$routeParams','config','$rootScope','_','$location','$sessionStorage',
+        function($http,$log,$scope,$routeParams,config,$rootScope,_,$location,$sessionStorage){
 
         $scope.loginUser = "";
         $scope.showPage = false;
 
-        if($localStorage.userToken && $localStorage.userToken != "") {
+        if($sessionStorage.userToken && $sessionStorage.userToken != "") {
             $location.path('/terminals');
         }
         else
@@ -32,7 +32,8 @@
 
                     if(data.userToken && data.userToken != '') {
                         //Llegue el usuario y se guarde el token
-                        $localStorage.userToken = data.userToken;
+                        $sessionStorage.userToken = data.userToken;
+                        $sessionStorage.userEmail = data.userEmail;
 
                         //Enviar el usuario a la pagina principal de las terminales
                         $location.path('/terminals');

@@ -26,5 +26,5 @@ gulp.task('buildCSS', function() {
         .pipe(gulp.dest('public/app'));
 });
 
-gulp.task('default', ['buildHtml','buildJS','buildCSS'  ]);
+gulp.task('default', ['buildHtml','buildJS','buildCSS']);
 

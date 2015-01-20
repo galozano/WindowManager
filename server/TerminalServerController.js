@@ -8,18 +8,16 @@ module.exports = function(express,connection,logger,configCSM,q) {
 
     terminalsRouter.get(configCSM.urls.terminals.getTerminals, function(req, res) {
 
-        var query = "SELECT terminalId, terminalName FROM Terminals";
-
         var user = req.authUser;
         var parameters = {
             rolId: user.rolId
         };
 
         var query2 = "SELECT T.terminalId, T.terminalName " +
-            "FROM Terminals AS T INNER JOIN TerminalAccess AS TA ON TA.terminalId = T.terminalId" +
+            "FROM Terminals AS T INNER JOIN TerminalAccess AS TA ON TA.terminalId = T.terminalId " +
             "WHERE TA.rolId = :rolId;";
 
-        connection.query(query,function(err, result) {
+        connection.query(query2,parameters,function(err, result) {
             if(err) {
                 logger.error("ERROR:" + err);
                 res.json(configCSM.errors.DATABASE_ERROR);
