@@ -38,8 +38,8 @@
             "code":"EVENT_INVALID_ID"
         },
         "DATABASE_ERROR": {
-            "userMessage": "Error connecting to database, please contact administrator",
-            "message": "Error connecting to database, please contact administrator",
+            "userMessage": "Database error, please contact Colibri support",
+            "message": "Database error, please contact Colibri support",
             "type": "ERROR",
             "code":"DATABASE_ERROR"
         },

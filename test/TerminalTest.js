@@ -16,7 +16,6 @@ describe('Test Terminals', function() {
         scenarioCreator.prepareScenario(function(events) {
 
             console.log('Creating Scenario');
-            eventsCreated = events;
             done();
         });
 

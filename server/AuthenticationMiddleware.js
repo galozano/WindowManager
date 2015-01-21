@@ -1,7 +1,7 @@
 /**
  * Created by gal on 1/10/15.
  */
-module.exports = function(express, connection, configCSM,logger, q) {
+module.exports = function(express, poolConnections, configCSM,logger, q) {
 
     //---------------------------------------------------------------------------------
     // Variables
@@ -22,16 +22,27 @@ module.exports = function(express, connection, configCSM,logger, q) {
            userToken: userToken
         };
 
-        connection.query(query, tokenJSON, function (err, result) {
+        poolConnections.getConnection(function(err, connection) {
 
             if (err) {
-                logger.error("Error user token:" + JSON.stringify(err));
-                deferred.reject(configCSM.errors.DATABASE_ERROR);
+                logger.error("Error:" + JSON.stringify(err));
+                res.json(configCSM.errors.DATABASE_ERROR);
+                return;
             }
-            else {
-                logger.debug("Query Result User Token:" + JSON.stringify(result));
-                deferred.resolve(result);
-            }
+
+            connection.query(query, tokenJSON, function (err, result) {
+
+                if (err) {
+                    logger.error("Error user token:" + JSON.stringify(err));
+                    deferred.reject(configCSM.errors.DATABASE_ERROR);
+                }
+                else {
+                    logger.debug("Query Result User Token:" + JSON.stringify(result));
+                    deferred.resolve(result);
+                }
+
+                connection.release();
+            });
         });
 
         return deferred.promise;
@@ -66,7 +77,7 @@ module.exports = function(express, connection, configCSM,logger, q) {
 
             }).fail(function(err){
                 //Sen error message
-                res.sendStatus(403);
+                res.json(err);
             });
 
         } else {

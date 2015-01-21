@@ -35,38 +35,42 @@ app.use(bodyParser.json());
 // Connections
 //-------------------------------------------------------------
 
-
-connection = mysql.createConnection({
+var poolConnections = mysql.createPool({
         "host": process.env.DB_URL,
         "user":process.env.DB_USER,
         "password":process.env.DB_PASS,
-        "database": "CSM"
+        "database": "CSM",
+        "connectionLimit" : 10
 });
 
-connection.config.queryFormat = function (query, values) {
-    if (!values) return query;
-    return query.replace(/\:(\w+)/g, function (txt, key) {
-        if (values.hasOwnProperty(key)) {
-            return this.escape(values[key]);
-        }
-        return txt;
-    }.bind(this));
-};
+poolConnections.on('connection', function (connection) {
+    logger.debug("New Connection got from the pool");
+
+    connection.config.queryFormat = function (query, values) {
+        if (!values) return query;
+        return query.replace(/\:(\w+)/g, function (txt, key) {
+            if (values.hasOwnProperty(key)) {
+                return this.escape(values[key]);
+            }
+            return txt;
+        }.bind(this));
+    };
+});
 
 //-------------------------------------------------------------
 // Module local dependencies
 //-------------------------------------------------------------
 
-var eventServerService  = require('./server/events/EventServerService.js')(connection,logger,configCSM,q);
-var eventServerController = require('./server/events/EventServerController.js')(express,connection,logger,configCSM,eventServerService,q);
+var eventServerService  = require('./server/events/EventServerService.js')(poolConnections,logger,configCSM,q);
+var eventServerController = require('./server/events/EventServerController.js')(express,poolConnections,logger,configCSM,eventServerService,q);
 
-var craneServerController = require('./server/CraneServerController.js')(express,connection,logger,configCSM,q,eventServerService);
+var craneServerController = require('./server/CraneServerController.js')(express,poolConnections,logger,configCSM,q,eventServerService);
 
-var terminalServerController = require('./server/TerminalServerController.js')(express,connection,logger,configCSM,q);
+var terminalServerController = require('./server/TerminalServerController.js')(express,poolConnections,logger,configCSM,q);
 
-var loginServerController = require('./server/LoginServerController.js')(express,connection,configCSM,logger,q,validator,jwt);
+var userServerController = require('./server/UserServerController.js')(express,poolConnections,configCSM,logger,q,validator,jwt);
 
-var authenticationMiddleware = require('./server/AuthenticationMiddleware.js')(express,connection,configCSM,logger,q);
+var authenticationMiddleware = require('./server/AuthenticationMiddleware.js')(express,poolConnections,configCSM,logger,q);
 
 app.use(configCSM.urls.events.main,authenticationMiddleware.ensureAuthorized);
 app.use(configCSM.urls.terminals.main,authenticationMiddleware.ensureAuthorized);
@@ -75,7 +79,7 @@ app.use(configCSM.urls.cranes.main,authenticationMiddleware.ensureAuthorized);
 app.use(configCSM.urls.events.main, eventServerController);
 app.use(configCSM.urls.terminals.main, terminalServerController);
 app.use(configCSM.urls.cranes.main, craneServerController);
-app.use(configCSM.urls.users.main,loginServerController);
+app.use(configCSM.urls.users.main,userServerController);
 
 
 //-------------------------------------------------------------

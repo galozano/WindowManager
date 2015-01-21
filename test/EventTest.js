@@ -12,14 +12,12 @@ describe('Test Events', function() {
 
     before(function(done){
 
-        console.log("Before");
+        console.log("Events Before");
 
         scenarioCreator.prepareScenario(function(events) {
-
             console.log('Creating Scenario');
             done();
         });
-
     });
 
     describe('Get Events of Terminal 1', function() {
@@ -116,16 +114,13 @@ describe('Test Events', function() {
         });
     });
 
-
     describe('Edit Events', function() {
 
         var url = 'http://localhost:3000/events/editEvent';
 
         it('Edit Event 1', function(done) {
 
-
-            var eventJSON =
-            {
+            var eventJSON = {
                 "eventName":"Nuevo Evento Editado",
                 "eventArrivingTime":"11:00",
                 "eventDuration":50,
@@ -169,7 +164,6 @@ describe('Test Events', function() {
         it('Delete Event 1', function(done) {
 
             var editEventId = 1;
-
             var eventJSON = {
                 "eventId":editEventId
             };

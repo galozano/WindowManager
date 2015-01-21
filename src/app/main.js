@@ -42,8 +42,8 @@
     }]);
 
     app.config(['$httpProvider',function($httpProvider) {
-        $httpProvider.interceptors.push(['$q','$location','$log','$sessionStorage',
-            function($q, $location,$log,$sessionStorage) {
+        $httpProvider.interceptors.push(['$q','$location','$log','$sessionStorage','alertService',
+            function($q, $location,$log,$sessionStorage,alertService) {
                 return {
                     'request': function (config) {
                         $log.debug("Intersected");
@@ -62,6 +62,9 @@
                     'responseError': function(response) {
                         if(response.status === 401 || response.status === 403) {
                             $location.path('/');
+                        }
+                        else if(response.code) {
+                            alertService.pushMessage(response);
                         }
                         return $q.reject(response);
                     }

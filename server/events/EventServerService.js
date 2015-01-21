@@ -1,7 +1,7 @@
 /**
  * Created by gal on 12/25/14.
  */
-module.exports = function (connection, logger, configCSM, q) {
+module.exports = function (poolConnections, logger, configCSM, q) {
 
     //---------------------------------------------------------------------------------
     // Variables
@@ -13,7 +13,7 @@ module.exports = function (connection, logger, configCSM, q) {
     // Private Methods
     //---------------------------------------------------------------------------------
 
-    function fillEventsWithCranes(rawEvents) {
+    function fillEventsWithCranes(rawEvents,connection) {
 
         logger.debug("Raw Events 1:" + JSON.stringify(rawEvents));
 
@@ -56,7 +56,7 @@ module.exports = function (connection, logger, configCSM, q) {
     // Public Methods
     //---------------------------------------------------------------------------------
 
-    eventServerService.getSpecificEvent = function getSpecificEvent(eventId, callback) {
+    eventServerService.getSpecificEvent = function getSpecificEvent(eventId,connection,callback) {
         logger.debug("Select specific event");
 
         var eventIdJSON = {eventId: eventId};
@@ -75,7 +75,7 @@ module.exports = function (connection, logger, configCSM, q) {
             }
             else {
                 logger.error("ERROR Add Events Result has no 0");
-                throw new Error(configCSM.errors.DATABASE_ERROR)
+                callback(configCSM.errors.DATABASE_ERROR)
             }
         }).then(function(result){
 
@@ -86,15 +86,16 @@ module.exports = function (connection, logger, configCSM, q) {
             }
             else {
                 logger.error("ERROR Add Events Result has no 0");
-                throw new Error(configCSM.errors.DATABASE_ERROR)
+                callback(configCSM.errors.DATABASE_ERROR)
             }
+
         }).fail(function(err){
             logger.error("ERROR Select Event:" + JSON.stringify(err));
             callback(configCSM.errors.DATABASE_ERROR);
         });
     };
 
-    eventServerService.getEvents = function getEvents(terminalId,rolId, callback) {
+    eventServerService.getEvents = function getEvents(terminalId,rolId,connection, callback) {
         logger.debug("Obtaining Events:" + terminalId);
 
         var terminalIdJSON = {
@@ -116,9 +117,10 @@ module.exports = function (connection, logger, configCSM, q) {
             else {
                 logger.debug("Query Result:" + JSON.stringify(result));
 
-                q.all(fillEventsWithCranes(result)).then(function(eventList){
+                q.all(fillEventsWithCranes(result,connection)).then(function(eventList){
                     logger.debug("FILL CRANES:"+ JSON.stringify(eventList));
                     callback(eventList);
+
                 }).fail(function(err){
                     logger.error("ERROR Get Events:" + JSON.stringify(err));
                     callback(configCSM.errors.DATABASE_ERROR);

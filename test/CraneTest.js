@@ -9,7 +9,7 @@ var request = require('request');
 var configCSM = require('../server/conf/config.json');
 var scenario = require('./scenario.json');
 
-describe('Test Cranes', function() {
+describe.only('Test Cranes', function() {
 
     before(function(done){
 
@@ -81,22 +81,26 @@ describe('Test Cranes', function() {
             });
         });
 
-        it('Invalid Crane or Event Id', function() {
+        it('Invalid Crane or Event Id', function(done) {
 
             var editCraneJson = {
-                "eventId": 'ABC',
+                "eventId": 123,
                 "cranes":[]
             };
 
             var editCraneString = JSON.stringify(editCraneJson);
             console.log(editCraneString);
 
-            var sentJson = {json:editCraneString};
+            var options = {
+                url:url,
+                form:{json:editCraneString},
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            };
 
-            request.post({url:url, form:editCraneJson},function(err, resp, body) {
+            request.post(options,function(err, resp, body) {
 
-                //expect(resp.statusCode).to.equals(200);
-                expect(JSON.parse(body).code).to.eql(configCSM.errors.EVENT_INVALID_ID);
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body)).to.eql(configCSM.errors.EVENT_INVALID_ID);
 
                 done();
             });

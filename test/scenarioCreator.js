@@ -11,7 +11,12 @@ var scenario = require('../test/scenario.json');
 // Connections
 //-------------------------------------------------------------
 
-connection = mysql.createConnection(configCSM.dbConn.test);
+connection = mysql.createConnection({
+    "host": process.env.DB_URL,
+    "user":process.env.DB_USER,
+    "password":process.env.DB_PASS,
+    "database": "CSM"
+});
 
 connection.config.queryFormat = function (query, values) {
     if (!values) return query;
@@ -165,7 +170,7 @@ function insertInformation ( ) {
 
 exports.prepareScenario = function(callback) {
     clearDatabase().then(function(result) {
-        console.log(result)
+        console.log(result);
         return insertInformation( );
     }).then(function(result){
         console.log(result);

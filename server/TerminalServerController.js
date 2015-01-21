@@ -2,7 +2,7 @@
  * Created by gal on 12/6/14.
  */
 
-module.exports = function(express,connection,logger,configCSM,q) {
+module.exports = function(express,poolConnections,logger,configCSM,q) {
 
     var terminalsRouter = express.Router();
 
@@ -17,17 +17,27 @@ module.exports = function(express,connection,logger,configCSM,q) {
             "FROM Terminals AS T INNER JOIN TerminalAccess AS TA ON TA.terminalId = T.terminalId " +
             "WHERE TA.rolId = :rolId;";
 
-        connection.query(query2,parameters,function(err, result) {
-            if(err) {
-                logger.error("ERROR:" + err);
-                res.json(configCSM.errors.DATABASE_ERROR);
-            }
-            else {
-                logger.info("JSON Sent:" + JSON.stringify(result));
-                res.json(result);
-            }
-        });
+        poolConnections.getConnection(function(err, connection) {
 
+            if (err) {
+                logger.error("Pool Error:" + JSON.stringify(err));
+                res.json(configCSM.errors.DATABASE_ERROR);
+                return;
+            }
+
+            connection.query(query2,parameters,function(err, result) {
+                if(err) {
+                    logger.error("ERROR:" + err);
+                    res.json(configCSM.errors.DATABASE_ERROR);
+                }
+                else {
+                    logger.info("JSON Sent:" + JSON.stringify(result));
+                    res.json(result);
+                }
+            });
+
+            connection.release();
+        });
     });
 
     terminalsRouter.get(configCSM.urls.terminals.getTerminal+'/:terminalId', function(req,res) {
@@ -64,34 +74,46 @@ module.exports = function(express,connection,logger,configCSM,q) {
             var terminalId = req.params.terminalId;
             var terminalIdJson = {terminalId:terminalId};
 
-            q.ninvoke(connection, "query", query1,terminalIdJson).then(function(result) {
+            poolConnections.getConnection(function(err, connection) {
 
-                logger.debug("Result thrown by query 1:" + JSON.stringify(result));
-                jsonResponse = result[0][0];
-                logger.debug("Response Construction 1:" + JSON.stringify(jsonResponse));
-                return q.ninvoke(connection, "query", query2,terminalIdJson);
-
-            }).then(function(result){
-                logger.debug("Result thrown by query 2:" + JSON.stringify(result));
-                jsonResponse.berths = result[0];
-
-                logger.debug("Response Construction 2:" + JSON.stringify(jsonResponse));
-                return q.ninvoke(connection, "query", query3,terminalIdJson);
-
-            }).then(function(result){
-                logger.debug("Result thrown by query 3:" + JSON.stringify(result));
-                jsonResponse.cranes = result[0];
-
-                logger.debug("Response Construction 3:" + JSON.stringify(jsonResponse));
-                logger.info("JSON sent:" + JSON.stringify(jsonResponse));
-                res.json(jsonResponse);
-
-            }).fail(function(err){
-                if(err) {
-                    logger.error("ERROR:" + err);
+                if (err) {
+                    logger.error("Pool Error:" + JSON.stringify(err));
                     res.json(configCSM.errors.DATABASE_ERROR);
+                    return;
                 }
+
+                q.ninvoke(connection, "query", query1,terminalIdJson).then(function(result) {
+
+                    logger.debug("Result thrown by query 1:" + JSON.stringify(result));
+                    jsonResponse = result[0][0];
+                    logger.debug("Response Construction 1:" + JSON.stringify(jsonResponse));
+                    return q.ninvoke(connection, "query", query2,terminalIdJson);
+
+                }).then(function(result){
+                    logger.debug("Result thrown by query 2:" + JSON.stringify(result));
+                    jsonResponse.berths = result[0];
+
+                    logger.debug("Response Construction 2:" + JSON.stringify(jsonResponse));
+                    return q.ninvoke(connection, "query", query3,terminalIdJson);
+
+                }).then(function(result){
+                    logger.debug("Result thrown by query 3:" + JSON.stringify(result));
+                    jsonResponse.cranes = result[0];
+
+                    logger.debug("Response Construction 3:" + JSON.stringify(jsonResponse));
+                    logger.info("JSON sent:" + JSON.stringify(jsonResponse));
+                    res.json(jsonResponse);
+
+                }).fail(function(err){
+                    if(err) {
+                        logger.error("ERROR:" + err);
+                        res.json(configCSM.errors.DATABASE_ERROR);
+                    }
+                });
+
+                connection.release();
             });
+
         }
         else {
             logger.warn("Got invalid terminal id");
@@ -103,16 +125,28 @@ module.exports = function(express,connection,logger,configCSM,q) {
 
         var query = "DELETE FROM Terminals WHERE terminalId = :terminalId";
 
-        connection.query(query,function(err, result) {
-            if(err) {
-                logger.error("ERROR:" + err);
+        poolConnections.getConnection(function(err, connection) {
+
+            if (err) {
+                logger.error("Pool Error:" + JSON.stringify(err));
                 res.json(configCSM.errors.DATABASE_ERROR);
+                return;
             }
-            else {
-                logger.info("JSON Sent:" + JSON.stringify(result));
-                res.json(result);
-            }
+
+            connection.query(query,function(err, result) {
+                if(err) {
+                    logger.error("ERROR:" + err);
+                    res.json(configCSM.errors.DATABASE_ERROR);
+                }
+                else {
+                    logger.info("JSON Sent:" + JSON.stringify(result));
+                    res.json(result);
+                }
+            });
+
+            connection.release();
         });
+
     });
 
     terminalsRouter.get('/getConfigSchemas', function(req,res) {
