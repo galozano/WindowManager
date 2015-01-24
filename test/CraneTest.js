@@ -107,7 +107,7 @@ describe('Test Cranes', function() {
         });
     });
 
-    describe.only("Add Crane Schema", function(){
+    describe("Add Crane Schema", function(){
 
         var url = 'http://localhost:3000/cranes/createCraneSchema';
 

@@ -2,7 +2,7 @@
  * Created by gal on 12/6/14.
  */
 
-module.exports = function(express,poolConnections,logger,configCSM,q,terminalService) {
+module.exports = function(express,poolConnections,logger,configCSM,q,terminalService,utilitiesCommon) {
 
     var terminalsRouter = express.Router();
 
@@ -149,90 +149,40 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
 
     });
 
-    terminalsRouter.get('/getConfigSchemas', function(req,res) {
-
-    });
-
-
     //Create terminal configuration Schema
     terminalsRouter.post(configCSM.urls.terminals.createTerminalSchema, function (req,res) {
 
-        var info = JSON.parse(req.body.data);
-        logger.debug("JSON received:" +JSON.stringify(info));
+        logger.debug("JSON received:" +JSON.stringify(req.body.data));
 
+        if(req.body.data) {
 
-        var insertedConfigId = -1;
-        var terminalConfigNameJSON = {
-            terminalConfigSchemaName: info.terminalConfigSchemaName
-        };
+            var terminalConfigJSON = JSON.parse(req.body.data);
 
-        poolConnections.getConnection(function(err, connection) {
+            poolConnections.getConnection(function(err, connection) {
 
-            if (err) {
-                logger.error("Pool Error:" + JSON.stringify(err));
-                res.json(configCSM.errors.DATABASE_ERROR);
-                return;
-            }
+                if (err) {
+                    logger.error("Pool Error:" + JSON.stringify(err));
+                    res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR,configCSM.status.ERROR));
+                    return;
+                }
 
-            connection.beginTransaction(function(err) {
+                terminalService.createTerminalConfig(terminalConfigJSON,connection).then(function(result){
 
-                terminalService.addTerminalConfigSchema(terminalConfigNameJSON,connection).then(function(result){
-
-                    logger.debug("Terminal Config Result:" +JSON.stringify(result));
-                    insertedConfigId = result.insertId;
-
-                    logger.debug("Berths:" + JSON.stringify(info.berths));
-                    var berths = info.berths;
-
-                    var promises = [];
-
-                    berths.forEach(function(element){
-
-                        logger.debug("Berth Element:" +JSON.stringify(element));
-                        element.terminalConfigSchemaId = insertedConfigId;
-                        logger.debug("Berth Element 2:" +JSON.stringify(element));
-
-                        promises.push(terminalService.addBerth(element,connection));
-                    });
-
-                    return promises;
-
-                }).then(function(result){
-
-                    logger.debug("Terminal Config Result 2:" + JSON.stringify(result));
-                    return terminalService.getTerminalConfigSchema(insertedConfigId,connection);
-
-                }).then(function(result){
-
-                    logger.debug("Terminal Config Result 3:" + JSON.stringify(result));
-
-                    connection.commit(function(err) {
-                        if (err) {
-                            connection.rollback(function() {
-                                logger.error("Commit Error:" + JSON.stringify(err));
-                                res.json(configCSM.errors.DATABASE_ERROR);
-                            });
-                        }
-                        else {
-
-                            logger.info("JSON Sent:" + JSON.stringify(result));
-                            res.json(result);
-                        }
-
-                        connection.release();
-                    });
+                    connection.release();
+                    res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
 
                 }).fail(function(err){
 
-                    connection.rollback(function() {
-                        connection.release();
-                    });
-
-                    logger.error("Error:" + JSON.stringify(err));
-                    res.json(configCSM.errors.DATABASE_ERROR);
+                    connection.release();
+                    if(err){
+                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
+                    }
                 });
             });
-        });
+        }
+        else {
+            res.json(utilitiesCommon.generateResponse(configCSM.errors.INVALID_INPUT,configCSM.status.ERROR));
+        }
     });
 
     return terminalsRouter;

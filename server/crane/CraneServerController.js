@@ -1,7 +1,7 @@
 /**
  * Created by gal on 12/28/14.
  */
-module.exports = function(express, poolConnections, logger, configCSM, q, eventServerService,craneServerService) {
+module.exports = function(express, poolConnections, logger, configCSM, q, eventServerService, craneServerService, utilitiesCommon) {
 
     var cranesRouter = express.Router();
 
@@ -77,19 +77,17 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
     cranesRouter.post(configCSM.urls.cranes.createCraneSchema, function(req,res){
 
         logger.debug("Create Crane Schema");
-        logger.info("JSON Recieved:" + req.body.json);
+        logger.info("JSON Received:" + req.body.data);
 
+        if(req.body.data) {
 
-
-        if(req.body.json) {
-
-            var cranesJSON = JSON.parse(req.body.json);
+            var cranesJSON = JSON.parse(req.body.data);
 
             poolConnections.getConnection(function(err, connection) {
 
                 if (err) {
                     logger.error("Error:" + JSON.stringify(err));
-                    res.json(configCSM.errors.DATABASE_ERROR);
+                    res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR,configCSM.status.ERROR));
                     connection.release();
                     return;
                 }
@@ -97,21 +95,20 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
                 craneServerService.createCraneConfigSchema(cranesJSON,connection).then(function (result){
 
                     connection.release();
-                    logger.info("JSON SENT:" + JSON.stringify(result));
-                    res.json(result);
+                    res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
 
                 }).fail(function(err){
 
                     connection.release();
                     if(err){
-                        res.json(err);
+                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
                     }
 
                 });
             });
         }
         else {
-            res.json(configCSM.errors.INVALID_INPUT);
+            res.json(utilitiesCommon.generateResponse(configCSM.errors.INVALID_INPUT,configCSM.status.ERROR));
         }
     });
 

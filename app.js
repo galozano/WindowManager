@@ -58,6 +58,12 @@ poolConnections.on('connection', function (connection) {
 });
 
 //-------------------------------------------------------------
+// Common Modules
+//-------------------------------------------------------------
+
+var utilitiesCommon = require('./server/UtilitiesCommon.js')(logger);
+
+//-------------------------------------------------------------
 // Module local dependencies
 //-------------------------------------------------------------
 
@@ -65,10 +71,10 @@ var eventServerService  = require('./server/events/EventServerService.js')(poolC
 var eventServerController = require('./server/events/EventServerController.js')(express,poolConnections,logger,configCSM,eventServerService,q);
 
 var craneServerService = require('./server/crane/CraneServerService.js')(express,poolConnections,logger,configCSM,q);
-var craneServerController = require('./server/crane/CraneServerController.js')(express,poolConnections,logger,configCSM,q,eventServerService,craneServerService);
+var craneServerController = require('./server/crane/CraneServerController.js')(express,poolConnections,logger,configCSM,q,eventServerService,craneServerService, utilitiesCommon);
 
 var terminalServerService = require('./server/terminal/TerminalServerService.js')(express,poolConnections,logger,configCSM,q);
-var terminalServerController = require('./server/terminal/TerminalServerController.js')(express,poolConnections,logger,configCSM,q,terminalServerService);
+var terminalServerController = require('./server/terminal/TerminalServerController.js')(express,poolConnections,logger,configCSM,q,terminalServerService,utilitiesCommon);
 
 var userServerController = require('./server/UserServerController.js')(express,poolConnections,configCSM,logger,q,validator,jwt);
 

@@ -93,6 +93,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
 
     craneServerService.createCraneConfigSchema = function createCraneConfigSchema (data,connection) {
 
+        logger.debug("Received Data:" +JSON.stringify(data));
         var deferred = q.defer();
 
         connection.beginTransaction(function(err) {
@@ -109,6 +110,8 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
             };
 
             addCraneConfigSchema(craneConfigData,connection).then(function(result){
+
+                logger.debug("Add Crane Config Result:" +JSON.stringify(result));
 
                 craneConfigInsertedId = result.insertId;
                 var cranes = data.cranes;
@@ -127,6 +130,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
 
             }).then(function(result){
 
+                logger.debug("Add Cranes:" +JSON.stringify(result));
                 return getCraneConfig(craneConfigInsertedId,connection);
 
             }).then(function(result){

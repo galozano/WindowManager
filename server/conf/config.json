@@ -26,6 +26,10 @@
             "changePassword":"/password"
         }
     },
+    "status":{
+        "OK":"OK",
+        "ERROR":"Error"
+    },
     "errors": {
         "TERMINAL_INVALID_ID": {
             "userMessage": "Invalid Terminal ID",

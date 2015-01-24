@@ -66,7 +66,38 @@ describe('Test Terminals', function() {
         });
     });
 
-    describe("Create Terminal Schema", function () {
+    describe("Create Terminal", function() {
+
+        var url = 'http://localhost:3000/terminals/createTerminal';
+
+        it("Create Terminal", function(done) {
+
+            var terminal = {
+                terminalName:"NewTerminal",
+                "terminalConfigSchemaId": 1,
+                "craneConfigSchemaId": 1
+            };
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
+                form:{data:JSON.stringify(terminal)}
+            };
+
+
+            request.post(options, function (err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).status).to.equals("OK");
+                expect(JSON.parse(body).data).to.exist;
+                expect(JSON.parse(body).data.terminalName).to.equals("NewTerminal");
+
+                done();
+            });
+        });
+    });
+
+    describe.only("Create Terminal Schema", function () {
 
         var url = 'http://localhost:3000/terminals/createTerminalSchema';
 
@@ -98,8 +129,8 @@ describe('Test Terminals', function() {
                 expect(resp.statusCode).to.equals(200);
                 expect(JSON.parse(body).status).to.equals("OK");
                 expect(JSON.parse(body).data).to.exist;
-                expect(JSON.parse(body).data.terminalConfigName).to.equals("SPRCConfig1");
-                expect(JSON.parse(body).data.berths).to.have.length(2)
+                expect(JSON.parse(body).data.terminalConfigSchemaName).to.equals("SPRCConfig1");
+                expect(JSON.parse(body).data.berths).to.have.length(2);
 
                 done();
             });
