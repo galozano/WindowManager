@@ -64,7 +64,45 @@ describe('Test Terminals', function() {
             });
 
         });
-    })
+    });
 
+    describe("Create Terminal Schema", function () {
 
+        var url = 'http://localhost:3000/terminals/createTerminalSchema';
+
+        it("Create Schema", function(done) {
+
+            var berthSchema = {
+                "terminalConfigSchemaName": "SPRCConfig1",
+                "berths":[{
+                        "berthName": "Berth 1",
+                        "berthLength":200,
+                        "berthSequence":1,
+                        "berthStart":true
+                    }, {
+                        "berthName": "Berth 2",
+                        "berthLength":200,
+                        "berthSequence":2,
+                        "berthStart":false
+                    }]
+            };
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
+                form:{data:JSON.stringify(berthSchema)}
+            };
+
+            request.post(options, function (err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).status).to.equals("OK");
+                expect(JSON.parse(body).data).to.exist;
+                expect(JSON.parse(body).data.terminalConfigName).to.equals("SPRCConfig1");
+                expect(JSON.parse(body).data.berths).to.have.length(2)
+
+                done();
+            });
+        });
+    });
 });

@@ -7,8 +7,8 @@ var configCSM = require('../../server/conf/config.json');
 
 function addUser() {
 
-    //var url = 'http://localhost:3000' + configCSM.urls.users.main + configCSM.urls.users.createUser;
-    var url = 'http://colibri.kelgal.com' + configCSM.urls.users.main + configCSM.urls.users.createUser;
+    var url = 'http://localhost:3000' + configCSM.urls.users.main + configCSM.urls.users.createUser;
+    //var url = 'http://colibri.kelgal.com' + configCSM.urls.users.main + configCSM.urls.users.createUser;
 
     var newUser = {
         "userFirstName":"Gustavo",
@@ -32,4 +32,4 @@ function createTerminal( ) {
 
 
 
-addUser();
+//addUser();

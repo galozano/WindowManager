@@ -2,7 +2,7 @@
  * Created by gal on 12/6/14.
  */
 
-module.exports = function(express,poolConnections,logger,configCSM,q) {
+module.exports = function(express,poolConnections,logger,configCSM,q,terminalService) {
 
     var terminalsRouter = express.Router();
 
@@ -153,14 +153,87 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
 
     });
 
+
     //Create terminal configuration Schema
-    terminalsRouter.post('/newConfigSchema', function (req,res) {
+    terminalsRouter.post(configCSM.urls.terminals.createTerminalSchema, function (req,res) {
 
+        var info = JSON.parse(req.body.data);
+        logger.debug("JSON received:" +JSON.stringify(info));
+
+
+        var insertedConfigId = -1;
+        var terminalConfigNameJSON = {
+            terminalConfigSchemaName: info.terminalConfigSchemaName
+        };
+
+        poolConnections.getConnection(function(err, connection) {
+
+            if (err) {
+                logger.error("Pool Error:" + JSON.stringify(err));
+                res.json(configCSM.errors.DATABASE_ERROR);
+                return;
+            }
+
+            connection.beginTransaction(function(err) {
+
+                terminalService.addTerminalConfigSchema(terminalConfigNameJSON,connection).then(function(result){
+
+                    logger.debug("Terminal Config Result:" +JSON.stringify(result));
+                    insertedConfigId = result.insertId;
+
+                    logger.debug("Berths:" + JSON.stringify(info.berths));
+                    var berths = info.berths;
+
+                    var promises = [];
+
+                    berths.forEach(function(element){
+
+                        logger.debug("Berth Element:" +JSON.stringify(element));
+                        element.terminalConfigSchemaId = insertedConfigId;
+                        logger.debug("Berth Element 2:" +JSON.stringify(element));
+
+                        promises.push(terminalService.addBerth(element,connection));
+                    });
+
+                    return promises;
+
+                }).then(function(result){
+
+                    logger.debug("Terminal Config Result 2:" + JSON.stringify(result));
+                    return terminalService.getTerminalConfigSchema(insertedConfigId,connection);
+
+                }).then(function(result){
+
+                    logger.debug("Terminal Config Result 3:" + JSON.stringify(result));
+
+                    connection.commit(function(err) {
+                        if (err) {
+                            connection.rollback(function() {
+                                logger.error("Commit Error:" + JSON.stringify(err));
+                                res.json(configCSM.errors.DATABASE_ERROR);
+                            });
+                        }
+                        else {
+
+                            logger.info("JSON Sent:" + JSON.stringify(result));
+                            res.json(result);
+                        }
+
+                        connection.release();
+                    });
+
+                }).fail(function(err){
+
+                    connection.rollback(function() {
+                        connection.release();
+                    });
+
+                    logger.error("Error:" + JSON.stringify(err));
+                    res.json(configCSM.errors.DATABASE_ERROR);
+                });
+            });
+        });
     });
-
-    //Delete configuration Schema
-
-    //Add new terminal
 
     return terminalsRouter;
 

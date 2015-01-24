@@ -11,11 +11,13 @@
             "main": "/terminals",
             "getTerminals":"/getTerminals",
             "getTerminal":"/getTerminal",
-            "deleteTerminal":"/deleteTerminal"
+            "deleteTerminal":"/deleteTerminal",
+            "createTerminalSchema":"/createTerminalSchema"
         },
         "cranes":{
             "main": "/cranes",
-            "editCranes":"/editEventCranes"
+            "editCranes":"/editEventCranes",
+            "createCraneSchema":"/createCraneSchema"
         },
         "users":{
             "main":"/users",

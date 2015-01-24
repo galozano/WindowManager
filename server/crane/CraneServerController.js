@@ -1,7 +1,7 @@
 /**
  * Created by gal on 12/28/14.
  */
-module.exports = function(express, poolConnections, logger, configCSM, q, eventServerService) {
+module.exports = function(express, poolConnections, logger, configCSM, q, eventServerService,craneServerService) {
 
     var cranesRouter = express.Router();
 
@@ -72,6 +72,47 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
             });
         });
 
+    });
+
+    cranesRouter.post(configCSM.urls.cranes.createCraneSchema, function(req,res){
+
+        logger.debug("Create Crane Schema");
+        logger.info("JSON Recieved:" + req.body.json);
+
+
+
+        if(req.body.json) {
+
+            var cranesJSON = JSON.parse(req.body.json);
+
+            poolConnections.getConnection(function(err, connection) {
+
+                if (err) {
+                    logger.error("Error:" + JSON.stringify(err));
+                    res.json(configCSM.errors.DATABASE_ERROR);
+                    connection.release();
+                    return;
+                }
+
+                craneServerService.createCraneConfigSchema(cranesJSON,connection).then(function (result){
+
+                    connection.release();
+                    logger.info("JSON SENT:" + JSON.stringify(result));
+                    res.json(result);
+
+                }).fail(function(err){
+
+                    connection.release();
+                    if(err){
+                        res.json(err);
+                    }
+
+                });
+            });
+        }
+        else {
+            res.json(configCSM.errors.INVALID_INPUT);
+        }
     });
 
     return cranesRouter;

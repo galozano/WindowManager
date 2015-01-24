@@ -9,7 +9,7 @@ var request = require('request');
 var configCSM = require('../server/conf/config.json');
 var scenario = require('./scenario.json');
 
-describe.only('Test Cranes', function() {
+describe('Test Cranes', function() {
 
     before(function(done){
 
@@ -106,4 +106,39 @@ describe.only('Test Cranes', function() {
             });
         });
     });
+
+    describe.only("Add Crane Schema", function(){
+
+        var url = 'http://localhost:3000/cranes/createCraneSchema';
+
+        it("Add Crane", function(done){
+
+            var craneSchema = {
+                "craneConfigSchemaName": "SPRCCraneConfig1",
+                "cranes":[{
+                    "craneName": "Crane 1"
+                }, {
+                    "craneName": "Crane 2"
+                }]
+            };
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
+                form:{data:JSON.stringify(craneSchema)}
+            };
+
+            request.post(options,function(err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).data).to.exist;
+                expect(resp.data.craneConfigSchemaName).to.equals("SPRCCraneConfig1");
+                expect(JSON.parse(body).data.cranes).to.have.length(2);
+
+                done();
+            });
+
+        });
+    });
+
 });
