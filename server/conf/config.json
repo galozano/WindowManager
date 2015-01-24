@@ -12,6 +12,7 @@
             "getTerminals":"/getTerminals",
             "getTerminal":"/getTerminal",
             "deleteTerminal":"/deleteTerminal",
+            "createTerminal":"/createTerminal",
             "createTerminalSchema":"/createTerminalSchema"
         },
         "cranes":{

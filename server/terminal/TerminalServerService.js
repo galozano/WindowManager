@@ -9,6 +9,10 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
 
     var terminalServerService = {};
 
+    //---------------------------------------------------------------------------------
+    // Private Methods
+    //---------------------------------------------------------------------------------
+
     function getTerminalConfigSchema(configSchemaId,connection) {
 
         var deferred = q.defer();
@@ -86,6 +90,102 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
         return  deferred.promise;
     };
 
+    //---------------------------------------------------------------------------------
+    // Public Methods
+    //---------------------------------------------------------------------------------
+
+    terminalServerService.getTerminal = function getTerminal(terminalId, connection) {
+
+        var deferred = q.defer();
+        var jsonResponse = "";
+
+        var query1 = "SELECT T.terminalId,T.terminalName, TCS.terminalConfigSchemaName, SUM(berthLength) totalLength FROM " +
+            "Terminals T, TerminalConfigSchema TCS, Berths B " +
+            "WHERE T.terminalConfigSchemaId = TCS.terminalConfigSchemaId " +
+            "AND   B.terminalConfigSchemaId = TCS.terminalConfigSchemaId " +
+            "AND T.terminalId = :terminalId " +
+            "GROUP BY TCS.terminalConfigSchemaName";
+
+        //Get all the berths of the terminal
+        var query2 = "SELECT B.berthId, B.berthName, B.berthLength, B.berthSequence, B.berthStart FROM " +
+            "Terminals T, TerminalConfigSchema TCS, Berths B " +
+            "WHERE T.terminalConfigSchemaId = TCS.terminalConfigSchemaId " +
+            "AND   B.terminalConfigSchemaId = TCS.terminalConfigSchemaId " +
+            "AND T.terminalId = :terminalId " +
+            "ORDER BY B.berthSequence";
+
+        //Get all the cranes of the terminal
+        var query3 = "SELECT C.craneId,C.craneName " +
+            "FROM Terminals T,CraneConfigSchema CCS,Cranes C " +
+            "WHERE T.craneConfigSchemaId = CCS.craneConfigSchemaId " +
+            "AND CCS.craneConfigSchemaId = C.craneConfigSchemaId " +
+            "AND T.terminalId = :terminalId";
+
+        q.ninvoke(connection, "query", query1,terminalId).then(function(result) {
+
+            logger.debug("Result thrown by query 1:" + JSON.stringify(result));
+            jsonResponse = result[0][0];
+            logger.debug("Response Construction 1:" + JSON.stringify(jsonResponse));
+            return q.ninvoke(connection, "query", query2,terminalId);
+
+        }).then(function(result){
+            logger.debug("Result thrown by query 2:" + JSON.stringify(result));
+            jsonResponse.berths = result[0];
+
+            logger.debug("Response Construction 2:" + JSON.stringify(jsonResponse));
+            return q.ninvoke(connection, "query", query3,terminalId);
+
+        }).then(function(result){
+            logger.debug("Result thrown by query 3:" + JSON.stringify(result));
+            jsonResponse.cranes = result[0];
+
+            logger.debug("Response Construction 3:" + JSON.stringify(jsonResponse));
+            logger.info("JSON sent:" + JSON.stringify(jsonResponse));
+            deferred.resolve(jsonResponse);
+
+        }).fail(function(err){
+            if(err) {
+                logger.error("ERROR:" + err);
+                deferred.reject(configCSM.errors.DATABASE_ERROR);
+            }
+        });
+
+        return  deferred.promise;
+    };
+
+    terminalServerService.createTerminal = function createTerminal (data,connection) {
+
+        logger.debug("Data Service:" +JSON.stringify(data));
+        var deferred = q.defer();
+
+        var insertSQL = "INSERT INTO Terminals (terminalName, terminalConfigSchemaId, craneConfigSchemaId) " +
+            " VALUES (:terminalName, :terminalConfigSchemaId, :craneConfigSchemaId)";
+
+        q.ninvoke(connection, "query", insertSQL, data).then(function(result){
+
+            logger.debug("Query 1 result:" + JSON.stringify(result));
+            var insertId = result[0].insertId;
+
+            var terminalIdJson = {
+                terminalId:insertId
+            };
+
+            return terminalServerService.getTerminal(terminalIdJson,connection);
+
+        }).then(function(result){
+
+            logger.debug("Query 2 result:" + JSON.stringify(result));
+            deferred.resolve(result);
+
+        }).fail(function(err){
+            if (err) {
+                logger.error("ERROR:" + JSON.stringify(err));
+                deferred.reject(configCSM.errors.DATABASE_ERROR);
+            }
+        });
+
+        return  deferred.promise;
+    };
 
     terminalServerService.createTerminalConfig = function createTerminalConfig(data,connection) {
 

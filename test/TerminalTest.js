@@ -56,24 +56,27 @@ describe('Test Terminals', function() {
             request.get(options, function (err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).terminalId).to.equals(1);
+                expect(JSON.parse(body).totalLength).to.equals(1200);
                 expect(JSON.parse(body).berths[0].berthSequence).to.equals(1);
                 expect(JSON.parse(body).berths[2].berthSequence).to.equals(3);
-
                 expect(JSON.parse(body).cranes).to.have.length(2);
+                expect(JSON.parse(body).berths).to.have.length(3);
+
                 done();
             });
 
         });
     });
 
-    describe("Create Terminal", function() {
+    describe.only("Create Terminal", function() {
 
         var url = 'http://localhost:3000/terminals/createTerminal';
 
         it("Create Terminal", function(done) {
 
             var terminal = {
-                terminalName:"NewTerminal",
+                "terminalName":"NewTerminal",
                 "terminalConfigSchemaId": 1,
                 "craneConfigSchemaId": 1
             };
@@ -83,7 +86,6 @@ describe('Test Terminals', function() {
                 headers:{"authorization":"Bearer " + scenario.users[0].userToken},
                 form:{data:JSON.stringify(terminal)}
             };
-
 
             request.post(options, function (err, resp, body) {
 
@@ -97,7 +99,7 @@ describe('Test Terminals', function() {
         });
     });
 
-    describe.only("Create Terminal Schema", function () {
+    describe("Create Terminal Schema", function () {
 
         var url = 'http://localhost:3000/terminals/createTerminalSchema';
 

@@ -132,7 +132,7 @@ describe('Test Cranes', function() {
 
                 expect(resp.statusCode).to.equals(200);
                 expect(JSON.parse(body).data).to.exist;
-                expect(resp.data.craneConfigSchemaName).to.equals("SPRCCraneConfig1");
+                expect(JSON.parse(body).data.craneConfigSchemaName).to.equals("SPRCCraneConfig1");
                 expect(JSON.parse(body).data.cranes).to.have.length(2);
 
                 done();
