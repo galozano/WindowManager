@@ -54,34 +54,34 @@ module.exports = function(express,poolConnections,configCSM,logger,q,validator,j
                 if(err) {
                     logger.error("Error:" + JSON.stringify(err));
                     callback(configCSM.errors.DATABASE_ERROR);
-                    return;
+                    connection.release();
                 }
+                else {
+                    connection.query(query,loginJSON, function(err, result) {
 
-                connection.query(query,loginJSON, function(err, result) {
-
-                    if(err) {
-                        logger.error("Error:" + JSON.stringify(err));
-                        callback(configCSM.errors.DATABASE_ERROR);
-                        connection.release();
-                    }
-                    else {
-
-                        //User exist and user found is sent
-                        if(result != null && result.length === 1) {
-
-                            logger.debug("Query result:" + JSON.stringify(result));
-                            callback(result[0]);
+                        if(err) {
+                            logger.error("Error:" + JSON.stringify(err));
+                            callback(configCSM.errors.DATABASE_ERROR);
                             connection.release();
                         }
                         else {
+                            //User exist and user found is sent
+                            if(result != null && result.length === 1) {
 
-                            //User does not exist
-                            logger.debug("Error Login:" + JSON.stringify(result));
-                            callback(configCSM.errors.INVALID_USER);
-                            connection.release();
+                                logger.debug("Query result:" + JSON.stringify(result));
+                                callback(result[0]);
+                                connection.release();
+                            }
+                            else {
+
+                                //User does not exist
+                                logger.debug("Error Login:" + JSON.stringify(result));
+                                callback(configCSM.errors.INVALID_USER);
+                                connection.release();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             });
         }
         else {
@@ -128,63 +128,65 @@ module.exports = function(express,poolConnections,configCSM,logger,q,validator,j
                 if (err) {
                     logger.error("Error:" + JSON.stringify(err));
                     res.json(configCSM.errors.DATABASE_ERROR);
-                    return;
+                    connection.release();
                 }
+                else {
+                    connection.beginTransaction(function(err) {
 
-                connection.beginTransaction(function(err) {
-
-                    if(err) {
-                        logger.error("Error:" + JSON.stringify(err));
-                        res.json(configCSM.errors.DATABASE_ERROR);
-                        connection.release();
-                    }
-
-                    q.ninvoke(connection,"query",queryInsertRol).then(function(result) {
-
-                        logger.debug("Result Query Rol:" + JSON.stringify(result));
-                        newUser.rolId = result[0].insertId;
-                        logger.debug("New User to Insert:" + JSON.stringify(newUser));
-
-                        return q.ninvoke(connection,"query",queryInsertUser,newUser);
-
-                    }).then(function(result){
-
-                        logger.debug("Result Query User:" + JSON.stringify(result));
-
-                        getUserByEmail(newUser.userEmail,connection,function(result){
-
-                            logger.debug("Result Query Get User:" + JSON.stringify(result));
-
-                            //Commit the transaction
-                            connection.commit(function(err) {
-                                if (err) {
-                                    logger.error("Error Commit:" + JSON.stringify(err));
-                                    connection.rollback(function() {
-                                        res.json(configCSM.errors.DATABASE_ERROR);
-                                    });
-                                }
-                                else {
-                                    logger.info("JSON Sent:" + JSON.stringify(result));
-                                    res.json(result);
-                                }
-
-                                connection.release();
-                            });
-                        });
-                    }).fail(function(err){
                         if(err) {
-                            connection.rollback(function() {
-                                logger.error("Error:" + JSON.stringify(err));
-                                res.json(configCSM.errors.DATABASE_ERROR);
-                            });
-
                             logger.error("Error:" + JSON.stringify(err));
                             res.json(configCSM.errors.DATABASE_ERROR);
-
                             connection.release();
                         }
+                        else {
+                            q.ninvoke(connection,"query",queryInsertRol).then(function(result) {
+
+                                logger.debug("Result Query Rol:" + JSON.stringify(result));
+                                newUser.rolId = result[0].insertId;
+                                logger.debug("New User to Insert:" + JSON.stringify(newUser));
+
+                                return q.ninvoke(connection,"query",queryInsertUser,newUser);
+
+                            }).then(function(result){
+
+                                logger.debug("Result Query User:" + JSON.stringify(result));
+
+                                getUserByEmail(newUser.userEmail,connection,function(result){
+
+                                    logger.debug("Result Query Get User:" + JSON.stringify(result));
+
+                                    //Commit the transaction
+                                    connection.commit(function(err) {
+                                        if (err) {
+                                            logger.error("Error Commit:" + JSON.stringify(err));
+                                            connection.rollback(function() {
+                                                res.json(configCSM.errors.DATABASE_ERROR);
+                                            });
+                                        }
+                                        else {
+                                            logger.info("JSON Sent:" + JSON.stringify(result));
+                                            res.json(result);
+                                        }
+
+                                        connection.release();
+                                    });
+                                });
+                            }).fail(function(err){
+                                if(err) {
+                                    connection.rollback(function() {
+                                        logger.error("Error:" + JSON.stringify(err));
+                                        res.json(configCSM.errors.DATABASE_ERROR);
+                                    });
+
+                                    logger.error("Error:" + JSON.stringify(err));
+                                    res.json(configCSM.errors.DATABASE_ERROR);
+
+                                    connection.release();
+                                }
+                            });
+                        }
                     });
-                });
+                }
             });
         }
         else {
@@ -217,25 +219,26 @@ module.exports = function(express,poolConnections,configCSM,logger,q,validator,j
                     if (err) {
                         logger.error("Error:" + JSON.stringify(err));
                         res.json(configCSM.errors.DATABASE_ERROR);
-                        return;
+                        connection.release();
                     }
+                    else {
+                        connection.query(updateQuery, userPasswords, function(err,result){
 
-                    connection.query(updateQuery, userPasswords, function(err,result){
-
-                        if(err) {
-                            logger.error("Error:" + JSON.stringify(err));
-                            res.json(configCSM.error.DATABASE_ERROR);
-                            connection.release();
-                        }
-                        else {
-
-                            getUserByEmail(userPasswords.userEmail,connection,function(result){
-                                logger.info("JSON Sent:" + JSON.stringify(result));
-                                res.json(result);
+                            if(err) {
+                                logger.error("Error:" + JSON.stringify(err));
+                                res.json(configCSM.error.DATABASE_ERROR);
                                 connection.release();
-                            });
-                        }
-                    });
+                            }
+                            else {
+
+                                getUserByEmail(userPasswords.userEmail,connection,function(result){
+                                    logger.info("JSON Sent:" + JSON.stringify(result));
+                                    res.json(result);
+                                    connection.release();
+                                });
+                            }
+                        });
+                    }
                 });
             }
             else {

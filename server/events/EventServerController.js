@@ -25,14 +25,15 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
                 if (err) {
                     logger.error("Error:" + JSON.stringify(err));
                     res.json(configCSM.errors.DATABASE_ERROR);
-                    return;
-                }
-
-                eventServerService.getEvents(terminalId,req.authUser.rolId,connection,function(result) {
-                    logger.info("JSON sent:" + JSON.stringify(result));
-                    res.json(result);
                     connection.release();
-                });
+                }
+                else {
+                    eventServerService.getEvents(terminalId,req.authUser.rolId,connection,function(result) {
+                        logger.info("JSON sent:" + JSON.stringify(result));
+                        res.json(result);
+                        connection.release();
+                    });
+                }
             });
         }
         else {
@@ -57,30 +58,30 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
             if (err) {
                 logger.error("Error:" + JSON.stringify(err));
                 res.json(configCSM.errors.DATABASE_ERROR);
-                return;
+                connection.release();
             }
+            else {
+                connection.query(insertQuery, newEvent, function(err, result) {
 
-            connection.query(insertQuery, newEvent, function(err, result) {
-
-                if(err) {
-                    logger.error("ERROR Add Events:" + JSON.stringify(err));
-                    res.json(configCSM.errors.DATABASE_ERROR);
-                    connection.release();
-                }
-                else
-                {
-                    logger.debug("Inserted ID:" +result.insertId);
-                    logger.debug("Result for ADD Event:" + JSON.stringify(result));
-
-                    eventServerService.getSpecificEvent(result.insertId,connection, function(result){
-                        logger.info("JSON sent:" + JSON.stringify(result));
-                        res.json(result);
-
+                    if(err) {
+                        logger.error("ERROR Add Events:" + JSON.stringify(err));
+                        res.json(configCSM.errors.DATABASE_ERROR);
                         connection.release();
-                    });
-                }
-            });
+                    }
+                    else
+                    {
+                        logger.debug("Inserted ID:" +result.insertId);
+                        logger.debug("Result for ADD Event:" + JSON.stringify(result));
 
+                        eventServerService.getSpecificEvent(result.insertId,connection, function(result){
+                            logger.info("JSON sent:" + JSON.stringify(result));
+                            res.json(result);
+
+                            connection.release();
+                        });
+                    }
+                });
+            }
         });
 
     });
@@ -100,25 +101,26 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
             if (err) {
                 logger.error("Error:" + JSON.stringify(err));
                 res.json(configCSM.errors.DATABASE_ERROR);
-                return;
+                connection.release();
             }
+            else {
+                connection.query(updateQuery, editEvent, function(err, result) {
 
-            connection.query(updateQuery, editEvent, function(err, result) {
-
-                if(err) {
-                    logger.error("ERROR Edit Events:" + JSON.stringify(err));
-                    res.json(configCSM.errors.DATABASE_ERROR);
-                    connection.release();
-                }
-                else {
-
-                    eventServerService.getSpecificEvent(editEvent.eventId,connection,function(result){
-                        logger.info("JSON sent:" + JSON.stringify(result));
-                        res.json(result);
+                    if(err) {
+                        logger.error("ERROR Edit Events:" + JSON.stringify(err));
+                        res.json(configCSM.errors.DATABASE_ERROR);
                         connection.release();
-                    });
-                }
-            });
+                    }
+                    else {
+
+                        eventServerService.getSpecificEvent(editEvent.eventId,connection,function(result){
+                            logger.info("JSON sent:" + JSON.stringify(result));
+                            res.json(result);
+                            connection.release();
+                        });
+                    }
+                });
+            }
         });
 
     });
@@ -144,50 +146,51 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
             if (err) {
                 logger.error("Error:" + JSON.stringify(err));
                 res.json(configCSM.errors.DATABASE_ERROR);
-                return;
+                connection.release();
             }
+            else {
+                connection.beginTransaction(function(err){
 
-            connection.beginTransaction(function(err){
-
-                if(err) {
-                    logger.error("Error:" + JSON.stringify(err));
-                    res.json(configCSM.errors.DATABASE_ERROR);
-                    connection.release();
-                    return;
-                }
-
-                q.ninvoke(connection,"query",deleteEventsCranesQuery,deleteEventJSON).then(function(result){
-
-                    return q.ninvoke(connection,"query",deleteEventQuery,deleteEventJSON)
-
-                }).then(function(result){
-
-                    connection.commit(function(err) {
-                        if (err) {
-                            connection.rollback(function() {
-                                logger.error("Error:" + JSON.stringify(err));
-                                res.json(configCSM.errors.DATABASE_ERROR);
-                            });
-                        }
-                        else {
-                            logger.info("Query Result:" + JSON.stringify(result));
-                            logger.info("JSON Sent:" + JSON.stringify("Ok"));
-                            res.json("OK");
-                        }
-
+                    if(err) {
+                        logger.error("Error:" + JSON.stringify(err));
+                        res.json(configCSM.errors.DATABASE_ERROR);
                         connection.release();
+                        return;
+                    }
+
+                    q.ninvoke(connection,"query",deleteEventsCranesQuery,deleteEventJSON).then(function(result){
+
+                        return q.ninvoke(connection,"query",deleteEventQuery,deleteEventJSON)
+
+                    }).then(function(result){
+
+                        connection.commit(function(err) {
+                            if (err) {
+                                connection.rollback(function() {
+                                    logger.error("Error:" + JSON.stringify(err));
+                                    res.json(configCSM.errors.DATABASE_ERROR);
+                                });
+                            }
+                            else {
+                                logger.info("Query Result:" + JSON.stringify(result));
+                                logger.info("JSON Sent:" + JSON.stringify("Ok"));
+                                res.json("OK");
+                            }
+
+                            connection.release();
+                        });
+
+                    }).fail(function(err){
+                        connection.rollback(function() {
+                            connection.release();
+                        });
+
+                        logger.error("Error Delete Events:" + JSON.stringify(err));
+                        res.json(configCSM.errors.DATABASE_ERROR);
                     });
 
-                }).fail(function(err){
-                    connection.rollback(function() {
-                        connection.release();
-                    });
-
-                    logger.error("Error Delete Events:" + JSON.stringify(err));
-                    res.json(configCSM.errors.DATABASE_ERROR);
                 });
-
-            });
+            }
         });
     });
 

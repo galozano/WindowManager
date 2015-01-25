@@ -22,21 +22,22 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
             if (err) {
                 logger.error("Pool Error:" + JSON.stringify(err));
                 res.json(configCSM.errors.DATABASE_ERROR);
-                return;
+                connection.release();
             }
+            else {
+                connection.query(query2,parameters,function(err, result) {
+                    if(err) {
+                        logger.error("ERROR:" + err);
+                        res.json(configCSM.errors.DATABASE_ERROR);
+                    }
+                    else {
+                        logger.info("JSON Sent:" + JSON.stringify(result));
+                        res.json(result);
+                    }
 
-            connection.query(query2,parameters,function(err, result) {
-                if(err) {
-                    logger.error("ERROR:" + err);
-                    res.json(configCSM.errors.DATABASE_ERROR);
-                }
-                else {
-                    logger.info("JSON Sent:" + JSON.stringify(result));
-                    res.json(result);
-                }
-            });
-
-            connection.release();
+                    connection.release();
+                });
+            }
         });
     });
 
@@ -54,16 +55,20 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
                 if (err) {
                     logger.error("Pool Error:" + JSON.stringify(err));
                     res.json(configCSM.errors.DATABASE_ERROR);
-                    return;
-                }
-
-                terminalService.getTerminal(terminalIdJson,connection).then(function(result){
-
                     connection.release();
-                    res.json(result);
-                }).fail(function(err){
-                    res.json(err);
-                });
+                }
+                else {
+
+                    terminalService.getTerminal(terminalIdJson,connection).then(function(result){
+
+                        connection.release();
+                        res.json(result);
+
+                    }).fail(function(err){
+                        res.json(err);
+                        connection.release();
+                    });
+                }
             });
         }
         else {
@@ -88,20 +93,21 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
                 if (err) {
                     logger.error("Pool Error:" + JSON.stringify(err));
                     res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR,configCSM.status.ERROR));
-                    return;
+                    connection.release();
                 }
+                else {
+                    terminalService.createTerminalConfig(terminalConfigJSON,connection).then(function(result){
 
-                terminalService.createTerminalConfig(terminalConfigJSON,connection).then(function(result){
+                        connection.release();
+                        res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
 
-                    connection.release();
-                    res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
-
-                }).fail(function(err){
-                    connection.release();
-                    if(err){
-                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
-                    }
-                });
+                    }).fail(function(err){
+                        connection.release();
+                        if(err){
+                            res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
+                        }
+                    });
+                }
             });
         }
         else {
@@ -125,19 +131,20 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
                 if (err) {
                     logger.error("Pool Error:" + JSON.stringify(err));
                     res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR,configCSM.status.ERROR));
-                    return;
+                    connection.release();
                 }
+                else {
+                    terminalService.deleteTerminalConfigSchema(data,connection).then(function(result){
+                        connection.release();
+                        res.json(utilitiesCommon.generateResponse([],configCSM.status.OK));
 
-                terminalService.deleteTerminalConfigSchema(data,connection).then(function(result){
-                    connection.release();
-                    res.json(utilitiesCommon.generateResponse([],configCSM.status.OK));
-
-                }).fail(function(err){
-                    connection.release();
-                    if(err){
-                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
-                    }
-                });
+                    }).fail(function(err){
+                        connection.release();
+                        if(err){
+                            res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
+                        }
+                    });
+                }
             });
         }
         else {
@@ -161,19 +168,21 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
                 if (err) {
                     logger.error("Pool Error:" + JSON.stringify(err));
                     res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR, configCSM.status.ERROR));
-                    return;
-                }
-
-                terminalService.createTerminal(data,connection).then(function(result){
-
-                    res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK))
-
-                }).fail(function(err){
                     connection.release();
-                    if(err){
-                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
-                    }
-                });
+                }
+                else {
+                    terminalService.createTerminal(data,connection).then(function(result){
+
+                        connection.release();
+                        res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK))
+
+                    }).fail(function(err){
+                        connection.release();
+                        if(err){
+                            res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
+                        }
+                    });
+                }
             });
         }
         else {
@@ -195,19 +204,20 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
                 if (err) {
                     logger.error("Pool Error:" + JSON.stringify(err));
                     res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR,configCSM.status.ERROR));
-                    return;
+                    connection.release();
                 }
+                else {
+                    terminalService.deleteTerminal(data,connection).then(function(result){
+                        connection.release();
+                        res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
 
-                terminalService.deleteTerminal(data,connection).then(function(result){
-                    connection.release();
-                    res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
-
-                }).fail(function(err){
-                    connection.release();
-                    if(err){
-                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
-                    }
-                });
+                    }).fail(function(err){
+                        connection.release();
+                        if(err){
+                            res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
+                        }
+                    });
+                }
             });
         }
         else {
