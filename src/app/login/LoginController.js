@@ -10,6 +10,7 @@
 
         $scope.loginUser = "";
         $scope.showPage = false;
+        $scope.formError = "";
 
         if($sessionStorage.userToken && $sessionStorage.userToken != "") {
             $location.path('/terminals');
@@ -38,6 +39,8 @@
                         //Enviar el usuario a la pagina principal de las terminales
                         $location.path('/terminals');
                     }
+                    else
+                        $scope.formError = "Invalid email or password";
                 }).
                 error(function(data, status, headers, config) {
 
