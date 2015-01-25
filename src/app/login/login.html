@@ -2,8 +2,11 @@
 <div class="jumbotron" ng-show="showPage">
     <div class="container">
         <span class="glyphicon glyphicon-list-alt"></span>
-        <h2>Colibri Service Manager</h2>
-        <div class="box">
+        <h2>Colibri Berth Viewer</h2>
+        <div>
+            <div class="general-error">
+                {{formError}}
+            </div>
             <form  name="loginForm" class="css-form" method="post" novalidate>
                 <input type="email" name="email" placeholder="email" ng-model="loginUser.email" required>
                 <div class="formError" ng-show="loginForm.email.$invalid && loginForm.eventName.$dirty || loginForm.$submitted">

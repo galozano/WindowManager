@@ -11,11 +11,16 @@
             "main": "/terminals",
             "getTerminals":"/getTerminals",
             "getTerminal":"/getTerminal",
-            "deleteTerminal":"/deleteTerminal"
+            "deleteTerminal":"/deleteTerminal",
+            "createTerminal":"/createTerminal",
+            "createTerminalSchema":"/createTerminalSchema",
+            "deleteTerminalSchema":"/deleteTerminalSchema"
         },
         "cranes":{
             "main": "/cranes",
-            "editCranes":"/editEventCranes"
+            "editCranes":"/editEventCranes",
+            "createCraneSchema":"/createCraneSchema",
+            "deleteCraneSchema":"/deleteCraneSchema"
         },
         "users":{
             "main":"/users",
@@ -23,6 +28,10 @@
             "createUser":"/createUser",
             "changePassword":"/password"
         }
+    },
+    "status":{
+        "OK":"OK",
+        "ERROR":"Error"
     },
     "errors": {
         "TERMINAL_INVALID_ID": {

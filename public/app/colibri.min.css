@@ -18,4 +18,4 @@
 .login .btn{border-radius:.2rem}
 .login .btn .glyphicon{font-size:3rem;color:#fff}
 .login .full-width{background-color:#8eb5e2;width:100%;-webkit-border-top-right-radius:0;-webkit-border-bottom-right-radius:0;-moz-border-radius-topright:0;-moz-border-radius-bottomright:0;border-top-right-radius:0;border-bottom-right-radius:0}
-.login .box{position:absolute;bottom:0;left:0;margin-bottom:3rem;margin-left:3rem;margin-right:3rem}
+.login .general-error{color:red}

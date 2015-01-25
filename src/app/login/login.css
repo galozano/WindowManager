@@ -60,11 +60,6 @@
     border-bottom-right-radius: 0;
 }
 
-.login .box {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    margin-bottom: 3rem;
-    margin-left: 3rem;
-    margin-right: 3rem;
+.login .general-error {
+    color:red;
 }

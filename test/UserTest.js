@@ -37,7 +37,6 @@ describe('Test Users', function() {
             request.post({url:url, form:newUser}, function (err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
-
                 expect(JSON.parse(body).userFirstName).to.eq(newUser.userFirstName);
                 expect(JSON.parse(body).userLastName).to.eq(newUser.userLastName);
                 expect(JSON.parse(body).userEmail).to.eq(newUser.userEmail);
@@ -61,7 +60,6 @@ describe('Test Users', function() {
             request.post({url:url, form:loginUser}, function (err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
-
                 expect(JSON.parse(body).userFirstName).to.eq("Gustavo");
                 expect(JSON.parse(body).userLastName).to.eq("Lozano");
                 expect(JSON.parse(body).userEmail).to.eq("gustavo@gmail.com");
@@ -80,7 +78,6 @@ describe('Test Users', function() {
             request.post({url:url, form:loginUser}, function (err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
-
                 expect(JSON.parse(body).code).to.eq(configCSM.errors.INVALID_USER.code);
 
                 done();
@@ -123,7 +120,6 @@ describe('Test Users', function() {
             request.post({url:url, form:loginUser}, function (err, resp, body) {
 
                 expect(resp.statusCode).to.equals(200);
-
                 expect(JSON.parse(body).code).to.eq(configCSM.errors.INVALID_USER.code);
 
                 done();

@@ -55,14 +55,23 @@
       "terminalConfigSchemaId":2,
       "berthSequence":3,
       "berthStart":true
-    }
-  ],
+    },{
+      "berthId":9,
+      "berthName": "Berth 9",
+      "berthLength":1000,
+      "terminalConfigSchemaId":3,
+      "berthSequence":1,
+      "berthStart":true
+  }],
   "terminalConfigurationsSchemas": [{
       "terminalConfigSchemaId":1,
       "terminalConfigSchemaName": "Config 1"
     }, {
       "terminalConfigSchemaId":2,
       "terminalConfigSchemaName": "Config 2"
+  },{
+    "terminalConfigSchemaId":3,
+    "terminalConfigSchemaName": "Config 3"
   }],
   "terminals": [{
       "terminalName":"SPRC",
@@ -84,6 +93,10 @@
       "craneId":2,
       "craneName":"G2",
       "craneConfigSchemaId":1
+    },{
+      "craneId":3,
+      "craneName":"P2",
+      "craneConfigSchemaId":2
     }
   ],
   "events" :[{
@@ -131,6 +144,9 @@
   "craneConfigurationSchemas": [{
       "craneConfigSchemaId":1,
       "craneConfigSchemaName":"SPRC Schema"
+    }, {
+      "craneConfigSchemaId":2,
+      "craneConfigSchemaName":"Other Schema"
     }
   ],
   "eventsCranes": [

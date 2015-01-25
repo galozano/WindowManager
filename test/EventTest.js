@@ -12,7 +12,7 @@ describe('Test Events', function() {
 
     before(function(done){
 
-        console.log("Events Before");
+        console.log("Before");
 
         scenarioCreator.prepareScenario(function(events) {
             console.log('Creating Scenario');
