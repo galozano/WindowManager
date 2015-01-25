@@ -72,35 +72,9 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
         }
     });
 
-    terminalsRouter.post(configCSM.urls.terminals.deleteTerminal,function(req,res) {
-
-        var query = "DELETE FROM Terminals WHERE terminalId = :terminalId";
-
-        poolConnections.getConnection(function(err, connection) {
-
-            if (err) {
-                logger.error("Pool Error:" + JSON.stringify(err));
-                res.json(configCSM.errors.DATABASE_ERROR);
-                return;
-            }
-
-            connection.query(query,function(err, result) {
-                if(err) {
-                    logger.error("ERROR:" + err);
-                    res.json(configCSM.errors.DATABASE_ERROR);
-                }
-                else {
-                    logger.info("JSON Sent:" + JSON.stringify(result));
-                    res.json(result);
-                }
-            });
-
-            connection.release();
-        });
-
-    });
-
-    //Create terminal configuration Schema
+    /**
+     *
+     */
     terminalsRouter.post(configCSM.urls.terminals.createTerminalSchema, function (req,res) {
 
         logger.debug("JSON received:" +JSON.stringify(req.body));
@@ -123,7 +97,6 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
                     res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
 
                 }).fail(function(err){
-
                     connection.release();
                     if(err){
                         res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
@@ -136,6 +109,45 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
         }
     });
 
+    /**
+     * POST: Delete the terminal schema specified with the id
+     */
+    terminalsRouter.post(configCSM.urls.terminals.deleteTerminalSchema,function(req,res) {
+
+        logger.debug("JSON received:" +JSON.stringify(req.body));
+
+        if(req.body.data) {
+
+            var data = JSON.parse(req.body.data);
+
+            poolConnections.getConnection(function(err, connection) {
+
+                if (err) {
+                    logger.error("Pool Error:" + JSON.stringify(err));
+                    res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR,configCSM.status.ERROR));
+                    return;
+                }
+
+                terminalService.deleteTerminalConfigSchema(data,connection).then(function(result){
+                    connection.release();
+                    res.json(utilitiesCommon.generateResponse([],configCSM.status.OK));
+
+                }).fail(function(err){
+                    connection.release();
+                    if(err){
+                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
+                    }
+                });
+            });
+        }
+        else {
+            res.json(utilitiesCommon.generateResponse(configCSM.errors.INVALID_INPUT,configCSM.status.ERROR));
+        }
+    });
+
+    /**
+     * POST: Create a new terminal
+     */
     terminalsRouter.post(configCSM.urls.terminals.createTerminal, function(req, res){
 
         logger.debug("JSON received:" +JSON.stringify(req.body));
@@ -168,6 +180,41 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
             res.json(utilitiesCommon.generateResponse(configCSM.errors.INVALID_INPUT,configCSM.status.ERROR));
         }
     });
+
+    terminalsRouter.post(configCSM.urls.terminals.deleteTerminal, function(req,res) {
+
+        logger.debug("JSON received:" +JSON.stringify(req.body));
+
+        if(req.body.data) {
+
+            var data = JSON.parse(req.body.data);
+            logger.debug("Data received:" + JSON.stringify(data));
+
+            poolConnections.getConnection(function(err, connection) {
+
+                if (err) {
+                    logger.error("Pool Error:" + JSON.stringify(err));
+                    res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR,configCSM.status.ERROR));
+                    return;
+                }
+
+                terminalService.deleteTerminal(data,connection).then(function(result){
+                    connection.release();
+                    res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
+
+                }).fail(function(err){
+                    connection.release();
+                    if(err){
+                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
+                    }
+                });
+            });
+        }
+        else {
+            res.json(utilitiesCommon.generateResponse(configCSM.errors.INVALID_INPUT,configCSM.status.ERROR));
+        }
+    });
+
 
     return terminalsRouter;
 };

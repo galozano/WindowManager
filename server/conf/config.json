@@ -13,12 +13,14 @@
             "getTerminal":"/getTerminal",
             "deleteTerminal":"/deleteTerminal",
             "createTerminal":"/createTerminal",
-            "createTerminalSchema":"/createTerminalSchema"
+            "createTerminalSchema":"/createTerminalSchema",
+            "deleteTerminalSchema":"/deleteTerminalSchema"
         },
         "cranes":{
             "main": "/cranes",
             "editCranes":"/editEventCranes",
-            "createCraneSchema":"/createCraneSchema"
+            "createCraneSchema":"/createCraneSchema",
+            "deleteCraneSchema":"/deleteCraneSchema"
         },
         "users":{
             "main":"/users",

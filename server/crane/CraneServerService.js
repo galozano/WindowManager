@@ -91,6 +91,24 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
     // Public Methods
     //---------------------------------------------------------------------------------
 
+    craneServerService.insertEventsCranes = function insertEventsCranes(eventId, cranes,connection) {
+
+        logger.debug("Insert All Cranes:" +JSON.stringify(cranes));
+
+        var promiseList = [];
+        var insertQuery = "INSERT INTO EventsCranes (eventId,craneId) VALUES (:eventId,:craneId)";
+
+        for(var i = 0; i < cranes.length ; i++) {
+
+            var crane = cranes[i];
+            var eventCrane = {eventId:eventId,craneId:crane.craneId};
+
+            promiseList.push(q.ninvoke(connection,"query",insertQuery,eventCrane));
+        }
+
+        return promiseList;
+    }
+
     craneServerService.createCraneConfigSchema = function createCraneConfigSchema (data,connection) {
 
         logger.debug("Received Data:" +JSON.stringify(data));
@@ -101,60 +119,96 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
             if (err) {
                 logger.error("Pool Error:" + JSON.stringify(err));
                 deferred.reject(configCSM.errors.DATABASE_ERROR);
-                return;
             }
+            else {
+                var craneConfigInsertedId = -1;
+                var craneConfigData = {
+                    craneConfigSchemaName: data.craneConfigSchemaName
+                };
 
-            var craneConfigInsertedId = -1;
-            var craneConfigData = {
-                craneConfigSchemaName: data.craneConfigSchemaName
-            };
+                addCraneConfigSchema(craneConfigData,connection).then(function(result){
 
-            addCraneConfigSchema(craneConfigData,connection).then(function(result){
+                    logger.debug("Add Crane Config Result:" +JSON.stringify(result));
 
-                logger.debug("Add Crane Config Result:" +JSON.stringify(result));
+                    craneConfigInsertedId = result.insertId;
+                    var cranes = data.cranes;
+                    var promises = [];
 
-                craneConfigInsertedId = result.insertId;
-                var cranes = data.cranes;
-                var promises = [];
+                    cranes.forEach(function(element){
 
-                cranes.forEach(function(element){
+                        logger.debug("Crane Element:" +JSON.stringify(element));
+                        element.craneConfigSchemaId = craneConfigInsertedId;
+                        logger.debug("Crane Element 2:" +JSON.stringify(element));
 
-                    logger.debug("Crane Element:" +JSON.stringify(element));
-                    element.craneConfigSchemaId = craneConfigInsertedId;
-                    logger.debug("Crane Element 2:" +JSON.stringify(element));
+                        promises.push(addCrane(element,connection));
+                    });
 
-                    promises.push(addCrane(element,connection));
+                    return promises;
+
+                }).then(function(result){
+
+                    logger.debug("Add Cranes:" +JSON.stringify(result));
+                    return getCraneConfig(craneConfigInsertedId,connection);
+
+                }).then(function(result){
+                    connection.commit(function(err) {
+                        if (err) {
+                            connection.rollback(function() {
+                                logger.error("Commit Error:" + JSON.stringify(err));
+                                deferred.reject(configCSM.errors.DATABASE_ERROR);
+                            });
+                        }
+                        else {
+
+                            logger.info("Callback:" + JSON.stringify(result));
+                            deferred.resolve(result);
+                        }
+                    });
+                }).fail(function(err){
+
+                    connection.rollback(function() {
+                        logger.error("Error:" + JSON.stringify(err));
+                        deferred.reject(configCSM.errors.DATABASE_ERROR);
+                    });
                 });
+            }
+        });
 
-                return promises;
+        return  deferred.promise;
+    };
 
-            }).then(function(result){
+    craneServerService.deleteCraneConfigSchema = function deleteCraneConfigSchema(data, connection){
 
-                logger.debug("Add Cranes:" +JSON.stringify(result));
-                return getCraneConfig(craneConfigInsertedId,connection);
+        logger.debug("Data Service:" +JSON.stringify(data));
+        var deferred = q.defer();
 
-            }).then(function(result){
-                connection.commit(function(err) {
+        var deleteCraneSchemaSQL = "DELETE FROM CraneConfigSchema WHERE craneConfigSchemaId = :craneConfigSchemaId";
+        var deleteCranes = "DELETE FROM Cranes WHERE craneConfigSchemaId = :craneConfigSchemaId";
+
+        connection.beginTransaction(function(err){
+
+            if (err) {
+                logger.error("Pool Error:" + JSON.stringify(err));
+                deferred.reject(configCSM.errors.DATABASE_ERROR);
+            }
+            else {
+                q.ninvoke(connection, "query", deleteCranes, data).then(function(result){
+
+                    logger.debug("Query 1 result:" + JSON.stringify(result));
+                    return  q.ninvoke(connection, "query", deleteCraneSchemaSQL, data);
+
+                }).then(function(result){
+
+                    logger.debug("Query 2 result:" + JSON.stringify(result));
+                    return deferred.resolve([]);
+
+                }).fail(function(err){
                     if (err) {
-                        connection.rollback(function() {
-                            logger.error("Commit Error:" + JSON.stringify(err));
-                            deferred.reject(configCSM.errors.DATABASE_ERROR);
-                        });
-                    }
-                    else {
-
-                        logger.info("Callback:" + JSON.stringify(result));
-                        deferred.resolve(result);
+                        logger.error("ERROR:" + JSON.stringify(err));
+                        deferred.reject(configCSM.errors.DATABASE_ERROR);
                     }
                 });
-            }).fail(function(err){
-
-                connection.rollback(function() {
-                    logger.error("Error:" + JSON.stringify(err));
-                    deferred.reject(configCSM.errors.DATABASE_ERROR);
-                });
-            });
-
+            }
         });
 
         return  deferred.promise;

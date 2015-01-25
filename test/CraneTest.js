@@ -107,6 +107,33 @@ describe('Test Cranes', function() {
         });
     });
 
+    describe("Delete Crane Schema", function () {
+
+        var url = 'http://localhost:3000/cranes/deleteCraneSchema';
+
+        it("Delete Crane Schema", function(done) {
+
+            var deleteCraneSchema = {
+                craneConfigSchemaId: 2
+            };
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
+                form:{data:JSON.stringify(deleteCraneSchema)}
+            };
+
+            request.post(options, function (err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).status).to.equals("OK");
+
+                expect(JSON.parse(body).data).to.exist;
+                done();
+            });
+        });
+    });
+
     describe("Add Crane Schema", function(){
 
         var url = 'http://localhost:3000/cranes/createCraneSchema';

@@ -18,7 +18,6 @@ describe('Test Terminals', function() {
             console.log('Creating Scenario');
             done();
         });
-
     });
 
     describe("Get Terminals", function(){
@@ -69,7 +68,7 @@ describe('Test Terminals', function() {
         });
     });
 
-    describe.only("Create Terminal", function() {
+    describe("Create Terminal", function() {
 
         var url = 'http://localhost:3000/terminals/createTerminal';
 
@@ -138,4 +137,59 @@ describe('Test Terminals', function() {
             });
         });
     });
+
+    describe("Delete Terminal Schema", function () {
+
+        var url = 'http://localhost:3000/terminals/deleteTerminalSchema';
+
+        it("Delete Terminal Schema", function(done){
+
+            var deleteTerminal = {
+                terminalConfigSchemaId: 3
+            };
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
+                form:{data:JSON.stringify(deleteTerminal)}
+            };
+
+            request.post(options, function (err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).status).to.equals("OK");
+                expect(JSON.parse(body).data).to.exist;
+
+                done();
+            });
+        });
+    });
+
+    describe("Delete Terminal", function () {
+
+        var url = 'http://localhost:3000/terminals/deleteTerminal';
+
+        it("Delete Terminal", function(done){
+
+            var deleteTerminal = {
+                terminalId: 2
+            };
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
+                form:{data:JSON.stringify(deleteTerminal)}
+            };
+
+            request.post(options, function (err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).status).to.equals("OK");
+                expect(JSON.parse(body).data).to.exist;
+
+                done();
+            });
+        });
+    });
+
 });

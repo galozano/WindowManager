@@ -5,24 +5,6 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
 
     var cranesRouter = express.Router();
 
-    function insertCranes(eventId, cranes,connection) {
-
-        logger.debug("Insert All Cranes:" +JSON.stringify(cranes));
-
-        var promiseList = [];
-        var insertQuery = "INSERT INTO EventsCranes (eventId,craneId) VALUES (:eventId,:craneId)";
-
-        for(var i = 0; i < cranes.length ; i++) {
-
-            var crane = cranes[i];
-            var eventCrane = {eventId:eventId,craneId:crane.craneId};
-
-            promiseList.push(q.ninvoke(connection,"query",insertQuery,eventCrane));
-        }
-
-        return promiseList;
-    }
-
     /**
     * Edit Event Cranes
     */
@@ -48,7 +30,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
             q.ninvoke(connection,"query",deleteQuery,eventId).then(function(result){
 
                 logger.debug("Result Delete Query:"+ JSON.stringify(result));
-                return insertCranes(eventCranes.eventId,eventCranes.cranes,connection);
+                return craneServerService.insertEventsCranes(eventCranes.eventId,eventCranes.cranes,connection);
 
             }).then(function(){
 
@@ -77,7 +59,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
     cranesRouter.post(configCSM.urls.cranes.createCraneSchema, function(req,res){
 
         logger.debug("Create Crane Schema");
-        logger.info("JSON Received:" + req.body.data);
+        logger.info("JSON Received:" + JSON.stringify(req.body));
 
         if(req.body.data) {
 
@@ -110,6 +92,45 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
         else {
             res.json(utilitiesCommon.generateResponse(configCSM.errors.INVALID_INPUT,configCSM.status.ERROR));
         }
+    });
+
+    cranesRouter.post(configCSM.urls.cranes.deleteCraneSchema, function(req,res){
+
+        logger.debug("Delete Crane Schema");
+        logger.info("JSON Received:" + JSON.stringify(req.body));
+
+        if(req.body.data) {
+
+            var cranesJSON = JSON.parse(req.body.data);
+
+            poolConnections.getConnection(function(err, connection) {
+
+                if (err) {
+                    logger.error("Error:" + JSON.stringify(err));
+                    res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR, configCSM.status.ERROR));
+                    connection.release();
+                    return;
+                }
+
+                craneServerService.deleteCraneConfigSchema(cranesJSON,connection).then(function (result){
+
+                    connection.release();
+                    res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
+
+                }).fail(function(err){
+
+                    connection.release();
+                    if(err){
+                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
+                    }
+
+                });
+            });
+        }
+        else {
+            res.json(utilitiesCommon.generateResponse(configCSM.errors.INVALID_INPUT,configCSM.status.ERROR));
+        }
+
     });
 
     return cranesRouter;
