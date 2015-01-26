@@ -27,11 +27,15 @@
             "login":"/login",
             "createUser":"/createUser",
             "changePassword":"/password"
+        },
+        "security":{
+            "main":"/security",
+            "addTerminalAccess":"/addTerminalAccess"
         }
     },
     "status":{
         "OK":"OK",
-        "ERROR":"Error"
+        "ERROR":"ERROR"
     },
     "errors": {
         "TERMINAL_INVALID_ID": {
@@ -63,6 +67,12 @@
             "message": "Invalid input",
             "type": "ERROR",
             "code": "INVALID_INPUT"
+        },
+        "INPUT_EXITS": {
+            "userMessage": "The information already exist, please provide a different one",
+            "message": "Input already exists on database",
+            "type": "ERROR",
+            "code": "INPUT_EXITS"
         }
     },
     "server":{
