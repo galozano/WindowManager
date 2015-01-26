@@ -24,34 +24,35 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
             if (err) {
                 logger.error("Error:" + JSON.stringify(err));
                 res.json(configCSM.errors.DATABASE_ERROR);
-                return;
+                connection.release();
             }
+            else {
+                q.ninvoke(connection,"query",deleteQuery,eventId).then(function(result){
 
-            q.ninvoke(connection,"query",deleteQuery,eventId).then(function(result){
+                    logger.debug("Result Delete Query:"+ JSON.stringify(result));
+                    return craneServerService.insertEventsCranes(eventCranes.eventId,eventCranes.cranes,connection);
 
-                logger.debug("Result Delete Query:"+ JSON.stringify(result));
-                return craneServerService.insertEventsCranes(eventCranes.eventId,eventCranes.cranes,connection);
+                }).then(function(){
 
-            }).then(function(){
+                    logger.debug("Getting Specific Event");
 
-                logger.debug("Getting Specific Event");
+                    eventServerService.getSpecificEvent(eventCranes.eventId,connection,function(result){
+                        logger.info("JSON sent:" + JSON.stringify(result));
+                        res.json(result);
+                        connection.release();
+                    });
 
-                eventServerService.getSpecificEvent(eventCranes.eventId,connection,function(result){
-                    logger.info("JSON sent:" + JSON.stringify(result));
-                    res.json(result);
+                }).fail(function(err){
+                    if(err) {
+                        logger.error("ERROR Edit Cranes:" + JSON.stringify(err));
+                        res.json(configCSM.errors.DATABASE_ERROR);
+                    }
+                    else {
+                        logger.error("Unknown Error:" + JSON.stringify(err));
+                    }
                     connection.release();
                 });
-
-            }).fail(function(err){
-                if(err) {
-                    logger.error("ERROR Edit Cranes:" + JSON.stringify(err));
-                    res.json(configCSM.errors.DATABASE_ERROR);
-                }
-                else {
-                    logger.error("Unknown Error:" + JSON.stringify(err));
-                }
-                connection.release();
-            });
+            }
         });
 
     });
@@ -71,22 +72,22 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
                     logger.error("Error:" + JSON.stringify(err));
                     res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR,configCSM.status.ERROR));
                     connection.release();
-                    return;
                 }
+                else {
+                    craneServerService.createCraneConfigSchema(cranesJSON,connection).then(function (result){
 
-                craneServerService.createCraneConfigSchema(cranesJSON,connection).then(function (result){
+                        connection.release();
+                        res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
 
-                    connection.release();
-                    res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
+                    }).fail(function(err){
 
-                }).fail(function(err){
+                        connection.release();
+                        if(err){
+                            res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
+                        }
 
-                    connection.release();
-                    if(err){
-                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
-                    }
-
-                });
+                    });
+                }
             });
         }
         else {
@@ -109,22 +110,22 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
                     logger.error("Error:" + JSON.stringify(err));
                     res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR, configCSM.status.ERROR));
                     connection.release();
-                    return;
                 }
+                else {
+                    craneServerService.deleteCraneConfigSchema(cranesJSON,connection).then(function (result){
 
-                craneServerService.deleteCraneConfigSchema(cranesJSON,connection).then(function (result){
+                        connection.release();
+                        res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
 
-                    connection.release();
-                    res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
+                    }).fail(function(err){
 
-                }).fail(function(err){
+                        connection.release();
+                        if(err){
+                            res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
+                        }
 
-                    connection.release();
-                    if(err){
-                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
-                    }
-
-                });
+                    });
+                }
             });
         }
         else {

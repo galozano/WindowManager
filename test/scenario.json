@@ -187,6 +187,9 @@
   "rol":[{
      "rolId":1,
      "rolTypeId":1
+  }, {
+      "rolId":2,
+      "rolTypeId":1
   }],
   "users":[{
       "userId":1,
@@ -196,6 +199,14 @@
       "userPassword":"754bd9fce61ff2b32dbb1071ed6f813fd5a8d940d36f4fe4f66829268cb492d3",
       "userToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJGaXN0TmFtZSI6Ikd1c3Rhdm8iLCJ1c2VyTGFzdE5hbWUiOiJMb3phbm8iLCJ1c2VyRW1haWwiOiJndXN0YXZvQGdtYWlsLmNvbSJ9.XifH3qwM6y7MCdMbAxr0kIlendSuo1OVH29kU2vAEpM",
       "rolId":1
+  },{
+    "userId":2,
+    "userFirstName":"Rafael",
+    "userLastName":"Perez",
+    "userEmail":"rperez@gmail.com",
+    "userPassword":"754bd9fce61ff2b32dbb1071ed6f813fd5a8d940d36f4fe4f66829268cb492d3",
+    "userToken":"qwM6y7MCdMbAxr0kIlendSuo1OVH29kU2vAEpM",
+    "rolId":2
   }],
   "terminalAccess":[{
     "terminalAccessId":1,

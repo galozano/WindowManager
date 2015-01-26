@@ -100,9 +100,31 @@ function createTerminal( ) {
             });
         });
     });
+}
 
-};
+function addTerminalAccess( ) {
 
+    var urlSec = 'http://localhost:3000' + configCSM.urls.security.main + configCSM.urls.security.addTerminalAccess;
+    //var urlSec = 'http://colibri.kelgal.com' + configCSM.urls.security.main + configCSM.urls.security.addTerminalAccess;
 
-createTerminal();
+    var addTerminalAccess = {
+        terminalId: 1,
+        rolId:2
+    };
+
+    var options = {
+        url:urlSec,
+        headers:{"authorization":"Bearer " + userToken},
+        form:{data:JSON.stringify(addTerminalAccess)}
+    };
+
+    request.post(options, function (err, resp, body) {
+
+        console.log(body);
+    });
+
+}
+
+addTerminalAccess();
+//createTerminal();
 //addUser();

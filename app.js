@@ -78,16 +78,23 @@ var terminalServerController = require('./server/terminal/TerminalServerControll
 
 var userServerController = require('./server/UserServerController.js')(express,poolConnections,configCSM,logger,q,validator,jwt);
 
+var securityServerController = require('./server/SecurityServerController.js')(express,poolConnections,logger,configCSM,q,utilitiesCommon);
+
 var authenticationMiddleware = require('./server/AuthenticationMiddleware.js')(express,poolConnections,configCSM,logger,q);
+
+
 
 app.use(configCSM.urls.events.main,authenticationMiddleware.ensureAuthorized);
 app.use(configCSM.urls.terminals.main,authenticationMiddleware.ensureAuthorized);
 app.use(configCSM.urls.cranes.main,authenticationMiddleware.ensureAuthorized);
+app.use(configCSM.urls.security.main,authenticationMiddleware.ensureAuthorized);
 
 app.use(configCSM.urls.events.main, eventServerController);
 app.use(configCSM.urls.terminals.main, terminalServerController);
 app.use(configCSM.urls.cranes.main, craneServerController);
-app.use(configCSM.urls.users.main,userServerController);
+app.use(configCSM.urls.users.main, userServerController);
+app.use(configCSM.urls.security.main, securityServerController);
+
 
 
 //-------------------------------------------------------------
