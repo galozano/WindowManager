@@ -33,6 +33,15 @@
         changePasswordURL:'/users/password'
     });
 
+    app.constant('errors',{
+        connectionError: {
+            "userMessage": "Connection error, please contact Colibri support",
+            "message": "Connection error, please contact Colibri support",
+            "type": "ERROR",
+            "code":"CONNECTION_ERROR"
+        }
+    });
+
     app.constant('tableProp',{
         tableDayHeight: 84,
         tableDayHeightNoBorder: 83,

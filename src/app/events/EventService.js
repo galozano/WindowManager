@@ -1,15 +1,18 @@
 /**
  * Created by gal on 1/28/15.
  */
-(function( ) {
+(function() {
 
     var eventModule = angular.module("EventModule");
 
-    eventModule.service("eventService", ['$http','$log','config','_','alertService', function($http,$log,config,_,alertService) {
+    eventModule.service("eventService", ['$http','$log','config','_','alertService','$q','errors',
+        function($http,$log,config,_,alertService,$q,errors) {
 
-        var eventsList = {};
+        var eventsList = [];
 
-        function updateEvents(terminalId) {
+        this.updateEvents = function updateEvents(terminalId) {
+
+            var deferred = $q.defer();
 
             $http.get(config.getEventURL+"/"+terminalId).
                 success(function(data, status, headers, config) {
@@ -18,21 +21,23 @@
 
                     if(data.message) {
                         $log.debug("Error getting events");
-                        alertService.pushMessage(data);
+                        deferred.reject(data);
                     }
                     else {
-                        events = data;
+                        eventsList = data;
+                        deferred.resolve(eventsList);
                     }
-
                 }).
                 error(function(data, status, headers, config) {
-
-                    alertService.pushMessage("Connection Error");
+                    deferred.reject(errors.connectionError);
                 });
-        }
 
-        function addNewEvent(newEvent) {
+            return deferred.promise;
+        };
 
+        this.addNewEvent = function addNewEvent(newEvent) {
+
+            var deferred = $q.defer();
             var eventJSON = angular.copy(newEvent);
 
             $http.post(config.addEventURL, eventJSON).
@@ -41,28 +46,82 @@
                     $log.debug("Add Event Received Data:" + JSON.stringify(data));
 
                     if(data.message) {
-                        alertService.pushMessage(data);
+                        deferred.reject(data);
                     }
                     else {
-                        $scope.events.push(data);
-                        $('#eventModal').modal('hide');
-                        $scope.newEvent = "";
+                        eventsList.push(data);
+                        deferred.resolve(eventsList);
                     }
-
                 }).
                 error(function(data, status, headers, config) {
-                    alertService.pushMessage("Connection Error");
+                    deferred.reject(errors.connectionError);
                 });
-        }
 
-        function editEvent(newEvent) {
+            return deferred.promise;
+        };
 
-        }
+        this.editEvent = function editEvent(editedEvent) {
 
-        function deleteEvent(eventId) {
+            var deferred = $q.defer();
+            var eventJSON = angular.copy(editedEvent);
 
-        }
+            $http.post(config.editEventURL, eventJSON).
+                success(function(data, status, headers, config) {
 
+                    $log.debug("Received Edit Data:" + JSON.stringify(data));
+
+                    if(data.message) {
+                        deferred.reject(data);
+                    }
+                    else {
+
+                        eventsList.forEach(function(element, index){
+
+                            if(element.eventId == data.eventId){
+                                eventsList[index] = data;
+                            }
+                        });
+
+                        deferred.resolve(eventsList);
+                    }
+                }).
+                error(function(data, status, headers, config) {
+                    deferred.reject(errors.connectionError);
+                });
+
+            return deferred.promise;
+        };
+
+        this.deleteEvent = function deleteEvent(eventId) {
+
+            var deferred = $q.defer();
+
+            $http.post(config.deleteEventURL, {eventId:eventId}).
+                success(function(data, status, headers, config) {
+
+                    $log.debug("Received Delete Data:" + JSON.stringify(data));
+
+                    if(data.message) {
+                        deferred.reject(data);
+                    }
+                    else {
+                        var eventIndex = -1;
+                        eventsList.forEach(function(element,index){
+
+                            if(element.eventId == eventId){
+                                eventIndex = index;
+                            }
+                        });
+
+                        eventsList.splice(eventIndex,1);
+                        deferred.resolve(eventsList);
+                    }
+                }).
+                error(function(data, status, headers, config) {
+                    deferred.reject(errors.connectionError);
+                });
+
+            return deferred.promise;
+        };
     }]);
-
-});
+})();

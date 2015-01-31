@@ -8,8 +8,8 @@
     /**
      * Event Controller to handle all Events logic
      */
-    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','alertService','_',
-        function($http,$log,$scope,$routeParams,config,alertService,_) {
+    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','alertService','_','eventService',
+        function($http,$log,$scope,$routeParams,config,alertService,_,eventService) {
 
         //------------------------------------------------------------------------
         // Router Params
@@ -48,24 +48,12 @@
         init();
 
         function getEvents() {
-            $http.get(config.getEventURL+"/"+terminalId).
-                success(function(data, status, headers, config) {
 
-                    $log.debug("Received Events:" + JSON.stringify(data));
-
-                    if(data.message) {
-                        $log.debug("Error getting events");
-                        alertService.pushMessage(data);
-                    }
-                    else {
-                        $scope.events = data;
-                    }
-
-                }).
-                error(function(data, status, headers, config) {
-
-                    alertService.pushMessage("Connection Error");
-                });
+            eventService.updateEvents(terminalId).then(function(result){
+                $scope.events = result;
+            },function(err){
+                alertService.pushMessage(err);
+            });
         }
 
         function constructMainBerths(berths) {
@@ -154,9 +142,6 @@
                 return;
             }
 
-            var eventToAdd = angular.copy(newEvent);
-            $log.debug("Event to Add:" + JSON.stringify(eventToAdd));
-
             var eventJSON = {
                 "eventName":newEvent.eventName,
                 "eventArrivingTime":newEvent.eventArrivingTime,
@@ -168,24 +153,13 @@
                 "terminalId":terminalId
             };
 
-            $http.post(config.addEventURL, eventJSON).
-                success(function(data, status, headers, config) {
-
-                    $log.debug("Add Event Received Data:" + JSON.stringify(data));
-
-                    if(data.message) {
-                        alertService.pushMessage(data);
-                    }
-                    else {
-                        $scope.events.push(data);
-                        $('#eventModal').modal('hide');
-                        $scope.newEvent = "";
-                    }
-
-                }).
-                error(function(data, status, headers, config) {
-                    alertService.pushMessage("Connection Error");
-                });
+            eventService.addNewEvent(eventJSON).then(function(result){
+                $scope.events = result;
+                $('#eventModal').modal('hide');
+                $scope.newEvent = "";
+            },function(err){
+                alertService.pushMessage(err);
+            });
         };
 
         $scope.changeButton = function() {
@@ -194,13 +168,11 @@
             $scope.editable = false;
             $scope.eventForm.$setPristine();
             $scope.newEvent = "";
-
         };
 
         $scope.editEvent = function(newEvent) {
 
-            $log.debug("Edit Event");
-            $log.debug("Edited Event:" + JSON.stringify(newEvent));
+            $log.debug("Edit Event:" + JSON.stringify(newEvent));
 
             if ($scope.eventForm.$invalid) {
                 $log.debug("Form is Invalid");
@@ -220,18 +192,11 @@
                 "terminalId":terminalId
             };
 
-            $http.post(config.editEventURL, eventJSON).
-                success(function(data, status, headers, config) {
-
-                    //TODO:Mostar un mensaje de que funciono en algun lado
-                    $log.debug("Received Edit Data:" + JSON.stringify(data));
-                    getEvents();
-                }).
-                error(function(data, status, headers, config) {
-
-                    //TODO:Manage the error and send a message to the scope
-                    alertService.pushMessage("Connection Error");
-                });
+            eventService.editEvent(eventJSON).then(function(result){
+                $scope.events = result;
+            }, function(err){
+                alertService.pushMessage(err);
+            });
 
             if( $scope.eventChange)
                 $scope.eventChange = false;
@@ -239,13 +204,11 @@
                 $scope.eventChange = true;
 
             $scope.newEvent = {};
-
         };
 
         $scope.editEventModal = function(event) {
 
-            $log.debug("Edit Event Modal");
-            $log.debug("Event to edit:" + JSON.stringify(event));
+            $log.debug("Event to edit Modal:" + JSON.stringify(event));
 
             $scope.newEvent = angular.copy(event);
             $scope.editable = true;
@@ -253,21 +216,13 @@
 
         $scope.deleteEvent = function(event) {
 
-            $log.debug("Delete Event");
-            $log.debug(event);
+            $log.debug("Delete Event:" + JSON.stringify(event));
 
-            $http.post(config.deleteEventURL, {eventId:event.eventId}).
-                success(function(data, status, headers, config) {
-
-                    //TODO:Mostar un mensaje de que funciono en algun lado
-                    $log.debug("Received Delete Data:" + JSON.stringify(data));
-                    getEvents();
-
-                }).
-                error(function(data, status, headers, config) {
-
-                    alertService.pushMessage("Connection Error");
-                });
+            eventService.deleteEvent(event.eventId).then(function(result){
+                $scope.events = result;
+            }, function(err) {
+                alertService.pushMessage(err);
+            });
         };
 
         $scope.updateEvents = function() {
@@ -278,7 +233,6 @@
 
         $scope.moveEvent = function(newEvent) {
 
-            $log.debug("Move Event");
             $log.debug("Moved Event: " + JSON.stringify(newEvent));
 
             var eventJSON = {
@@ -292,15 +246,11 @@
                 "berthId":newEvent.berthId
             };
 
-            $http.post(config.editEventURL, eventJSON).
-                success(function(data, status, headers, config) {
-                    $log.debug("Received Edit Data:" + JSON.stringify(data));
-
-                }).
-                error(function(data, status, headers, config) {
-
-                    alertService.pushMessage("Connection Error");
-                });
+            eventService.editEvent(eventJSON).then(function(result){
+                $scope.events = result;
+            }, function(err){
+                alertService.pushMessage(err);
+            });
         };
 
         $scope.editCranesModal = function(event) {
