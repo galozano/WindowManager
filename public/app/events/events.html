@@ -21,9 +21,9 @@
 <div class="container" ng-show="calendarLoaded">
     <div class="calendar">
         <div ng-repeat="event in events">
-            <event event="event"></event>
+            <event class="event" delete-event="deleteEvent(event)" edit-cranes-modal="editCranesModal(event)" move-event="moveEvent(event)" edit-event-modal="editEventModal(event)" event="event" terminal-info="terminal" eventChange="eventChange"></event>
         </div>
-        <table-gen></table-gen>
+        <table-gen terminal-info="terminal" hours="hours"></table-gen>
     </div>
 </div>
 

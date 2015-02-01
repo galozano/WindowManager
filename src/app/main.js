@@ -33,6 +33,27 @@
         changePasswordURL:'/users/password'
     });
 
+    app.constant('errors',{
+        connectionError: {
+            "userMessage": "Connection error, please contact Colibri support",
+            "message": "Connection error, please contact Colibri support",
+            "type": "ERROR",
+            "code":"CONNECTION_ERROR"
+        }
+    });
+
+    app.constant('tableProp',{
+        tableDayHeight: 84,
+        tableDayHeightNoBorder: 83,
+        tableTopHeaderHeight: 29,
+        tableLeftHeaderWidth: 100,
+        tableTotalWidth: 1099,
+        cellHourHeight: 3.5, //TableDayHeight/12 cells
+        hoursInDay: 24,
+        minutesHour: 60,
+        totalPixelLength:999
+    });
+
     //--------------------------------------------------------------------
     // Interceptors
     //--------------------------------------------------------------------
