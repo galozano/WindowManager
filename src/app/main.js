@@ -50,7 +50,8 @@
         tableTotalWidth: 1099,
         cellHourHeight: 3.5, //TableDayHeight/12 cells
         hoursInDay: 24,
-        minutesHour: 60
+        minutesHour: 60,
+        totalPixelLength:999
     });
 
     //--------------------------------------------------------------------

@@ -5,20 +5,52 @@
 
     var eventModule = angular.module("EventModule");
 
-    eventModule.directive('tableGen', function( ) {
+    eventModule.directive('tableGen', ['$log',function($log) {
         return {
             restrict: 'E',
             templateUrl: './app/events/table.html',
-            replace: true
+            scope: {
+               terminal:'=terminalInfo',
+               hours:'=hours'
+            },
+            controller:['$scope','tableProp', function($scope, tableProp){
+
+                function createTerminalViewObject(terminalData) {
+
+                    if(terminalData) {
+                        var totalBerthLength = terminalData.totalLength;
+
+                        for(var i = 0; i < terminalData.berths.length ; i ++) {
+
+                            var berth = terminalData.berths[i];
+                            berth.pixelLength = (tableProp.totalPixelLength/totalBerthLength) * berth.berthLength;
+                        }
+                    }
+
+                    $log.debug("New Terminal Data:" + JSON.stringify(terminalData));
+                }
+
+                $scope.$watch('terminal', function(newTerminalInfo){
+                    console.debug("Terminal 3:" + JSON.stringify($scope.terminal));
+                    createTerminalViewObject($scope.terminal);
+                });
+            }]
         }
-    });
+    }]);
 
     eventModule.directive('event', ['$log','$document', function($log,$document) {
         return {
             restrict: 'E',
             templateUrl: './app/events/event.html',
-            replace: true,
-            transclude:true,
+            scope:{
+                event:'=event',
+                terminal:'=terminalInfo',
+                eventChange:'=eventChange',
+                moveEvent:'&moveEvent',
+                editEventModal:'&editEventModal',
+                deleteEvent: '&deleteEvent',
+                editCranesModal:'&editCranesModal'
+            },
             controller:['$scope','tableProp',function($scope,tableProp){
 
                 //Add the number of padding number to the number pass

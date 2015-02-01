@@ -10,6 +10,16 @@
 
         var eventsList = [];
 
+        function replaceEvent(modifiedEvent) {
+
+            eventsList.forEach(function(element, index){
+
+                if(element.eventId == modifiedEvent.eventId){
+                    eventsList[index] = modifiedEvent;
+                }
+            });
+        }
+
         this.updateEvents = function updateEvents(terminalId) {
 
             var deferred = $q.defer();
@@ -74,14 +84,7 @@
                         deferred.reject(data);
                     }
                     else {
-
-                        eventsList.forEach(function(element, index){
-
-                            if(element.eventId == data.eventId){
-                                eventsList[index] = data;
-                            }
-                        });
-
+                        replaceEvent(data);
                         deferred.resolve(eventsList);
                     }
                 }).
@@ -116,6 +119,25 @@
                         eventsList.splice(eventIndex,1);
                         deferred.resolve(eventsList);
                     }
+                }).
+                error(function(data, status, headers, config) {
+                    deferred.reject(errors.connectionError);
+                });
+
+            return deferred.promise;
+        };
+
+        this.editCranes = function editCranes(cranes) {
+
+            var deferred = $q.defer();
+            var dataToSend = {json:JSON.stringify(cranes)};
+
+            $http.post(config.editCranesURL, dataToSend).
+                success(function(data, status, headers, config) {
+
+                    $log.debug("Received Edit Crane Data:" + JSON.stringify(data));
+                    replaceEvent(data);
+                    deferred.resolve(eventsList);
                 }).
                 error(function(data, status, headers, config) {
                     deferred.reject(errors.connectionError);

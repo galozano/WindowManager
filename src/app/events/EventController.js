@@ -8,8 +8,8 @@
     /**
      * Event Controller to handle all Events logic
      */
-    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','alertService','_','eventService',
-        function($http,$log,$scope,$routeParams,config,alertService,_,eventService) {
+    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','alertService','_','eventService','terminalService',
+        function($http, $log, $scope, $routeParams, config, alertService, _, eventService, terminalService) {
 
         //------------------------------------------------------------------------
         // Router Params
@@ -38,7 +38,6 @@
 
         //Show current crane list of an specific event when selected
         $scope.cranesList = [];
-
         $scope.calendarLoaded = false;
 
         //------------------------------------------------------------------------
@@ -56,76 +55,18 @@
             });
         }
 
-        function constructMainBerths(berths) {
-            var berthsMainLength  = new Object();
+        function init( ) {
 
-            //Hago un array de los berths con start true y su longitude
-            var sum = 0;
-            var lastBerthId = "";
+            terminalService.getTerminal(terminalId).then(function(result){
 
-            for(var i = 0 ; i < berths.length ; i++) {
+                $scope.terminal = result;
+                //createTerminalViewObject($scope.terminal);
+                getEvents();
+                $scope.calendarLoaded = true;
 
-                var berth = berths[i];
-
-                if(berth.berthStart) {
-                    berthsMainLength[berth.berthId] = {sumLength: sum,berthName: berth.berthName, berthId:berth.berthId};
-                }
-
-                sum += berth.berthLength;
-            }
-
-            $scope.terminal.mainBerths = berthsMainLength;
-            $log.debug("Modified Terminal:" + JSON.stringify($scope.terminal));
-        }
-
-        function createTerminalViewObject(data) {
-
-            var totalBerthLength = data.totalLength;
-
-            //TODO:Quitar esto de aqui
-            var totalPixelLength = 999;
-
-            for(var i = 0; i < data.berths.length ; i ++) {
-
-                var berth = data.berths[i];
-                berth.pixelLength = (totalPixelLength/totalBerthLength) * berth.berthLength;
-            }
-
-            $log.debug("New Terminal Data:" + JSON.stringify(data));
-        }
-
-        function getTerminalInformation( ) {
-
-            $http.get(config.getTerminalURL+"/"+terminalId).
-                success(function(data, status, headers, config) {
-
-                    $log.debug("Terminal Info Received:" + JSON.stringify(data));
-
-                    //Validate is message is an error
-                    if(data.type) {
-                        alertService.pushMessage(data);
-                    }
-                    else {
-
-                        createTerminalViewObject(data);
-                        $scope.terminal = data;
-
-                        if(data.berths) {
-                            constructMainBerths(data.berths);
-                            getEvents();
-                            $scope.calendarLoaded = true;
-                        }
-                        else
-                            alertService.pushMessage("Unable to load events");
-                    }
-                }).
-                error(function(data, status, headers, config) {
-                    alertService.pushMessage("Connection Error");
-                });
-        }
-
-        function init() {
-            getTerminalInformation( );
+            }, function(err){
+                alertService.pushMessage(err);
+            });
         }
 
         //------------------------------------------------------------------------
@@ -134,7 +75,7 @@
 
         $scope.addNewEvent = function(newEvent) {
 
-            $log.debug("New Event");
+            $log.debug("New Event:" + JSON.stringify(newEvent));
 
             if ($scope.eventForm.$invalid) {
                 $log.debug("Invalid Form");
@@ -288,7 +229,7 @@
                 cranesList.push(temp);
             }
 
-            $log.debug("Crane Final List:" + JSON.stringify(cranesList))
+            $log.debug("Crane Final List:" + JSON.stringify(cranesList));
             $scope.cranesList = cranesList;
         };
 
@@ -313,21 +254,12 @@
             sendJSON.cranes = eventCranes;
             $log.debug("JSON to Send:" + JSON.stringify(sendJSON));
 
-            var dataToSend = {json:JSON.stringify(sendJSON)};
-
-            $http.post(config.editCranesURL, dataToSend).
-                success(function(data, status, headers, config) {
-
-                    $log.debug("Received Edit Crane Data:" + JSON.stringify(data));
-                    $('#craneModal').modal('hide');
-                    getEvents();
-                }).
-                error(function(data, status, headers, config) {
-
-                    alertService.pushMessage("Connection Error");
-                });
+            eventService.editCranes(sendJSON).then(function(result){
+                $scope.events = result;
+                $('#craneModal').modal('hide');
+            }, function(err){
+                alertService.pushMessage(err);
+            });
         };
     }]);
-
-
 })();
