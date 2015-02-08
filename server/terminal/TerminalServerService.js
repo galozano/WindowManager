@@ -74,7 +74,6 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
         return  deferred.promise;
     }
 
-
     function addTerminalConfigSchema(terminalConfig,connection) {
 
         var deferred = q.defer();
@@ -156,6 +155,30 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
         }).fail(function(err){
             if(err) {
                 logger.error("ERROR:" + err);
+                deferred.reject(configCSM.errors.DATABASE_ERROR);
+            }
+        });
+
+        return  deferred.promise;
+    };
+
+    /**
+     * Get all the terminals configs schemas
+     * @param connection - connection to the database
+     * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+     */
+    terminalServerService.getTerminalConfigSchemas = function getTerminalConfigSchemas(connection){
+
+        var deferred = q.defer();
+        var selectSQL = "SELECT terminalConfigSchemaId,terminalConfigSchemaName FROM TerminalConfigSchema";
+
+        q.ninvoke(connection, "query", selectSQL).then(function(result){
+
+            deferred.resolve(result[0]);
+
+        }).fail(function(err){
+            if (err) {
+                logger.error("ERROR:" + JSON.stringify(err));
                 deferred.reject(configCSM.errors.DATABASE_ERROR);
             }
         });

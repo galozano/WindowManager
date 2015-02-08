@@ -107,7 +107,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
         }
 
         return promiseList;
-    }
+    };
 
     craneServerService.createCraneConfigSchema = function createCraneConfigSchema (data,connection) {
 
@@ -212,6 +212,25 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
         });
 
         return  deferred.promise;
+    };
+
+    craneServerService.getCranesSchemasConfigs = function getCranesSchemasConfigs(connection) {
+
+        var deferred = q.defer();
+        var sqlQuery = "SELECT craneConfigSchemaId, craneConfigSchemaName FROM CraneConfigSchema";
+
+        q.ninvoke(connection, "query", sqlQuery).then(function(result){
+
+            deferred.resolve(result[0]);
+
+        }).fail(function(err){
+            if (err) {
+                logger.error("ERROR:" + JSON.stringify(err));
+                deferred.reject(configCSM.errors.DATABASE_ERROR);
+            }
+        });
+
+        return deferred.promise;
     };
 
     return craneServerService;

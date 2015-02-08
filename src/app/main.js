@@ -30,7 +30,12 @@
         getTerminalURL:'/terminals/getTerminal',
         editCranesURL:'/cranes/editEventCranes',
         loginUserURL:'/users/login',
-        changePasswordURL:'/users/password'
+        changePasswordURL:'/users/password',
+        getTerminalConfigSchemas:'/terminals/getTerminalConfigSchemas',
+        createTerminalSchema:'/terminals/createTerminalSchema',
+        getCranesSchemas: '/cranes/getCranesSchemas',
+        createCraneSchema:'/cranes/createCraneSchema',
+        createTerminal:'/terminals/createTerminal'
     });
 
     app.constant('errors',{
@@ -39,6 +44,12 @@
             "message": "Connection error, please contact Colibri support",
             "type": "ERROR",
             "code":"CONNECTION_ERROR"
+        },
+        dataError:{
+            "userMessage": "Data error, please contact Colibri support",
+            "message": "Error on the data received by the server, it is not compatible",
+            "type": "ERROR",
+            "code":"DATA_ERROR"
         }
     });
 

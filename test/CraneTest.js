@@ -159,12 +159,42 @@ describe('Test Cranes', function() {
 
                 expect(resp.statusCode).to.equals(200);
                 expect(JSON.parse(body).data).to.exist;
+                expect(JSON.parse(body).status).to.equals("OK");
                 expect(JSON.parse(body).data.craneConfigSchemaName).to.equals("SPRCCraneConfig1");
                 expect(JSON.parse(body).data.cranes).to.have.length(2);
 
                 done();
             });
+        });
 
+        it("No Cranes", function(done){
+
+            //TODO: poner cuando no existan cranes
+
+        });
+    });
+
+
+    describe("Get Cranes Schema Config", function() {
+
+        var url = 'http://localhost:3000/cranes/getCranesSchemas';
+
+        it("Get Cranes", function(done){
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            };
+
+            request.get(options,function(err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).data).to.exist;
+                expect(JSON.parse(body).data).to.have.length(2);
+                expect(JSON.parse(body).data[0].craneConfigSchemaId).to.equals(1);
+                expect(JSON.parse(body).data[0].craneConfigSchemaName).to.equals("SPRC Schema");
+                done();
+            });
         });
     });
 

@@ -40,7 +40,6 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
              logger.warn("Got invalid terminal id");
              res.json(configCSM.errors.TERMINAL_INVALID_ID);
         }
-
     });
 
     eventsRouter.post(configCSM.urls.events.addEvent,function(req,res) {

@@ -68,6 +68,29 @@ describe('Test Terminals', function() {
         });
     });
 
+    describe("Get Terminal Config Schemas", function() {
+
+        var url = 'http://localhost:3000/terminals/getTerminalConfigSchemas';
+
+        it("Get all of them", function(done) {
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            };
+
+            request.get(options, function (err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).status).to.equals("OK");
+                expect(JSON.parse(body).data).to.exist;
+                expect(JSON.parse(body).data).to.have.length(3);
+
+                done();
+            });
+        });
+    });
+
     describe("Create Terminal", function() {
 
         var url = 'http://localhost:3000/terminals/createTerminal';
@@ -135,6 +158,11 @@ describe('Test Terminals', function() {
 
                 done();
             });
+        });
+
+        it("No berths", function(done){
+
+            //TODO:Poner cuando no exista berths
         });
     });
 
