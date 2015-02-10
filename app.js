@@ -67,21 +67,21 @@ var utilitiesCommon = require('./server/UtilitiesCommon.js')(logger);
 // Module local dependencies
 //-------------------------------------------------------------
 
+var securityServerService = require('./server/security/SecurityServerService.js')(poolConnections, logger, configCSM, q);
+var securityServerController = require('./server/security/SecurityServerController.js')(express,poolConnections,logger,configCSM,q,utilitiesCommon);
+
 var eventServerService  = require('./server/events/EventServerService.js')(poolConnections,logger,configCSM,q);
 var eventServerController = require('./server/events/EventServerController.js')(express,poolConnections,logger,configCSM,eventServerService,q);
 
 var craneServerService = require('./server/crane/CraneServerService.js')(express,poolConnections,logger,configCSM,q);
 var craneServerController = require('./server/crane/CraneServerController.js')(express,poolConnections,logger,configCSM,q,eventServerService,craneServerService, utilitiesCommon);
 
-var terminalServerService = require('./server/terminal/TerminalServerService.js')(express,poolConnections,logger,configCSM,q);
+var terminalServerService = require('./server/terminal/TerminalServerService.js')(express,poolConnections,logger,configCSM,q,securityServerService);
 var terminalServerController = require('./server/terminal/TerminalServerController.js')(express,poolConnections,logger,configCSM,q,terminalServerService,utilitiesCommon);
 
 var userServerController = require('./server/UserServerController.js')(express,poolConnections,configCSM,logger,q,validator,jwt);
 
-var securityServerController = require('./server/SecurityServerController.js')(express,poolConnections,logger,configCSM,q,utilitiesCommon);
-
 var authenticationMiddleware = require('./server/AuthenticationMiddleware.js')(express,poolConnections,configCSM,logger,q);
-
 
 
 app.use(configCSM.urls.events.main,authenticationMiddleware.ensureAuthorized);
@@ -94,7 +94,6 @@ app.use(configCSM.urls.terminals.main, terminalServerController);
 app.use(configCSM.urls.cranes.main, craneServerController);
 app.use(configCSM.urls.users.main, userServerController);
 app.use(configCSM.urls.security.main, securityServerController);
-
 
 
 //-------------------------------------------------------------

@@ -91,36 +91,6 @@ describe('Test Terminals', function() {
         });
     });
 
-    describe("Create Terminal", function() {
-
-        var url = 'http://localhost:3000/terminals/createTerminal';
-
-        it("Create Terminal", function(done) {
-
-            var terminal = {
-                "terminalName":"NewTerminal",
-                "terminalConfigSchemaId": 1,
-                "craneConfigSchemaId": 1
-            };
-
-            var options = {
-                url:url,
-                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
-                form:{data:JSON.stringify(terminal)}
-            };
-
-            request.post(options, function (err, resp, body) {
-
-                expect(resp.statusCode).to.equals(200);
-                expect(JSON.parse(body).status).to.equals("OK");
-                expect(JSON.parse(body).data).to.exist;
-                expect(JSON.parse(body).data.terminalName).to.equals("NewTerminal");
-
-                done();
-            });
-        });
-    });
-
     describe("Create Terminal Schema", function () {
 
         var url = 'http://localhost:3000/terminals/createTerminalSchema';
@@ -130,16 +100,16 @@ describe('Test Terminals', function() {
             var berthSchema = {
                 "terminalConfigSchemaName": "SPRCConfig1",
                 "berths":[{
-                        "berthName": "Berth 1",
-                        "berthLength":200,
-                        "berthSequence":1,
-                        "berthStart":true
-                    }, {
-                        "berthName": "Berth 2",
-                        "berthLength":200,
-                        "berthSequence":2,
-                        "berthStart":false
-                    }]
+                    "berthName": "Berth 1",
+                    "berthLength":200,
+                    "berthSequence":1,
+                    "berthStart":true
+                }, {
+                    "berthName": "Berth 2",
+                    "berthLength":200,
+                    "berthSequence":2,
+                    "berthStart":false
+                }]
             };
 
             var options = {
@@ -165,6 +135,39 @@ describe('Test Terminals', function() {
             //TODO:Poner cuando no exista berths
         });
     });
+
+    describe("Create Terminal", function() {
+
+        var url = 'http://localhost:3000/terminals/createTerminal';
+
+        it("Create Terminal", function(done) {
+
+            var terminal = {
+                "terminalName":"NewTerminal",
+                "terminalConfigSchemaId": 1,
+                "craneConfigSchemaId": 1
+            };
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
+                form:{data:JSON.stringify(terminal)}
+            };
+
+            request.post(options, function (err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).status).to.equals("OK");
+                expect(JSON.parse(body).data).to.exist;
+                expect(JSON.parse(body).data.terminalName).to.equals("NewTerminal");
+
+                //TODO:Verificar que los Terminal Access fueron agregados
+
+                done();
+            });
+        });
+    });
+
 
     describe("Delete Terminal Schema", function () {
 

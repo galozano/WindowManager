@@ -44,6 +44,9 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
         });
     });
 
+    /**
+     *
+     */
     terminalsRouter.get(configCSM.urls.terminals.getTerminal+'/:terminalId', function(req,res) {
 
         logger.info("Terminal ID Requested:" + req.params.terminalId);
@@ -174,7 +177,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
                     connection.release();
                 }
                 else {
-                    terminalService.createTerminal(data,connection).then(function(result){
+                    terminalService.createTerminal(data,req.authUser,connection).then(function(result){
 
                         connection.release();
                         res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK))
@@ -193,6 +196,9 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
         }
     });
 
+    /**
+     *
+     */
     terminalsRouter.post(configCSM.urls.terminals.deleteTerminal, function(req,res) {
 
         logger.info("JSON received:" +JSON.stringify(req.body));
@@ -229,6 +235,9 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
     });
 
 
+    /**
+     *
+     */
     terminalsRouter.get(configCSM.urls.terminals.getTerminalConfigSchemas, function(req,res){
 
         poolConnections.getConnection(function(err, connection) {
@@ -252,6 +261,9 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
             }
         });
     });
+
+
+
 
     return terminalsRouter;
 };

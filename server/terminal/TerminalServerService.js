@@ -1,7 +1,7 @@
 /**
  * Created by gal on 1/21/15.
  */
-module.exports = function(express,poolConnections,logger,configCSM,q) {
+module.exports = function(express,poolConnections,logger,configCSM,q, securityService) {
 
     //---------------------------------------------------------------------------------
     // Variables
@@ -192,34 +192,64 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
      * @param connection - connection to the database
      * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
      */
-    terminalServerService.createTerminal = function createTerminal (data,connection) {
+    terminalServerService.createTerminal = function createTerminal (data, user, connection) {
 
-        logger.debug("Data Service:" +JSON.stringify(data));
+        logger.debug("Data Service:" + JSON.stringify(data));
         var deferred = q.defer();
 
         var insertSQL = "INSERT INTO Terminals (terminalName, terminalConfigSchemaId, craneConfigSchemaId) " +
             " VALUES (:terminalName, :terminalConfigSchemaId, :craneConfigSchemaId)";
 
-        q.ninvoke(connection, "query", insertSQL, data).then(function(result){
+        connection.beginTransaction(function(err){
 
-            logger.debug("Query 1 result:" + JSON.stringify(result));
-            var insertId = result[0].insertId;
-
-            var terminalIdJson = {
-                terminalId:insertId
-            };
-
-            return terminalServerService.getTerminal(terminalIdJson,connection);
-
-        }).then(function(result){
-
-            logger.debug("Query 2 result:" + JSON.stringify(result));
-            deferred.resolve(result);
-
-        }).fail(function(err){
+            var terminalIdJSON = {};
             if (err) {
-                logger.error("ERROR:" + JSON.stringify(err));
+                logger.error("Transaction Error::" + JSON.stringify(err));
                 deferred.reject(configCSM.errors.DATABASE_ERROR);
+            }
+            else {
+
+                q.ninvoke(connection, "query", insertSQL, data).then(function(result){
+
+                    logger.debug("Query 1 result:" + JSON.stringify(result));
+
+                    var insertId = result[0].insertId;
+
+                    terminalIdJSON = {
+                        terminalId:insertId
+                    };
+
+                    return securityService.createTerminalAccess(user,insertId,connection);
+
+                }).then(function(result){
+
+                    logger.debug("Query 2 result:" + JSON.stringify(result));
+                    return terminalServerService.getTerminal(terminalIdJSON,connection);
+
+                }).then(function(result){
+
+                    logger.debug("Query 2 result:" + JSON.stringify(result));
+
+                    connection.commit(function(err) {
+                        if (err) {
+                            connection.rollback(function() {
+                                logger.error("Commit Error:" + JSON.stringify(err));
+                                deferred.reject(configCSM.errors.DATABASE_ERROR);
+                            });
+                        }
+                        else {
+                            logger.info("Result:" + JSON.stringify(result));
+                            deferred.resolve(result);
+                        }
+                    });
+                }).fail(function(err){
+                    if (err) {
+                        connection.rollback(function() {
+                            logger.error("Error:" + JSON.stringify(err));
+                            deferred.reject(configCSM.errors.DATABASE_ERROR);
+                        });
+                    }
+                });
             }
         });
 
@@ -276,7 +306,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
         connection.beginTransaction(function(err) {
 
             if (err) {
-                logger.error("Pool Error:" + JSON.stringify(err));
+                logger.error("Transaction Error:" + JSON.stringify(err));
                 deferred.reject(configCSM.errors.DATABASE_ERROR);
             }
             else {
@@ -388,6 +418,8 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
 
         return  deferred.promise;
     };
+
+
 
     return terminalServerService;
 };

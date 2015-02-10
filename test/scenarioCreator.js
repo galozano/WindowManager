@@ -45,6 +45,7 @@ function clearDatabase( ) {
             deleteCranes: "DELETE FROM Cranes",
             deleteCraneConfigSchema: "DELETE FROM CraneConfigSchema",
             deleteDayName: "DELETE FROM Day",
+            deleteCompany: "DELETE FROM Company",
             deleteUsers: "DELETE FROM Users",
             deleteRol:"DELETE FROM Rol",
             deleteRolType:"DELETE FROM RolType"
