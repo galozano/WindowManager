@@ -168,7 +168,6 @@ describe('Test Terminals', function() {
         });
     });
 
-
     describe("Delete Terminal Schema", function () {
 
         var url = 'http://localhost:3000/terminals/deleteTerminalSchema';

@@ -6,7 +6,7 @@ var server =  require('../app.js');
 var scenarioCreator = require("./scenarioCreator.js");
 var expect = require('chai').expect;
 var request = require('request');
-var configCSM = require('../server/conf/config.json');
+var configCSM = require('../src/server/conf/config.json');
 var scenario = require('./scenario.json');
 
 describe('Test Cranes', function() {

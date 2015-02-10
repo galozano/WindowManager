@@ -4,7 +4,7 @@
 
 var mysql = require('mysql');
 var q = require('q');
-var configCSM = require('../server/conf/config.json');
+var configCSM = require('../src/server/conf/config.json');
 var scenario = require('../test/scenario.json');
 
 //-------------------------------------------------------------
@@ -45,8 +45,8 @@ function clearDatabase( ) {
             deleteCranes: "DELETE FROM Cranes",
             deleteCraneConfigSchema: "DELETE FROM CraneConfigSchema",
             deleteDayName: "DELETE FROM Day",
-            deleteCompany: "DELETE FROM Company",
             deleteUsers: "DELETE FROM Users",
+            deleteCompany: "DELETE FROM Company",
             deleteRol:"DELETE FROM Rol",
             deleteRolType:"DELETE FROM RolType"
         };
@@ -183,7 +183,7 @@ exports.prepareScenario = function(callback) {
     });
 };
 
-exports.prepareScenario(function( ) {
-
-    console.log("OK");
-});
+//exports.prepareScenario(function( ) {
+//
+//    console.log("OK");
+//});

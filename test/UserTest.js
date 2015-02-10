@@ -6,7 +6,7 @@ var server =  require('../app.js');
 var scenarioCreator = require("./scenarioCreator.js");
 var expect = require('chai').expect;
 var request = require('request');
-var configCSM = require('../server/conf/config.json');
+var configCSM = require('../src/server/conf/config.json');
 
 describe('Test Users', function() {
 
@@ -21,7 +21,7 @@ describe('Test Users', function() {
         });
     });
 
-    describe('Create User', function() {
+    describe.only('Create User', function() {
 
         var url = 'http://localhost:3000' + configCSM.urls.users.main + configCSM.urls.users.createUser;
 
@@ -31,7 +31,8 @@ describe('Test Users', function() {
                 "userFirstName":"Natalia",
                 "userLastName":"Perez",
                 "userEmail":"nperez@gmail.com",
-                "userPassword":"nat123"
+                "userPassword":"nat123",
+                "companyId":1
             };
 
             request.post({url:url, form:newUser}, function (err, resp, body) {

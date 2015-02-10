@@ -234,7 +234,6 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
         }
     });
 
-
     /**
      *
      */
@@ -261,8 +260,6 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
             }
         });
     });
-
-
 
 
     return terminalsRouter;
