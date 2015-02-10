@@ -14,8 +14,8 @@ var q = require('q');
 var validator = require('validator');
 var jwt = require('jsonwebtoken');
 
-var logger = require('./server/conf/logger.js');
-var configCSM = require('./server/conf/config.json');
+var logger = require('./src/server/conf/logger.js');
+var configCSM = require('./src/server/conf/config.json');
 
 //-------------------------------------------------------------
 // Initial Configuration
@@ -61,27 +61,27 @@ poolConnections.on('connection', function (connection) {
 // Common Modules
 //-------------------------------------------------------------
 
-var utilitiesCommon = require('./server/UtilitiesCommon.js')(logger);
+var utilitiesCommon = require('./src/server/UtilitiesCommon.js')(logger);
 
 //-------------------------------------------------------------
 // Module local dependencies
 //-------------------------------------------------------------
 
-var securityServerService = require('./server/security/SecurityServerService.js')(poolConnections, logger, configCSM, q);
-var securityServerController = require('./server/security/SecurityServerController.js')(express,poolConnections,logger,configCSM,q,utilitiesCommon);
+var securityServerService = require('./src/server/security/SecurityServerService.js')(poolConnections, logger, configCSM, q);
+var securityServerController = require('./src/server/security/SecurityServerController.js')(express,poolConnections,logger,configCSM,q,utilitiesCommon);
 
-var eventServerService  = require('./server/events/EventServerService.js')(poolConnections,logger,configCSM,q);
-var eventServerController = require('./server/events/EventServerController.js')(express,poolConnections,logger,configCSM,eventServerService,q);
+var eventServerService  = require('./src/server/events/EventServerService.js')(poolConnections,logger,configCSM,q);
+var eventServerController = require('./src/server/events/EventServerController.js')(express,poolConnections,logger,configCSM,eventServerService,q);
 
-var craneServerService = require('./server/crane/CraneServerService.js')(express,poolConnections,logger,configCSM,q);
-var craneServerController = require('./server/crane/CraneServerController.js')(express,poolConnections,logger,configCSM,q,eventServerService,craneServerService, utilitiesCommon);
+var craneServerService = require('./src/server/crane/CraneServerService.js')(express,poolConnections,logger,configCSM,q);
+var craneServerController = require('./src/server/crane/CraneServerController.js')(express,poolConnections,logger,configCSM,q,eventServerService,craneServerService, utilitiesCommon);
 
-var terminalServerService = require('./server/terminal/TerminalServerService.js')(express,poolConnections,logger,configCSM,q,securityServerService);
-var terminalServerController = require('./server/terminal/TerminalServerController.js')(express,poolConnections,logger,configCSM,q,terminalServerService,utilitiesCommon);
+var terminalServerService = require('./src/server/terminal/TerminalServerService.js')(express,poolConnections,logger,configCSM,q,securityServerService);
+var terminalServerController = require('./src/server/terminal/TerminalServerController.js')(express,poolConnections,logger,configCSM,q,terminalServerService,utilitiesCommon);
 
-var userServerController = require('./server/UserServerController.js')(express,poolConnections,configCSM,logger,q,validator,jwt);
+var userServerController = require('./src/server/UserServerController.js')(express,poolConnections,configCSM,logger,q,validator,jwt);
 
-var authenticationMiddleware = require('./server/AuthenticationMiddleware.js')(express,poolConnections,configCSM,logger,q);
+var authenticationMiddleware = require('./src/server/AuthenticationMiddleware.js')(express,poolConnections,configCSM,logger,q);
 
 
 app.use(configCSM.urls.events.main,authenticationMiddleware.ensureAuthorized);
