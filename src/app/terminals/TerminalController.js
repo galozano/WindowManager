@@ -21,6 +21,8 @@
 
         $scope.newCraneSchema = {};
 
+        $scope.viewMode = false;
+
         //------------------------------------------------------------------------
         // Initialization
         //------------------------------------------------------------------------
@@ -99,9 +101,10 @@
                 terminalService.createTerminalSchema(newBerthSchema).then(function(result){
 
                     $log.debug("Berth Schema added:" + JSON.stringify(result));
-                    $scope.newBerthSchema = {};
+
                     $scope.berthSchemas = result;
                     $('#berthModal').modal('hide');
+                    $scope.newBerthSchema = {};
 
                 }, function(err) {
                     alertService.pushMessage(err);
@@ -167,14 +170,46 @@
 
                 terminalService.createTerminal(newTerminal).then(function(result){
 
-                    $scope.newTerminal = {};
                     $scope.terminals = result;
+                    $scope.newTerminal = {};
                     $('#terminalModal').modal('hide');
 
                 }, function(err){
                     alertService.pushMessage(err);
                 });
             }
+        };
+
+        $scope.changeToEditMode = function changeToEditMode() {
+
+            $scope.newBerthSchema = {};
+            $scope.newCraneSchema = {};
+
+            $scope.viewMode = false;
+        };
+
+        $scope.viewBerthSchema = function viewBerthSchema(berthSchema) {
+
+            $scope.viewMode = true;
+
+            $scope.berthSchemas.forEach(function(element){
+
+                if(element === berthSchema)
+                    $scope.newBerthSchema = element;
+
+            });
+        };
+
+        $scope.viewCraneSchema = function viewCraneSchema(craneSchema){
+
+            $scope.viewMode = true;
+
+            $scope.cranesSchemas.forEach(function(element){
+
+                if(element === craneSchema)
+                    $scope.newCraneSchema = element;
+
+            });
         };
 
     }]);

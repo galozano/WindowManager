@@ -85,6 +85,7 @@ describe('Test Terminals', function() {
                 expect(JSON.parse(body).status).to.equals("OK");
                 expect(JSON.parse(body).data).to.exist;
                 expect(JSON.parse(body).data).to.have.length(3);
+                expect(JSON.parse(body).data[0].berths).to.have.length(5);
 
                 done();
             });

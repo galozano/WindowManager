@@ -21,7 +21,7 @@ describe('Test Users', function() {
         });
     });
 
-    describe.only('Create User', function() {
+    describe('Create User', function() {
 
         var url = 'http://localhost:3000' + configCSM.urls.users.main + configCSM.urls.users.createUser;
 

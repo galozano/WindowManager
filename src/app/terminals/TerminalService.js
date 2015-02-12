@@ -87,7 +87,6 @@
             return deferred.promise;
         };
 
-
         this.getTerminals = function getTerminals( ){
 
             var deferred = $q.defer();
@@ -153,7 +152,8 @@
                     if(data.status == "OK" && data.data) {
                         $log.debug("Data OK");
                         var dataReceived = data.data;
-                        delete dataReceived.berths;
+
+
                         berthsSchemas.push(dataReceived);
                         deferred.resolve(berthsSchemas);
                     }
@@ -215,7 +215,6 @@
                         $log.debug("Data OK");
                         var dataReceived = data.data;
 
-                        delete dataReceived.cranes;
                         cranesSchemas.push(dataReceived);
                         deferred.resolve(cranesSchemas);
                     }
@@ -269,7 +268,6 @@
 
             return deferred.promise;
         };
-
 
     }]);
 })();

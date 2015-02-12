@@ -174,7 +174,6 @@ describe('Test Cranes', function() {
         });
     });
 
-
     describe("Get Cranes Schema Config", function() {
 
         var url = 'http://localhost:3000/cranes/getCranesSchemas';
@@ -193,6 +192,8 @@ describe('Test Cranes', function() {
                 expect(JSON.parse(body).data).to.have.length(2);
                 expect(JSON.parse(body).data[0].craneConfigSchemaId).to.equals(1);
                 expect(JSON.parse(body).data[0].craneConfigSchemaName).to.equals("SPRC Schema");
+                expect(JSON.parse(body).data[0].cranes).to.have.length(2);
+
                 done();
             });
         });

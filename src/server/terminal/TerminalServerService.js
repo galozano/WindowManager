@@ -170,11 +170,58 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
     terminalServerService.getTerminalConfigSchemas = function getTerminalConfigSchemas(connection){
 
         var deferred = q.defer();
-        var selectSQL = "SELECT terminalConfigSchemaId,terminalConfigSchemaName FROM TerminalConfigSchema";
+        var selectSQL = "SELECT TCS.terminalConfigSchemaId, TCS.terminalConfigSchemaName, B.berthId, B.berthName, B.berthLength, B.berthStart, B.berthSequence" +
+            " FROM TerminalConfigSchema TCS INNER JOIN Berths B" +
+            " ON B.terminalConfigSchemaId = TCS.terminalConfigSchemaId" +
+            " ORDER BY TCS.terminalConfigSchemaId";
 
         q.ninvoke(connection, "query", selectSQL).then(function(result){
 
-            deferred.resolve(result[0]);
+            var resultList = result[0];
+            var sentJSON = [];
+
+            var lastConfigSchema;
+
+            resultList.forEach(function(element){
+
+                if(!lastConfigSchema || lastConfigSchema.terminalConfigSchemaId != element.terminalConfigSchemaId) {
+
+                    if(lastConfigSchema)
+                        sentJSON.push(lastConfigSchema);
+
+                    lastConfigSchema = {};
+                    lastConfigSchema.terminalConfigSchemaId = element.terminalConfigSchemaId;
+                    lastConfigSchema.terminalConfigSchemaName = element.terminalConfigSchemaName;
+                    lastConfigSchema.berths = [];
+
+                    var newBerth  = {};
+
+                    newBerth.berthId = element.berthId;
+                    newBerth.berthName = element.berthName;
+                    newBerth.berthLength =  element.berthLength;
+                    newBerth.berthStart = element.berthStart
+                    newBerth.berthSequence = element.berthSequence;
+
+                    lastConfigSchema.berths.push(newBerth);
+                }
+                else if(lastConfigSchema.terminalConfigSchemaId == element.terminalConfigSchemaId){
+
+                    var newBerth  = {};
+
+                    newBerth.berthId = element.berthId;
+                    newBerth.berthName = element.berthName;
+                    newBerth.berthLength =  element.berthLength;
+                    newBerth.berthStart = element.berthStart
+                    newBerth.berthSequence = element.berthSequence;
+
+                    lastConfigSchema.berths.push(newBerth);
+                }
+            });
+
+            if(lastConfigSchema)
+                sentJSON.push(lastConfigSchema);
+
+            deferred.resolve(sentJSON);
 
         }).fail(function(err){
             if (err) {
