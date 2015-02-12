@@ -24,9 +24,22 @@
                 <table class="table table-hover">
                     <tr ng-repeat="terminal in terminals">
                         <td>
-                            <a href="#/events/{{terminal.terminalId}}">
+                            <a class="pull-left" href="#/events/{{terminal.terminalId}}">
                                 <h4 class="list-group-item-heading">{{terminal.terminalName}}</h4>
                             </a>
+                            <div class="pull-right"  >
+                                <div class="dropdown">
+                                    <a id="dLabel" data-target="#" href="" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                                        Options
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu" >
+                                        <li><a href="#/events/{{terminal.terminalId}}">View</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="" ng-click="deleteTerminal(terminal)">Delete</a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </table>
@@ -39,9 +52,22 @@
                 <table class="table table-hover">
                     <tr ng-repeat="berthSchema in berthSchemas">
                         <td>
-                            <a href="" ng-click="viewBerthSchema(berthSchema)" data-toggle="modal" data-target="#berthModal">
+                            <a class="pull-left" href="" ng-click="viewBerthSchema(berthSchema)" data-toggle="modal" data-target="#berthModal">
                                 <h4 class="list-group-item-heading">{{berthSchema.terminalConfigSchemaName}}</h4>
                             </a>
+                            <div class="pull-right"  >
+                                <div class="dropdown">
+                                    <a id="dLabel" data-target="#" href="http://example.com" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                                        Options
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu" >
+                                        <li><a href="" ng-click="viewBerthSchema(berthSchema)" data-toggle="modal" data-target="#berthModal">View</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="">Delete</a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </table>
@@ -54,9 +80,22 @@
                 <table class="table table-hover">
                     <tr ng-repeat="craneSchema in cranesSchemas">
                         <td>
-                            <a href="" ng-click="viewCraneSchema(craneSchema)" data-toggle="modal" data-target="#craneModal">
+                            <a class="pull-left" href="" ng-click="viewCraneSchema(craneSchema)" data-toggle="modal" data-target="#craneModal">
                                 <h4 class="list-group-item-heading">{{craneSchema.craneConfigSchemaName}}</h4>
                             </a>
+                            <div class="pull-right"  >
+                                <div class="dropdown">
+                                    <a id="dLabel" data-target="#" href="http://example.com" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                                        Options
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu" >
+                                        <li><a href="" ng-click="viewCraneSchema(craneSchema)" data-toggle="modal" data-target="#craneModal">View</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="">Delete</a></li>
+                                    </ul>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </table>

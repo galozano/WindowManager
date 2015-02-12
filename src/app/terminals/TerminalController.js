@@ -212,5 +212,19 @@
             });
         };
 
+        $scope.deleteTerminal = function deleteTerminal(terminal){
+
+            if(terminal){
+                terminalService.deleteTerminal(terminal).then(function(result){
+
+                    $scope.terminals = result;
+
+                }, function(err){
+                    alertService.pushMessage(err);
+                });
+            }
+
+        };
+
     }]);
 })();

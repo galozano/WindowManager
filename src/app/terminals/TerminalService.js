@@ -7,13 +7,13 @@
 
     terminalModule.service("terminalService", ['$http','$log','config','_','alertService','$q','errors',function($http,$log,config,_,alertService,$q,errors){
 
-
         //------------------------------------------------------------------------
         // Variables
         //------------------------------------------------------------------------
 
         /**
-         * Selected Terminal
+         * Selected Terminal by the user when viewing one particular terminal
+         * This is only for the Calendar View
          * @type {{}}
          */
         var terminal = {};
@@ -24,13 +24,27 @@
          */
         var terminals = [];
 
+        /**
+         * Berths being viewed by the user
+         * @type {Array}
+         */
         var berthsSchemas = [];
+
+        /**
+         * Cranes Schemas being viewed by the user
+         * @type {Array}
+         */
         var cranesSchemas = [];
 
         //------------------------------------------------------------------------
         // Private Functions
         //------------------------------------------------------------------------
 
+        /**
+         * Constructs the main berths array for the controller
+         * @param berths - Ther current berths of the terminal
+         * @returns {{array with only the main berths - main berths are the one that have berthStart 'YES'}}
+         */
         function constructMainBerths(berths) {
             var berthsMainLength  = {};
 
@@ -153,7 +167,6 @@
                         $log.debug("Data OK");
                         var dataReceived = data.data;
 
-
                         berthsSchemas.push(dataReceived);
                         deferred.resolve(berthsSchemas);
                     }
@@ -253,6 +266,46 @@
                         };
 
                         terminals.push(newTerminal);
+                        deferred.resolve(terminals);
+                    }
+                    else if(data.status == "ERROR") {
+                        deferred.reject(data.data);
+                    }
+                    else {
+                        deferred.reject(errors.dataError);
+                    }
+                }).
+                error(function(data, status, headers, config) {
+                    deferred.reject(errors.connectionError);
+                });
+
+            return deferred.promise;
+        };
+
+        this.deleteTerminal = function deleteTerminal(terminal) {
+
+            $log.debug("Delete Terminal:" + JSON.stringify(terminal));
+
+            var deferred = $q.defer();
+            var dataToSend = {data:JSON.stringify({
+                terminalId: terminal.terminalId
+            })};
+
+            $http.post(config.deleteTerminal, dataToSend).
+                success(function(data, status, headers, config) {
+
+                    //Validate if message is an error
+                    if(data.status == "OK" && data.data) {
+
+                        var deleteIndexTerminal = -1;
+                        terminals.forEach(function(element,index){
+
+                            if(element == terminal)
+                                deleteIndexTerminal = index;
+
+                        });
+
+                        terminals.splice(deleteIndexTerminal,1);
                         deferred.resolve(terminals);
                     }
                     else if(data.status == "ERROR") {

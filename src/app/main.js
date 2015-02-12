@@ -35,7 +35,8 @@
         createTerminalSchema:'/terminals/createTerminalSchema',
         getCranesSchemas: '/cranes/getCranesSchemas',
         createCraneSchema:'/cranes/createCraneSchema',
-        createTerminal:'/terminals/createTerminal'
+        createTerminal:'/terminals/createTerminal',
+        deleteTerminal:'terminals/deleteTerminal'
     });
 
     app.constant('errors',{

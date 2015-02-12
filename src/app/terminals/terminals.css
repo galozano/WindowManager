@@ -50,7 +50,7 @@
     }
 }
 
-.terminal #numberLength {
+.terminals #numberLength {
     width: 50px;
 }
 
@@ -61,5 +61,10 @@
 .nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus {
     color:inherit;
     background-color: inherit;
+}
+
+.terminals .dropdown-menu {
+    right: 0;
+    left: auto;
 }
 
