@@ -2,33 +2,36 @@
 <alerts-display></alerts-display>
 
 <div class="eventCalendar">
-<div class="container">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="pull-left">
-                <h2>{{terminal.terminalName}}</h2>
+
+    <!-- Top Menu -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="pull-left">
+                    <h2>{{terminal.terminalName}}</h2>
+                </div>
             </div>
-        </div>
-        <div class="col-md-8">
-            <div class="pull-right">
-                <button type="button" id="updateEvent" class="btn btn-primary navbar-btn"  ng-click="updateEvents()">Update</button>
-                <button type="button" id="createEvent" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#eventModal" ng-click="changeButton()">Create Event</button>
+            <div class="col-md-8">
+                <div class="pull-right">
+                    <button type="button" id="updateEvent" class="btn btn-primary navbar-btn"  ng-click="updateEvents()">Update</button>
+                    <button type="button" id="createEvent" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#eventModal" ng-click="changeButton()">Create Event</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="container" ng-show="calendarLoaded">
-    <div class="calendar">
-        <div ng-repeat="event in events">
-            <event class="event" delete-event="deleteEvent(event)" edit-cranes-modal="editCranesModal(event)" move-event="moveEvent(event)" edit-event-modal="editEventModal(event)" event="event" terminal-info="terminal" eventChange="eventChange"></event>
+    <!-- Calendar -->
+    <div class="container" ng-show="calendarLoaded">
+        <div class="calendar">
+            <div ng-repeat="event in events">
+                <event class="event" delete-event="deleteEvent(event)" edit-cranes-modal="editCranesModal(event)" move-event="moveEvent(event)" edit-event-modal="editEventModal(event)" event="event" terminal-info="terminal" eventChange="eventChange"></event>
+            </div>
+            <table-gen terminal-info="terminal" hours="hours"></table-gen>
         </div>
-        <table-gen terminal-info="terminal" hours="hours"></table-gen>
     </div>
-</div>
 
-<!-- Create Event and Edit modal -->
-<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <!-- Create Event and Edit modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -119,8 +122,8 @@
     </div>
 </div>
 
-<!-- Edit Crane Modal -->
-<div class="modal fade" id="craneModal" tabindex="-1" role="dialog" aria-labelledby="craneModalLabel" aria-hidden="true">
+    <!-- Edit Crane Modal -->
+    <div class="modal fade" id="craneModal" tabindex="-1" role="dialog" aria-labelledby="craneModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
             <div class="modal-header">
@@ -132,7 +135,7 @@
                     <div class="col-md-1">
                         <input type="checkbox" ng-model="crane.value" />
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-8">
                         <span>{{crane.craneName}}</span>
                     </div>
                 </div>

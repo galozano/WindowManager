@@ -200,13 +200,25 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
                 }).then(function(result){
 
                     logger.debug("Query 2 result:" + JSON.stringify(result));
-                    return deferred.resolve([]);
+
+                    connection.commit(function(err) {
+                        if (err) {
+                            connection.rollback(function() {
+                                logger.error("Commit Error:" + JSON.stringify(err));
+                                deferred.reject(configCSM.errors.DATABASE_ERROR);
+                            });
+                        }
+                        else {
+                            logger.info("Callback:" + JSON.stringify(result));
+                            deferred.resolve([]);
+                        }
+                    });
 
                 }).fail(function(err){
-                    if (err) {
-                        logger.error("ERROR:" + JSON.stringify(err));
+                    connection.rollback(function() {
+                        logger.error("Error:" + JSON.stringify(err));
                         deferred.reject(configCSM.errors.DATABASE_ERROR);
-                    }
+                    });
                 });
             }
         });

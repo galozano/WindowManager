@@ -11,6 +11,10 @@
         // Scope Variables
         //------------------------------------------------------------------------
 
+        /**
+         * All the terminals listed for the user
+         * @type {Array}
+         */
         $scope.terminals = [];
 
         $scope.berthSchemas = [];
@@ -21,6 +25,10 @@
 
         $scope.newCraneSchema = {};
 
+        /**
+         * Specifies the mode of the modals | View mode or create mode
+         * @type {boolean}
+         */
         $scope.viewMode = false;
 
         //------------------------------------------------------------------------
@@ -226,5 +234,30 @@
 
         };
 
+        $scope.deleteBerthSchema = function deleteBerthSchema(berthSchema) {
+
+            if(berthSchema) {
+                terminalService.deleteBerthSchema(berthSchema).then(function(result){
+
+                    $scope.berthSchemas = result;
+
+                }, function(err){
+                    alertService.pushMessage(err);
+                });
+            }
+        };
+
+        $scope.deleteCraneSchema = function deleteCraneSchema(craneSchema) {
+
+            if(craneSchema) {
+                terminalService.deleteCraneSchema(craneSchema).then(function(result){
+
+                    $scope.cranesSchemas = result;
+
+                }, function(err){
+                    alertService.pushMessage(err);
+                });
+            }
+        };
     }]);
 })();

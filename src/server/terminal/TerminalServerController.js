@@ -12,13 +12,6 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
     terminalsRouter.get(configCSM.urls.terminals.getTerminals, function(req, res) {
 
         var user = req.authUser;
-        var parameters = {
-            rolId: user.rolId
-        };
-
-        var query2 = "SELECT T.terminalId, T.terminalName " +
-            "FROM Terminals AS T INNER JOIN TerminalAccess AS TA ON TA.terminalId = T.terminalId " +
-            "WHERE TA.rolId = :rolId;";
 
         poolConnections.getConnection(function(err, connection) {
 
@@ -28,16 +21,14 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
                 connection.release();
             }
             else {
-                connection.query(query2,parameters,function(err, result) {
-                    if(err) {
-                        logger.error("ERROR:" + err);
-                        res.json(configCSM.errors.DATABASE_ERROR);
-                    }
-                    else {
-                        logger.info("JSON Sent:" + JSON.stringify(result));
-                        res.json(result);
-                    }
 
+                terminalService.getTerminals(connection,user).then(function(result){
+
+                    connection.release();
+                    res.json(result);
+
+                }).fail(function(err){
+                    res.json(err);
                     connection.release();
                 });
             }

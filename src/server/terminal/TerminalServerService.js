@@ -98,6 +98,39 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
     //---------------------------------------------------------------------------------
 
     /**
+     * Get all the terminals for a particular User
+     * @param connection - connection to the database
+     * @param user - logged user
+     * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+     */
+    terminalServerService.getTerminals = function getTerminals(connection,user){
+
+        var deferred = q.defer();
+
+        var parameters = {
+            rolId: user.rolId
+        };
+
+        var query2 = "SELECT T.terminalId, T.terminalName, T.terminalConfigSchemaId, T.craneConfigSchemaId " +
+            "FROM Terminals AS T INNER JOIN TerminalAccess AS TA ON TA.terminalId = T.terminalId " +
+            "WHERE TA.rolId = :rolId;";
+
+        connection.query(query2,parameters,function(err, result) {
+
+            if(err) {
+                logger.error("ERROR:" + err);
+                deferred.reject(configCSM.errors.DATABASE_ERROR);
+            }
+            else {
+                logger.info("JSON Sent:" + JSON.stringify(result));
+                deferred.resolve(result);
+            }
+        });
+
+        return deferred.promise;
+    };
+
+    /**
      * Get all the information of a terminal with id terminalId
      * @param terminalId - id of the terminal to query
      * @param connection - connection to the database
@@ -450,7 +483,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
                     }
                     else {
                         logger.info("Result:" + JSON.stringify(result));
-                        deferred.resolve("OK");
+                        deferred.resolve([]);
                     }
                 });
             }).fail(function(err){

@@ -5,6 +5,9 @@
 
     var terminalModule = angular.module("TerminalModule");
 
+    /**
+     * Terminal Module service which handles all the information exchange with the server
+     */
     terminalModule.service("terminalService", ['$http','$log','config','_','alertService','$q','errors',function($http,$log,config,_,alertService,$q,errors){
 
         //------------------------------------------------------------------------
@@ -70,6 +73,11 @@
         // Public Terminal Functions
         //------------------------------------------------------------------------
 
+        /**
+         *
+         * @param terminalId
+         * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+         */
         this.getTerminal = function getTerminal(terminalId) {
 
             var deferred = $q.defer();
@@ -101,6 +109,10 @@
             return deferred.promise;
         };
 
+        /**
+         *
+         * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+         */
         this.getTerminals = function getTerminals( ){
 
             var deferred = $q.defer();
@@ -125,6 +137,10 @@
             return deferred.promise;
         };
 
+        /**
+         *
+         * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+         */
         this.getTerminalSchemas = function getTerminalSchemas( ){
             var deferred = $q.defer();
 
@@ -152,6 +168,11 @@
             return deferred.promise;
         };
 
+        /**
+         *
+         * @param newTerminalSchema
+         * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+         */
         this.createTerminalSchema = function createTerminalSchema(newTerminalSchema) {
 
             var deferred = $q.defer();
@@ -184,6 +205,10 @@
             return deferred.promise;
         };
 
+        /**
+         *
+         * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+         */
         this.getCranesSchemasConfigs = function getCranesSchemasConfigs() {
             var deferred = $q.defer();
 
@@ -211,6 +236,11 @@
             return deferred.promise;
         };
 
+        /**
+         *
+         * @param newCraneSchema
+         * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+         */
         this.createCraneSchema = function createCraneSchema(newCraneSchema){
 
             $log.debug("New Crane Schema Terminal Service:" + JSON.stringify(newCraneSchema));
@@ -245,6 +275,11 @@
             return deferred.promise;
         };
 
+        /**
+         * Create a new terminal
+         * @param newTerminal - the terminal data to create the new terminal
+         * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+         */
         this.createTerminal = function createTerminal(newTerminal) {
 
             $log.debug("Create Terminal Service:" + JSON.stringify(newTerminal));
@@ -282,6 +317,11 @@
             return deferred.promise;
         };
 
+        /**
+         * Delete an specific terminal
+         * @param terminal - terminal to delete
+         * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+         */
         this.deleteTerminal = function deleteTerminal(terminal) {
 
             $log.debug("Delete Terminal:" + JSON.stringify(terminal));
@@ -322,5 +362,96 @@
             return deferred.promise;
         };
 
+        /**
+         * Delete an specific Berth or Terminal Schema
+         * @param berthSchema - schema to delete
+         * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+         */
+        this.deleteBerthSchema = function deleteBerthSchema(berthSchema) {
+
+            $log.debug("Delete Terminal Schema:" + JSON.stringify(berthSchema));
+
+            var deferred = $q.defer();
+            var dataToSend = {data:JSON.stringify({
+                terminalConfigSchemaId: berthSchema.terminalConfigSchemaId
+            })};
+
+            $http.post(config.deleteTerminalSchema, dataToSend).
+                success(function(data, status, headers, config) {
+
+                    //Validate if message is an error
+                    if(data.status == "OK" && data.data) {
+
+                        var deleteIndexTerminal = -1;
+                        berthsSchemas.forEach(function(element,index){
+
+                            if(element == berthSchema)
+                                deleteIndexTerminal = index;
+
+                        });
+
+                        berthsSchemas.splice(deleteIndexTerminal,1);
+                        deferred.resolve(berthsSchemas);
+                    }
+                    else if(data.status == "ERROR") {
+                        deferred.reject(data.data);
+                    }
+                    else {
+                        deferred.reject(errors.dataError);
+                    }
+                }).
+                error(function(data, status, headers, config) {
+                    deferred.reject(errors.connectionError);
+                });
+
+            return deferred.promise;
+
+        };
+
+        /**
+         * Delelete an specific Crane Schema
+         * @param craneSchema - crane schema selected to delete
+         * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+         */
+        this.deleteCraneSchema = function deleteCraneSchema(craneSchema) {
+
+            $log.debug("Delete Crane Schema:" + JSON.stringify(craneSchema));
+
+            var deferred = $q.defer();
+            var dataToSend = {data:JSON.stringify({
+                craneConfigSchemaId: craneSchema.craneConfigSchemaId
+            })};
+
+            $http.post(config.deleteCraneSchema, dataToSend).
+                success(function(data, status, headers, config) {
+
+                    //Validate if message is an error
+                    if(data.status == "OK" && data.data) {
+
+                        var deleteIndexCrane = -1;
+                        cranesSchemas.forEach(function(element,index){
+
+                            if(element == craneSchema)
+                                deleteIndexCrane = index;
+
+                        });
+
+                        cranesSchemas.splice(deleteIndexCrane,1);
+                        deferred.resolve(cranesSchemas);
+                    }
+                    else if(data.status == "ERROR") {
+                        deferred.reject(data.data);
+                    }
+                    else {
+                        deferred.reject(errors.dataError);
+                    }
+                }).
+                error(function(data, status, headers, config) {
+                    deferred.reject(errors.connectionError);
+                });
+
+            return deferred.promise;
+
+        };
     }]);
 })();

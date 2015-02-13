@@ -21,6 +21,9 @@
         "NavigationModule",
         "UserModule"]);
 
+    /**
+     * List of all the Web Services URL of the server
+     */
     app.constant('config',{
         getEventURL:'/events/getEvents',
         addEventURL:'/events/addEvent',
@@ -36,9 +39,14 @@
         getCranesSchemas: '/cranes/getCranesSchemas',
         createCraneSchema:'/cranes/createCraneSchema',
         createTerminal:'/terminals/createTerminal',
-        deleteTerminal:'terminals/deleteTerminal'
+        deleteTerminal:'terminals/deleteTerminal',
+        deleteTerminalSchema:'terminals/deleteTerminalSchema',
+        deleteCraneSchema:'/cranes/deleteCraneSchema'
     });
 
+    /**
+     * List of possible errors on the client side
+     */
     app.constant('errors',{
         connectionError: {
             "userMessage": "Connection error, please contact Colibri support",
@@ -54,6 +62,9 @@
         }
     });
 
+    /**
+     * Table Calendar Table properties
+     */
     app.constant('tableProp',{
         tableDayHeight: 84,
         tableDayHeightNoBorder: 83,
