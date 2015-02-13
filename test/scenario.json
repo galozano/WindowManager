@@ -183,6 +183,9 @@
   "rolType":[{
      "rolTypeId":1,
      "rolTypeName":"User"
+  },{
+    "rolTypeId":2,
+    "rolTypeName":"Company"
   }],
   "rol":[{
      "rolId":1,
@@ -190,15 +193,22 @@
   }, {
       "rolId":2,
       "rolTypeId":1
+  }, {
+    "rolId":3,
+    "rolTypeId":2
+  }, {
+    "rolId":4,
+    "rolTypeId":2
   }],
   "users":[{
-      "userId":1,
-      "userFirstName":"Gustavo",
-      "userLastName":"Lozano",
-      "userEmail":"gustavo@gmail.com",
-      "userPassword":"754bd9fce61ff2b32dbb1071ed6f813fd5a8d940d36f4fe4f66829268cb492d3",
-      "userToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJGaXN0TmFtZSI6Ikd1c3Rhdm8iLCJ1c2VyTGFzdE5hbWUiOiJMb3phbm8iLCJ1c2VyRW1haWwiOiJndXN0YXZvQGdtYWlsLmNvbSJ9.XifH3qwM6y7MCdMbAxr0kIlendSuo1OVH29kU2vAEpM",
-      "rolId":1
+    "userId":1,
+    "userFirstName":"Gustavo",
+    "userLastName":"Lozano",
+    "userEmail":"gustavo@gmail.com",
+    "userPassword":"754bd9fce61ff2b32dbb1071ed6f813fd5a8d940d36f4fe4f66829268cb492d3",
+    "userToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJGaXN0TmFtZSI6Ikd1c3Rhdm8iLCJ1c2VyTGFzdE5hbWUiOiJMb3phbm8iLCJ1c2VyRW1haWwiOiJndXN0YXZvQGdtYWlsLmNvbSJ9.XifH3qwM6y7MCdMbAxr0kIlendSuo1OVH29kU2vAEpM",
+    "rolId":1,
+    "companyId":2
   },{
     "userId":2,
     "userFirstName":"Rafael",
@@ -206,7 +216,17 @@
     "userEmail":"rperez@gmail.com",
     "userPassword":"754bd9fce61ff2b32dbb1071ed6f813fd5a8d940d36f4fe4f66829268cb492d3",
     "userToken":"qwM6y7MCdMbAxr0kIlendSuo1OVH29kU2vAEpM",
-    "rolId":2
+    "rolId":2,
+    "companyId":1
+  }],
+  "companies":[{
+    "companyId":1,
+    "companyName":"SPRC",
+    "rolId":3
+  },{
+    "companyId":2,
+    "companyName":"Hambursud",
+    "rolId":4
   }],
   "terminalAccess":[{
     "terminalAccessId":1,

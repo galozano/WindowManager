@@ -68,6 +68,75 @@ describe('Test Terminals', function() {
         });
     });
 
+    describe("Get Terminal Config Schemas", function() {
+
+        var url = 'http://localhost:3000/terminals/getTerminalConfigSchemas';
+
+        it("Get all of them", function(done) {
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            };
+
+            request.get(options, function (err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).status).to.equals("OK");
+                expect(JSON.parse(body).data).to.exist;
+                expect(JSON.parse(body).data).to.have.length(3);
+                expect(JSON.parse(body).data[0].berths).to.have.length(5);
+
+                done();
+            });
+        });
+    });
+
+    describe("Create Terminal Schema", function () {
+
+        var url = 'http://localhost:3000/terminals/createTerminalSchema';
+
+        it("Create Schema", function(done) {
+
+            var berthSchema = {
+                "terminalConfigSchemaName": "SPRCConfig1",
+                "berths":[{
+                    "berthName": "Berth 1",
+                    "berthLength":200,
+                    "berthSequence":1,
+                    "berthStart":true
+                }, {
+                    "berthName": "Berth 2",
+                    "berthLength":200,
+                    "berthSequence":2,
+                    "berthStart":false
+                }]
+            };
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
+                form:{data:JSON.stringify(berthSchema)}
+            };
+
+            request.post(options, function (err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).status).to.equals("OK");
+                expect(JSON.parse(body).data).to.exist;
+                expect(JSON.parse(body).data.terminalConfigSchemaName).to.equals("SPRCConfig1");
+                expect(JSON.parse(body).data.berths).to.have.length(2);
+
+                done();
+            });
+        });
+
+        it("No berths", function(done){
+
+            //TODO:Poner cuando no exista berths
+        });
+    });
+
     describe("Create Terminal", function() {
 
         var url = 'http://localhost:3000/terminals/createTerminal';
@@ -93,45 +162,7 @@ describe('Test Terminals', function() {
                 expect(JSON.parse(body).data).to.exist;
                 expect(JSON.parse(body).data.terminalName).to.equals("NewTerminal");
 
-                done();
-            });
-        });
-    });
-
-    describe("Create Terminal Schema", function () {
-
-        var url = 'http://localhost:3000/terminals/createTerminalSchema';
-
-        it("Create Schema", function(done) {
-
-            var berthSchema = {
-                "terminalConfigSchemaName": "SPRCConfig1",
-                "berths":[{
-                        "berthName": "Berth 1",
-                        "berthLength":200,
-                        "berthSequence":1,
-                        "berthStart":true
-                    }, {
-                        "berthName": "Berth 2",
-                        "berthLength":200,
-                        "berthSequence":2,
-                        "berthStart":false
-                    }]
-            };
-
-            var options = {
-                url:url,
-                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
-                form:{data:JSON.stringify(berthSchema)}
-            };
-
-            request.post(options, function (err, resp, body) {
-
-                expect(resp.statusCode).to.equals(200);
-                expect(JSON.parse(body).status).to.equals("OK");
-                expect(JSON.parse(body).data).to.exist;
-                expect(JSON.parse(body).data.terminalConfigSchemaName).to.equals("SPRCConfig1");
-                expect(JSON.parse(body).data.berths).to.have.length(2);
+                //TODO:Verificar que los Terminal Access fueron agregados
 
                 done();
             });

@@ -131,7 +131,33 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
         else {
             res.json(utilitiesCommon.generateResponse(configCSM.errors.INVALID_INPUT,configCSM.status.ERROR));
         }
+    });
 
+    cranesRouter.get(configCSM.urls.cranes.getCranesSchemas, function(req, res){
+
+        poolConnections.getConnection(function(err, connection) {
+
+            if (err) {
+                logger.error("Error:" + JSON.stringify(err));
+                res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR, configCSM.status.ERROR));
+                connection.release();
+            }
+            else {
+
+                craneServerService.getCranesSchemasConfigs(connection).then(function(result) {
+
+                    connection.release();
+                    res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
+
+                }).fail(function(err){
+
+                    connection.release();
+                    if(err){
+                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
+                    }
+                });
+            }
+        });
     });
 
     return cranesRouter;

@@ -2,6 +2,6 @@ projectFilesBackup
 .idea
 bower_components
 node_modules
-server/logs
+src/server/logs
 build
 public/app

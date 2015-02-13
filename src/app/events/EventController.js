@@ -98,6 +98,7 @@
                 $scope.events = result;
                 $('#eventModal').modal('hide');
                 $scope.newEvent = "";
+
             },function(err){
                 alertService.pushMessage(err);
             });
@@ -261,5 +262,6 @@
                 alertService.pushMessage(err);
             });
         };
+
     }]);
 })();

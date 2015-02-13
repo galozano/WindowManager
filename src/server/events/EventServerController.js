@@ -8,8 +8,6 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
     /**
      * @Name: Get Events
      * @Descripcion: Returns all the events from an specific terminal
-     * @Pre:
-     * @Post:
      */
     eventsRouter.get(configCSM.urls.events.getEvents + '/:terminalId', function (req, res) {
 
@@ -40,9 +38,11 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
              logger.warn("Got invalid terminal id");
              res.json(configCSM.errors.TERMINAL_INVALID_ID);
         }
-
     });
 
+    /**
+     *
+     */
     eventsRouter.post(configCSM.urls.events.addEvent,function(req,res) {
 
         logger.debug("Add Event");
@@ -86,6 +86,9 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
 
     });
 
+    /**
+     *
+     */
     eventsRouter.post(configCSM.urls.events.editEvent, function(req,res) {
 
         logger.debug("Edit event");
@@ -125,6 +128,9 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
 
     });
 
+    /**
+     *
+     */
     eventsRouter.post(configCSM.urls.events.deleteEvent,function(req,res) {
 
         logger.debug("Delete event");
@@ -193,6 +199,8 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
             }
         });
     });
+
+
 
     return eventsRouter;
 };

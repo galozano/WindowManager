@@ -20,7 +20,7 @@
 
                 $scope.$on('AlertEvent', function (event, message) {
 
-                    $log.debug("AlertEvent Call:" + message);
+                    $log.debug("AlertEvent Call:" + JSON.stringify(message));
 
                     $scope.showError = false;
                     $scope.showError = true;
@@ -29,7 +29,7 @@
 
                 $scope.$on('SuccessMessage', function (event, message) {
 
-                    $log.debug("Success Message Call:" + message);
+                    $log.debug("Success Message Call:" + JSON.stringify(message));
 
                     $scope.showSuccess = true;
                     $scope.successMessage = message;

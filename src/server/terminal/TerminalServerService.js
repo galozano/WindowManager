@@ -1,7 +1,7 @@
 /**
  * Created by gal on 1/21/15.
  */
-module.exports = function(express,poolConnections,logger,configCSM,q) {
+module.exports = function(express,poolConnections,logger,configCSM,q, securityService) {
 
     //---------------------------------------------------------------------------------
     // Variables
@@ -74,7 +74,6 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
         return  deferred.promise;
     }
 
-
     function addTerminalConfigSchema(terminalConfig,connection) {
 
         var deferred = q.defer();
@@ -97,6 +96,39 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
     //---------------------------------------------------------------------------------
     // Public Methods
     //---------------------------------------------------------------------------------
+
+    /**
+     * Get all the terminals for a particular User
+     * @param connection - connection to the database
+     * @param user - logged user
+     * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+     */
+    terminalServerService.getTerminals = function getTerminals(connection,user){
+
+        var deferred = q.defer();
+
+        var parameters = {
+            rolId: user.rolId
+        };
+
+        var query2 = "SELECT T.terminalId, T.terminalName, T.terminalConfigSchemaId, T.craneConfigSchemaId " +
+            "FROM Terminals AS T INNER JOIN TerminalAccess AS TA ON TA.terminalId = T.terminalId " +
+            "WHERE TA.rolId = :rolId;";
+
+        connection.query(query2,parameters,function(err, result) {
+
+            if(err) {
+                logger.error("ERROR:" + err);
+                deferred.reject(configCSM.errors.DATABASE_ERROR);
+            }
+            else {
+                logger.info("JSON Sent:" + JSON.stringify(result));
+                deferred.resolve(result);
+            }
+        });
+
+        return deferred.promise;
+    };
 
     /**
      * Get all the information of a terminal with id terminalId
@@ -164,39 +196,140 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
     };
 
     /**
-     * Creates a new terminal
-     * @param data - new terminal information | JSON format
+     * Get all the terminals configs schemas
      * @param connection - connection to the database
      * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
      */
-    terminalServerService.createTerminal = function createTerminal (data,connection) {
+    terminalServerService.getTerminalConfigSchemas = function getTerminalConfigSchemas(connection){
 
-        logger.debug("Data Service:" +JSON.stringify(data));
         var deferred = q.defer();
+        var selectSQL = "SELECT TCS.terminalConfigSchemaId, TCS.terminalConfigSchemaName, B.berthId, B.berthName, B.berthLength, B.berthStart, B.berthSequence" +
+            " FROM TerminalConfigSchema TCS INNER JOIN Berths B" +
+            " ON B.terminalConfigSchemaId = TCS.terminalConfigSchemaId" +
+            " ORDER BY TCS.terminalConfigSchemaId";
 
-        var insertSQL = "INSERT INTO Terminals (terminalName, terminalConfigSchemaId, craneConfigSchemaId) " +
-            " VALUES (:terminalName, :terminalConfigSchemaId, :craneConfigSchemaId)";
+        q.ninvoke(connection, "query", selectSQL).then(function(result){
 
-        q.ninvoke(connection, "query", insertSQL, data).then(function(result){
+            var resultList = result[0];
+            var sentJSON = [];
 
-            logger.debug("Query 1 result:" + JSON.stringify(result));
-            var insertId = result[0].insertId;
+            var lastConfigSchema;
 
-            var terminalIdJson = {
-                terminalId:insertId
-            };
+            resultList.forEach(function(element){
 
-            return terminalServerService.getTerminal(terminalIdJson,connection);
+                if(!lastConfigSchema || lastConfigSchema.terminalConfigSchemaId != element.terminalConfigSchemaId) {
 
-        }).then(function(result){
+                    if(lastConfigSchema)
+                        sentJSON.push(lastConfigSchema);
 
-            logger.debug("Query 2 result:" + JSON.stringify(result));
-            deferred.resolve(result);
+                    lastConfigSchema = {};
+                    lastConfigSchema.terminalConfigSchemaId = element.terminalConfigSchemaId;
+                    lastConfigSchema.terminalConfigSchemaName = element.terminalConfigSchemaName;
+                    lastConfigSchema.berths = [];
+
+                    var newBerth  = {};
+
+                    newBerth.berthId = element.berthId;
+                    newBerth.berthName = element.berthName;
+                    newBerth.berthLength =  element.berthLength;
+                    newBerth.berthStart = element.berthStart
+                    newBerth.berthSequence = element.berthSequence;
+
+                    lastConfigSchema.berths.push(newBerth);
+                }
+                else if(lastConfigSchema.terminalConfigSchemaId == element.terminalConfigSchemaId){
+
+                    var newBerth  = {};
+
+                    newBerth.berthId = element.berthId;
+                    newBerth.berthName = element.berthName;
+                    newBerth.berthLength =  element.berthLength;
+                    newBerth.berthStart = element.berthStart
+                    newBerth.berthSequence = element.berthSequence;
+
+                    lastConfigSchema.berths.push(newBerth);
+                }
+            });
+
+            if(lastConfigSchema)
+                sentJSON.push(lastConfigSchema);
+
+            deferred.resolve(sentJSON);
 
         }).fail(function(err){
             if (err) {
                 logger.error("ERROR:" + JSON.stringify(err));
                 deferred.reject(configCSM.errors.DATABASE_ERROR);
+            }
+        });
+
+        return  deferred.promise;
+    };
+
+    /**
+     * Creates a new terminal
+     * @param data - new terminal information | JSON format
+     * @param connection - connection to the database
+     * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
+     */
+    terminalServerService.createTerminal = function createTerminal (data, user, connection) {
+
+        logger.debug("Data Service:" + JSON.stringify(data));
+        var deferred = q.defer();
+
+        var insertSQL = "INSERT INTO Terminals (terminalName, terminalConfigSchemaId, craneConfigSchemaId) " +
+            " VALUES (:terminalName, :terminalConfigSchemaId, :craneConfigSchemaId)";
+
+        connection.beginTransaction(function(err){
+
+            var terminalIdJSON = {};
+            if (err) {
+                logger.error("Transaction Error::" + JSON.stringify(err));
+                deferred.reject(configCSM.errors.DATABASE_ERROR);
+            }
+            else {
+
+                q.ninvoke(connection, "query", insertSQL, data).then(function(result){
+
+                    logger.debug("Query 1 result:" + JSON.stringify(result));
+
+                    var insertId = result[0].insertId;
+
+                    terminalIdJSON = {
+                        terminalId:insertId
+                    };
+
+                    return securityService.createTerminalAccess(user,insertId,connection);
+
+                }).then(function(result){
+
+                    logger.debug("Query 2 result:" + JSON.stringify(result));
+                    return terminalServerService.getTerminal(terminalIdJSON,connection);
+
+                }).then(function(result){
+
+                    logger.debug("Query 2 result:" + JSON.stringify(result));
+
+                    connection.commit(function(err) {
+                        if (err) {
+                            connection.rollback(function() {
+                                logger.error("Commit Error:" + JSON.stringify(err));
+                                deferred.reject(configCSM.errors.DATABASE_ERROR);
+                            });
+                        }
+                        else {
+                            logger.info("Result:" + JSON.stringify(result));
+                            deferred.resolve(result);
+                        }
+                    });
+                }).fail(function(err){
+                    if (err) {
+                        connection.rollback(function() {
+                            logger.error("Error:" + JSON.stringify(err));
+                            deferred.reject(configCSM.errors.DATABASE_ERROR);
+                        });
+                    }
+                });
             }
         });
 
@@ -253,7 +386,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
         connection.beginTransaction(function(err) {
 
             if (err) {
-                logger.error("Pool Error:" + JSON.stringify(err));
+                logger.error("Transaction Error:" + JSON.stringify(err));
                 deferred.reject(configCSM.errors.DATABASE_ERROR);
             }
             else {
@@ -350,7 +483,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
                     }
                     else {
                         logger.info("Result:" + JSON.stringify(result));
-                        deferred.resolve("OK");
+                        deferred.resolve([]);
                     }
                 });
             }).fail(function(err){
@@ -365,6 +498,8 @@ module.exports = function(express,poolConnections,logger,configCSM,q) {
 
         return  deferred.promise;
     };
+
+
 
     return terminalServerService;
 };

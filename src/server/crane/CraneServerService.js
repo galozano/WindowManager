@@ -49,7 +49,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
         return deferred.promise;
     }
 
-   function getCraneConfig(craneConfigId,connection) {
+    function getCraneConfig(craneConfigId,connection) {
 
        var deferred = q.defer();
        var selectSchemaQuery = "SELECT CCS.craneConfigSchemaId, CCS.craneConfigSchemaName,C.craneId,C.craneName" +
@@ -107,7 +107,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
         }
 
         return promiseList;
-    }
+    };
 
     craneServerService.createCraneConfigSchema = function createCraneConfigSchema (data,connection) {
 
@@ -200,18 +200,92 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
                 }).then(function(result){
 
                     logger.debug("Query 2 result:" + JSON.stringify(result));
-                    return deferred.resolve([]);
+
+                    connection.commit(function(err) {
+                        if (err) {
+                            connection.rollback(function() {
+                                logger.error("Commit Error:" + JSON.stringify(err));
+                                deferred.reject(configCSM.errors.DATABASE_ERROR);
+                            });
+                        }
+                        else {
+                            logger.info("Callback:" + JSON.stringify(result));
+                            deferred.resolve([]);
+                        }
+                    });
 
                 }).fail(function(err){
-                    if (err) {
-                        logger.error("ERROR:" + JSON.stringify(err));
+                    connection.rollback(function() {
+                        logger.error("Error:" + JSON.stringify(err));
                         deferred.reject(configCSM.errors.DATABASE_ERROR);
-                    }
+                    });
                 });
             }
         });
 
         return  deferred.promise;
+    };
+
+    craneServerService.getCranesSchemasConfigs = function getCranesSchemasConfigs(connection) {
+
+        var deferred = q.defer();
+
+        var sqlQuery = "SELECT CCS.craneConfigSchemaId, CCS.craneConfigSchemaName, C.craneId, C.craneName" +
+            " FROM CraneConfigSchema CCS INNER JOIN Cranes C " +
+            " ON CCS.craneConfigSchemaId = C.craneConfigSchemaId " +
+            " ORDER BY CCS.craneConfigSchemaId";
+
+        q.ninvoke(connection, "query", sqlQuery).then(function(result){
+
+            var resultList = result[0];
+            var sentJSON = [];
+
+            var lastConfigSchema;
+
+            resultList.forEach(function(element){
+
+                if(!lastConfigSchema || lastConfigSchema.craneConfigSchemaId != element.craneConfigSchemaId) {
+
+                    if(lastConfigSchema)
+                        sentJSON.push(lastConfigSchema);
+
+                    lastConfigSchema = {};
+                    lastConfigSchema.craneConfigSchemaId = element.craneConfigSchemaId;
+                    lastConfigSchema.craneConfigSchemaName = element.craneConfigSchemaName;
+                    lastConfigSchema.cranes = [];
+
+                    var newCrane = {};
+
+                    newCrane.craneId = element.craneId;
+                    newCrane.craneName = element.craneName;
+
+                    lastConfigSchema.cranes.push(newCrane);
+                }
+                else if(lastConfigSchema.craneConfigSchemaId == element.craneConfigSchemaId){
+
+                    var newCrane = {};
+
+                    newCrane.craneId = element.craneId;
+                    newCrane.craneName = element.craneName;
+
+                    lastConfigSchema.cranes.push(newCrane);
+                }
+            });
+
+
+            if(lastConfigSchema)
+                sentJSON.push(lastConfigSchema);
+
+            deferred.resolve(sentJSON);
+
+        }).fail(function(err){
+            if (err) {
+                logger.error("ERROR:" + JSON.stringify(err));
+                deferred.reject(configCSM.errors.DATABASE_ERROR);
+            }
+        });
+
+        return deferred.promise;
     };
 
     return craneServerService;

@@ -1,48 +1,288 @@
+
 <navigation-bar></navigation-bar>
 <alerts-display></alerts-display>
 
-<div class="container">
-    <div>
-        <h1>Terminals</h1>
-        <div><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#terminalModal" ng-show="false">New Terminal</button></div>
-    </div>
-    <table class="table table-hover">
-        <tr ng-repeat="terminal in terminals">
-            <td>
-                <a href="#/events/{{terminal.terminalId}}">
-                    <h4 class="list-group-item-heading">{{terminal.terminalName}}</h4>
-                </a>
-            </td>
-        </tr>
-    </table>
-</div>
+<div class="terminals">
 
-<!-- Create Terminal modal -->
-<div class="modal fade" id="terminalModal" tabindex="-1" role="dialog" aria-labelledby="terminalModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="terminalModalLabel">Create New Terminal</h4>
-            </div>
-            <div class="modal-body">
-                <div>{{formError}}</div>
-                <div class="form-horizontal">
-                    <div class="form-group">
-                        <label for="inputTerminalName" class="col-sm-2 control-label">Terminal Name</label>
-                        <div class="col-sm-10">
-                            <input type="text" ng-model="newTerminal.terminalName" class="form-control" id="inputTerminalName" placeholder="Terminal Name">
-                        </div>
-                    </div>
+    <div class="navbar-default sidebar" role="navigation">
+        <div class="sidebar-nav navbar-collapse">
+            <ul class="nav nav-pills nav-stacked" role="tablist" id="side-menu">
+                <li role="presentation"><a data-target="#terminals" aria-controls="terminals" role="tab" data-toggle="tab">Terminals</a></li>
+                <li role="presentation"><a data-target="#berths" aria-controls="berths" role="tab" data-toggle="tab">Berths Schemas</a></li>
+                <li role="presentation"><a data-target="#cranes" aria-controls="cranes" role="tab" data-toggle="tab">Cranes Schemas</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="page-wrapper">
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="terminals">
+                <div>
+                    <h1 class="pull-left">Terminals</h1>
+                    <div class="pull-right"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#terminalModal">New Terminal</button></div>
                 </div>
+                <table class="table table-hover">
+                    <tr ng-repeat="terminal in terminals">
+                        <td>
+                            <a class="pull-left" href="#/events/{{terminal.terminalId}}">
+                                <h4 class="list-group-item-heading">{{terminal.terminalName}}</h4>
+                            </a>
+                            <div class="pull-right"  >
+                                <div class="dropdown">
+                                    <a id="dLabel" data-target="#" href="" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                                        Options
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu" >
+                                        <li><a href="#/events/{{terminal.terminalId}}">View</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="" ng-click="deleteTerminal(terminal)">Delete</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" ng-hide="editable" ng-click="">Create Terminal</button>
+            <div role="tabpanel" class="tab-pane" id="berths">
+                <div>
+                    <h1 class="pull-left">Berths Schemas</h1>
+                    <div class="pull-right"><button type="button" class="btn btn-primary" ng-click="changeToEditMode()" data-toggle="modal" data-target="#berthModal">New Berth Schema</button></div>
+                </div>
+                <table class="table table-hover">
+                    <tr ng-repeat="berthSchema in berthSchemas">
+                        <td>
+                            <a class="pull-left" href="" ng-click="viewBerthSchema(berthSchema)" data-toggle="modal" data-target="#berthModal">
+                                <h4 class="list-group-item-heading">{{berthSchema.terminalConfigSchemaName}}</h4>
+                            </a>
+                            <div class="pull-right"  >
+                                <div class="dropdown">
+                                    <a id="dLabel" data-target="#" href="http://example.com" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                                        Options
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu" >
+                                        <li><a href="" ng-click="viewBerthSchema(berthSchema)" data-toggle="modal" data-target="#berthModal">View</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="" ng-click="deleteBerthSchema(berthSchema)">Delete</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="cranes">
+                <div>
+                    <h1 class="pull-left">Cranes Schemas</h1>
+                    <div class="pull-right"><button type="button" class="btn btn-primary" ng-click="changeToEditMode()" data-toggle="modal" data-target="#craneModal">New Crane Schema</button></div>
+                </div>
+                <table class="table table-hover">
+                    <tr ng-repeat="craneSchema in cranesSchemas">
+                        <td>
+                            <a class="pull-left" href="" ng-click="viewCraneSchema(craneSchema)" data-toggle="modal" data-target="#craneModal">
+                                <h4 class="list-group-item-heading">{{craneSchema.craneConfigSchemaName}}</h4>
+                            </a>
+                            <div class="pull-right"  >
+                                <div class="dropdown">
+                                    <a id="dLabel" data-target="#" href="http://example.com" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                                        Options
+                                        <span class="caret"></span>
+                                    </a>
+                                    <ul class="dropdown-menu" role="menu" >
+                                        <li><a href="" ng-click="viewCraneSchema(craneSchema)" data-toggle="modal" data-target="#craneModal">View</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="" ng-click="deleteCraneSchema(craneSchema)">Delete</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
     </div>
+
+    <!-- Terminal modal -->
+    <div class="modal fade" id="terminalModal" tabindex="-1" role="dialog" aria-labelledby="terminalModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="terminalModalLabel">Create New Terminal</h4>
+                </div>
+                <div class="modal-body">
+                    <form name="terminalForm" class="css-form" novalidate>
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="inputTerminalName" class="col-sm-3 control-label">Terminal Name</label>
+                                <div class="col-sm-8">
+                                    <input type="text" name="terminalName" ng-model="newTerminal.terminalName" class="form-control" id="inputTerminalName" placeholder="Terminal Name" required>
+                                    <div class="formError" ng-show="terminalForm.terminalName.$invalid && terminalForm.terminalName.$dirty || terminalForm.$submitted">
+                                        <span class="error" ng-show="terminalForm.terminalName.$error.required">Please input a terminal name</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="selectTerminalSchema" class="col-sm-3 control-label">Berth Schema</label>
+                                <div class="col-sm-8">
+                                    <select id="selectTerminalSchema" name="berthSchemaId" ng-model="newTerminal.terminalConfigSchemaId" class="form-control" required>
+                                        <option ng-repeat="berthSchema in berthSchemas" value="{{berthSchema.terminalConfigSchemaId}}">{{berthSchema.terminalConfigSchemaName}}</option>
+                                    </select>
+                                    <div class="formError" ng-show="terminalForm.berthSchemaId.$invalid && terminalForm.berthSchemaId.$dirty || terminalForm.$submitted">
+                                        <span class="error" ng-show="terminalForm.berthSchemaId.$error.required">Please select a Berth Schema</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="selectCraneSchema" class="col-sm-3 control-label">Crane Schema</label>
+                                <div class="col-sm-8">
+                                    <select id="selectCraneSchema" name="craneSchemaId" ng-model="newTerminal.craneConfigSchemaId" class="form-control" required>
+                                        <option ng-repeat="craneSchema in cranesSchemas" value="{{craneSchema.craneConfigSchemaId}}">{{craneSchema.craneConfigSchemaName}}</option>
+                                    </select>
+                                    <div class="formError" ng-show="terminalForm.craneSchemaId.$invalid && terminalForm.craneSchemaId.$dirty || terminalForm.$submitted">
+                                        <span class="error" ng-show="terminalForm.craneSchemaId.$error.required">Please select a Crane Schema</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" ng-click="createTerminal(newTerminal)">Create Terminal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Berth modal -->
+    <div class="modal fade" id="berthModal" tabindex="-1" role="dialog" aria-labelledby="berthModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="berthModalLabel">Create New Berth Schema</h4>
+                </div>
+                <form name="berthForm" class="css-form" novalidate>
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="inputBerthSchema" class="col-sm-4 control-label">Berth Schema Name</label>
+                                <div class="col-sm-8">
+                                    <input type="text"  ng-hide="viewMode" ng-model="newBerthSchema.terminalConfigSchemaName" class="form-control" id="inputBerthSchema" placeholder="Berth Schema Name" />
+                                    <span ng-show="viewMode">{{newBerthSchema.terminalConfigSchemaName}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-horizontal">
+                            <table class="table">
+                                <tr>
+                                    <th>Sequence</th>
+                                    <th>Berth Name</th>
+                                    <th>Berth Length</th>
+                                    <th>Start?</th>
+                                    <th ng-hide="viewMode">Option</th>
+                                </tr>
+                                <tr ng-repeat="berth in newBerthSchema.berths">
+                                    <td>{{$index + 1}}</td>
+                                    <td>{{berth.berthName}}</td>
+                                    <td>{{berth.berthLength}}</td>
+                                    <td>
+                                        <span class="glyphicon glyphicon-ok" ng-show="berth.berthStart"></span>
+                                        <span class="glyphicon glyphicon-remove" ng-hide="berth.berthStart"></span>
+                                    </td>
+                                    <td ng-hide="viewMode"><button type="button" class="btn btn-danger" ng-click="deleteBerth(berth)">Delete</button></td>
+                                </tr>
+                                <tr ng-hide="viewMode">
+                                    <td></td>
+                                    <td>
+                                        <div class="formError" ng-show="berthForm.berthName.$invalid && berthForm.berthName.$dirty || berthForm.$submitted">
+                                            <span class="error" ng-show="berthForm.berthName.$error.maxLength">Berth Name too long</span>
+                                        </div>
+                                        <input type="text" name="berthName" id="berthName" ng-model="newBerth.berthName" class="form-control"  maxlength="20" required/>
+                                    </td>
+                                    <td>
+                                        <div class="formError" ng-show="berthForm.berthLength.$invalid && berthForm.berthLength.$dirty || berthForm.$submitted">
+                                            <span class="error" ng-show="berthForm.berthLength.$error.maxLength">Berth Length too long</span>
+                                            <span class="error" ng-show="berthForm.berthLength.$error.number">Invalid Input</span>
+                                        </div>
+                                        <input type="number" name="berthLength" id="berthLength" ng-model="newBerth.berthLength" class="form-control" required/>
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" id="berthStart" name="berthStart" ng-model="newBerth.berthStart"  class="form-control"/>
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-primary" ng-click="addNewBerth(newBerth)">Add</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" ng-hide="viewMode" ng-click="createNewBerthSchema(newBerthSchema)">Create Berth Schema</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crane modal -->
+    <div class="modal fade" id="craneModal" tabindex="-1" role="dialog" aria-labelledby="craneModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="craneModalLabel">Create New Crane Schema</h4>
+                </div>
+                <form name="craneForm" class="css-form" novalidate>
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="inputCraneSchema" class="col-sm-4 control-label">Crane Schema Name</label>
+                                <div class="col-sm-8">
+                                    <input type="text" ng-hide="viewMode" ng-model="newCraneSchema.craneConfigSchemaName" class="form-control" id="inputCraneSchema" placeholder="Crane Schema Name"/>
+                                    <span ng-show="viewMode">{{newCraneSchema.craneConfigSchemaName}}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-horizontal">
+                            <table class="table">
+                                <tr>
+                                    <th>Crane Name</th>
+                                    <th ng-hide="viewMode">Option</th>
+                                </tr>
+                                <tr ng-repeat="crane in newCraneSchema.cranes">
+                                    <td>{{crane.craneName}}</td>
+                                    <td ng-hide="viewMode"><button type="button" class="btn btn-danger" ng-click="deleteCrane(crane)">Delete</button></td>
+                                </tr>
+                                <tr ng-hide="viewMode">
+                                    <td>
+                                        <div class="formError" ng-show="craneForm.craneName.$invalid && craneForm.craneName.$dirty || craneForm.$submitted">
+                                            <span class="error" ng-show="craneForm.craneName.$error.maxLength">Crane Name too long</span>
+                                        </div>
+                                        <input type="text" name="craneName" id="craneName" ng-model="newCrane.craneName" class="form-control"  maxlength="20" required/>
+                                    </td>
+                                    <td>
+                                        <button type="submit" class="btn btn-primary" ng-click="addNewCrane(newCrane)">Add</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" ng-hide="viewMode"  ng-click="createCraneSchema(newCraneSchema)">Create Crane Schema</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 </div>
-
-
 

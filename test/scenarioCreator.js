@@ -4,7 +4,7 @@
 
 var mysql = require('mysql');
 var q = require('q');
-var configCSM = require('../server/conf/config.json');
+var configCSM = require('../src/server/conf/config.json');
 var scenario = require('../test/scenario.json');
 
 //-------------------------------------------------------------
@@ -46,6 +46,7 @@ function clearDatabase( ) {
             deleteCraneConfigSchema: "DELETE FROM CraneConfigSchema",
             deleteDayName: "DELETE FROM Day",
             deleteUsers: "DELETE FROM Users",
+            deleteCompany: "DELETE FROM Company",
             deleteRol:"DELETE FROM Rol",
             deleteRolType:"DELETE FROM RolType"
         };
@@ -128,8 +129,12 @@ function insertInformation ( ) {
                 query:"INSERT INTO Rol (rolId,rolTypeId) VALUES (:rolId,:rolTypeId)",
                 value:scenario.rol
             },
+            insertCompanies:{
+                query:"INSERT INTO Company (companyId,companyName,rolId) VALUES (:companyId,:companyName,:rolId)",
+                value:scenario.companies
+            },
             insertUsers: {
-                query:"INSERT INTO Users (userId,userFirstName,userLastName,userEmail,userPassword,userToken,rolId) VALUES (:userId,:userFirstName,:userLastName,:userEmail,:userPassword,:userToken,:rolId)",
+                query:"INSERT INTO Users (userId,userFirstName,userLastName,userEmail,userPassword,userToken,rolId,companyId) VALUES (:userId,:userFirstName,:userLastName,:userEmail,:userPassword,:userToken,:rolId,:companyId)",
                 value:scenario.users
             },
             insertTerminalAccess:{

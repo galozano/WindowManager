@@ -6,16 +6,12 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
 
     var terminalsRouter = express.Router();
 
+    /**
+     *
+     */
     terminalsRouter.get(configCSM.urls.terminals.getTerminals, function(req, res) {
 
         var user = req.authUser;
-        var parameters = {
-            rolId: user.rolId
-        };
-
-        var query2 = "SELECT T.terminalId, T.terminalName " +
-            "FROM Terminals AS T INNER JOIN TerminalAccess AS TA ON TA.terminalId = T.terminalId " +
-            "WHERE TA.rolId = :rolId;";
 
         poolConnections.getConnection(function(err, connection) {
 
@@ -25,22 +21,23 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
                 connection.release();
             }
             else {
-                connection.query(query2,parameters,function(err, result) {
-                    if(err) {
-                        logger.error("ERROR:" + err);
-                        res.json(configCSM.errors.DATABASE_ERROR);
-                    }
-                    else {
-                        logger.info("JSON Sent:" + JSON.stringify(result));
-                        res.json(result);
-                    }
 
+                terminalService.getTerminals(connection,user).then(function(result){
+
+                    connection.release();
+                    res.json(result);
+
+                }).fail(function(err){
+                    res.json(err);
                     connection.release();
                 });
             }
         });
     });
 
+    /**
+     *
+     */
     terminalsRouter.get(configCSM.urls.terminals.getTerminal+'/:terminalId', function(req,res) {
 
         logger.info("Terminal ID Requested:" + req.params.terminalId);
@@ -82,7 +79,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
      */
     terminalsRouter.post(configCSM.urls.terminals.createTerminalSchema, function (req,res) {
 
-        logger.debug("JSON received:" +JSON.stringify(req.body));
+        logger.info("JSON received:" +JSON.stringify(req.body));
 
         if(req.body.data) {
 
@@ -120,7 +117,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
      */
     terminalsRouter.post(configCSM.urls.terminals.deleteTerminalSchema,function(req,res) {
 
-        logger.debug("JSON received:" +JSON.stringify(req.body));
+        logger.info("JSON received:" +JSON.stringify(req.body));
 
         if(req.body.data) {
 
@@ -157,7 +154,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
      */
     terminalsRouter.post(configCSM.urls.terminals.createTerminal, function(req, res){
 
-        logger.debug("JSON received:" +JSON.stringify(req.body));
+        logger.info("JSON received:" + JSON.stringify(req.body));
 
         if(req.body.data) {
 
@@ -171,7 +168,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
                     connection.release();
                 }
                 else {
-                    terminalService.createTerminal(data,connection).then(function(result){
+                    terminalService.createTerminal(data,req.authUser,connection).then(function(result){
 
                         connection.release();
                         res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK))
@@ -190,9 +187,12 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
         }
     });
 
+    /**
+     *
+     */
     terminalsRouter.post(configCSM.urls.terminals.deleteTerminal, function(req,res) {
 
-        logger.debug("JSON received:" +JSON.stringify(req.body));
+        logger.info("JSON received:" +JSON.stringify(req.body));
 
         if(req.body.data) {
 
@@ -223,6 +223,33 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
         else {
             res.json(utilitiesCommon.generateResponse(configCSM.errors.INVALID_INPUT,configCSM.status.ERROR));
         }
+    });
+
+    /**
+     *
+     */
+    terminalsRouter.get(configCSM.urls.terminals.getTerminalConfigSchemas, function(req,res){
+
+        poolConnections.getConnection(function(err, connection) {
+
+            if (err) {
+                logger.error("Pool Error:" + JSON.stringify(err));
+                res.json(utilitiesCommon.generateResponse(configCSM.errors.DATABASE_ERROR,configCSM.status.ERROR));
+                connection.release();
+            }
+            else {
+                terminalService.getTerminalConfigSchemas(connection).then(function(result){
+                    connection.release();
+                    res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
+
+                }).fail(function(err){
+                    connection.release();
+                    if(err){
+                        res.json(utilitiesCommon.generateResponse(err,configCSM.status.ERROR));
+                    }
+                });
+            }
+        });
     });
 
 
