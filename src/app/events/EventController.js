@@ -49,7 +49,8 @@
         function getEvents() {
 
             eventService.updateEvents(terminalId).then(function(result){
-                $scope.events = result;
+
+                updateEventList(result);
             },function(err){
                 alertService.pushMessage(err);
             });
@@ -67,6 +68,54 @@
             }, function(err){
                 alertService.pushMessage(err);
             });
+        }
+
+        //------------------------------------------------------------------------
+        // Private Functions
+        //------------------------------------------------------------------------
+
+        function updateEventList(pEventsList) {
+
+            $log.info("Event List: " + JSON.stringify(pEventsList));
+
+            var eventsList = angular.copy(pEventsList);
+
+            if($scope.terminal) {
+
+                eventsList.forEach(function(element){
+
+                    var arrivingTime = element.eventArrivingTime;
+                    var duration = element.eventDuration;
+
+                    var splitArray = arrivingTime.split(":");
+                    var arrivingHour = parseInt(splitArray[0],10);
+                    var arrivingSec = parseInt(splitArray[1],10);
+
+                    var totalHours = (24 * (element.eventDay - 1)) + (arrivingHour + duration) + (arrivingSec/60);
+
+                    $log.debug("Evento:" + JSON.stringify(element) + " Total Hours:" + totalHours);
+
+                    if(totalHours > 168){
+                        $log.debug("Mayo que 168:" + totalHours);
+
+                        element.eventCalculatedDuration = element.eventDuration - (totalHours-168);
+                        $log.debug("Evento Nuevo:" + JSON.stringify(element));
+
+                        var cutEvent = angular.copy(element);
+                        cutEvent.eventArrivingTime = "00:00";
+                        cutEvent.eventDay = 1;
+                        cutEvent.eventCalculatedDuration = (totalHours-168);
+
+                        eventsList.push(cutEvent);
+                    }
+                    else {
+                        element.eventCalculatedDuration = element.eventDuration;
+                    }
+                });
+            }
+
+            $log.info("Event List Changed: " + JSON.stringify(eventsList));
+            $scope.events = eventsList;
         }
 
         //------------------------------------------------------------------------
@@ -94,14 +143,16 @@
                 "terminalId":terminalId
             };
 
-            eventService.addNewEvent(eventJSON).then(function(result){
-                $scope.events = result;
-                $('#eventModal').modal('hide');
-                $scope.newEvent = "";
+            if(!$scope.editable){
+                eventService.addNewEvent(eventJSON).then(function(result){
+                    updateEventList(result);
+                    $('#eventModal').modal('hide');
+                    $scope.newEvent = "";
 
-            },function(err){
-                alertService.pushMessage(err);
-            });
+                },function(err){
+                    alertService.pushMessage(err);
+                });
+            }
         };
 
         $scope.changeButton = function() {
@@ -134,18 +185,20 @@
                 "terminalId":terminalId
             };
 
-            eventService.editEvent(eventJSON).then(function(result){
-                $scope.events = result;
-            }, function(err){
-                alertService.pushMessage(err);
-            });
+            if($scope.editable){
+                eventService.editEvent(eventJSON).then(function(result){
+                    updateEventList(result);
+                }, function(err){
+                    alertService.pushMessage(err);
+                });
 
-            if( $scope.eventChange)
-                $scope.eventChange = false;
-            else
-                $scope.eventChange = true;
+                if( $scope.eventChange)
+                    $scope.eventChange = false;
+                else
+                    $scope.eventChange = true;
 
-            $scope.newEvent = {};
+                $scope.newEvent = {};
+            }
         };
 
         $scope.editEventModal = function(event) {
@@ -161,7 +214,7 @@
             $log.debug("Delete Event:" + JSON.stringify(event));
 
             eventService.deleteEvent(event.eventId).then(function(result){
-                $scope.events = result;
+                updateEventList(result);
             }, function(err) {
                 alertService.pushMessage(err);
             });
@@ -189,7 +242,10 @@
             };
 
             eventService.editEvent(eventJSON).then(function(result){
-                $scope.events = result;
+                //$scope.events = result;
+
+                updateEventList(result);
+
             }, function(err){
                 alertService.pushMessage(err);
             });
@@ -256,7 +312,7 @@
             $log.debug("JSON to Send:" + JSON.stringify(sendJSON));
 
             eventService.editCranes(sendJSON).then(function(result){
-                $scope.events = result;
+                updateEventList(result);
                 $('#craneModal').modal('hide');
             }, function(err){
                 alertService.pushMessage(err);

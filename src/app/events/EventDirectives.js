@@ -77,7 +77,7 @@
                     var arrivingTimeSec = parseInt(splitArray[1],10);
 
                     var top = ((event.eventDay - 1) * tableProp.tableDayHeight)  +  ((tableProp.tableDayHeightNoBorder/tableProp.hoursInDay) * arrivingTime) +  tableProp.tableTopHeaderHeight;
-                    var bottom = ((event.eventDay - 1) * tableProp.tableDayHeight)  +  ((tableProp.tableDayHeightNoBorder/tableProp.hoursInDay) * (arrivingTime + event.eventDuration)) +  tableProp.tableTopHeaderHeight;
+                    var bottom = ((event.eventDay - 1) * tableProp.tableDayHeight)  +  ((tableProp.tableDayHeightNoBorder/tableProp.hoursInDay) * (arrivingTime + event.eventCalculatedDuration)) +  tableProp.tableTopHeaderHeight;
 
                     //Calculate the amount of px to add to the top and bottom
                     var topSec = (arrivingTimeSec/tableProp.minutesHour) * tableProp.cellHourHeight;
@@ -91,7 +91,6 @@
 
                     var left = (event.eventStart * (tableProp.tableTotalWidth-tableProp.tableLeftHeaderWidth)/berthLengthMeters) + tableProp.tableLeftHeaderWidth;
                     var right = ((event.eventStart + event.eventLength) * (tableProp.tableTotalWidth-tableProp.tableLeftHeaderWidth)/berthLengthMeters) + tableProp.tableLeftHeaderWidth;
-
 
                     var eventCSS = {
                         top: top,
@@ -116,7 +115,7 @@
                     var difference = parseInt((eventArrivingTime - parseInt(eventArrivingTime)) *100);
                     $log.debug("Event Arriving Time:" + difference);
 
-                    //Calculate thhe minutes based on the difference of the actual and specific arriving time
+                    //Calculate the minutes based on the difference of the actual and specific arriving time
                     var arrivingMinutes = (difference/100) * tableProp.minutesHour;
                     $log.debug("Event Arriving Minutes:" + arrivingMinutes);
 

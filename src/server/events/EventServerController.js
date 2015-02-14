@@ -45,8 +45,7 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
      */
     eventsRouter.post(configCSM.urls.events.addEvent,function(req,res) {
 
-        logger.debug("Add Event");
-        logger.info("JSON received: " + JSON.stringify(req.body));
+        logger.info("Add Event JSON received: " + JSON.stringify(req.body));
 
         //TODO:Falta hacer las respectivas validaciones
         var newEvent = req.body;
@@ -91,8 +90,7 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
      */
     eventsRouter.post(configCSM.urls.events.editEvent, function(req,res) {
 
-        logger.debug("Edit event");
-        logger.info("JSON received: " + JSON.stringify(req.body));
+        logger.info("Edit event JSON received: " + JSON.stringify(req.body));
 
         var editEvent = req.body;
 

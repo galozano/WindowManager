@@ -1,4 +1,5 @@
 
+
 <div class="content">
     {{event.eventName}} <br/>
     Arriving Time: {{event.eventArrivingTime}} <br/>
@@ -7,7 +8,7 @@
 <div class="content">
     <div ng-repeat="crane in event.eventCranes" class="crane" tooltips title="{{crane.craneName}}" tooltip-side="bottom"/>
 </div>
-<div class="modifier"><span class="glyphicon glyphicon-pencil" ng-click="editEventModal({event:event})" data-toggle="modal" data-target="#eventModal"></span></div>
-<div class="remover"><span class="glyphicon glyphicon-remove" ng-click="deleteEvent({event:event})" ></span></div>
-<div class="craneSelection"><span class="glyphicon glyphicon-tasks" ng-click="editCranesModal({event:event})" data-toggle="modal" data-target="#craneModal"></span></div>
+<div class="modifier" ng-click="editEventModal({event:event})" data-toggle="modal" data-target="#eventModal"><span class="glyphicon glyphicon-pencil"></span></div>
+<div class="remover" ng-click="deleteEvent({event:event})"><span class="glyphicon glyphicon-remove" ></span></div>
+<div class="craneSelection" ng-click="editCranesModal({event:event})" data-toggle="modal" data-target="#craneModal"><span class="glyphicon glyphicon-tasks"></span></div>
 
