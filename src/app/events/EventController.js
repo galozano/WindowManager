@@ -101,10 +101,12 @@
                         element.eventCalculatedDuration = element.eventDuration - (totalHours-168);
                         $log.debug("Evento Nuevo:" + JSON.stringify(element));
 
+                        //Create the new event for the top of the calendar
                         var cutEvent = angular.copy(element);
                         cutEvent.eventArrivingTime = "00:00";
                         cutEvent.eventDay = 1;
                         cutEvent.eventCalculatedDuration = (totalHours-168);
+                        cutEvent.isCutEvent = true;
 
                         eventsList.push(cutEvent);
                     }

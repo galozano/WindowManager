@@ -65,7 +65,7 @@ module.exports = function (poolConnections, logger, configCSM, q) {
 
         q.ninvoke(connection,"query", insertQuery, userEmailJSON).then(function(result){
 
-            deferred.resolve();
+            deferred.resolve(result);
 
         }).fail(function(err){
             deferred.reject(err);

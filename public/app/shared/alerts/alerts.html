@@ -1,10 +1,16 @@
-<div>
-    <div id="errorAlert" class="alert alert-danger" ng-show="showError">
-        <strong>Error!</strong> {{errorMessage}}
-        <button type="button" class="close" data-dismiss="alert">
-            <span aria-hidden="true">&times;</span>
-            <span class="sr-only">Close</span>
-        </button>
+<div class="alertDirective">
+    <div id="errorAlert">
+        <ul>
+            <li ng-repeat="alert in alertMessages">
+                <div class="alert alert-danger">
+                    <strong>Error!</strong> {{alert.message}}
+                    <button type="button" class="close" data-dismiss="alert" ng-click="deleteAlert(alert)">
+                        <span aria-hidden="true">&times;</span>
+                        <span class="sr-only">Close</span>
+                    </button>
+                </div>
+            </li>
+        </ul>
     </div>
     <div id="successAlert" class="alert alert-success" ng-show="showSuccess">
         <strong>Success!</strong> {{successMessage}}

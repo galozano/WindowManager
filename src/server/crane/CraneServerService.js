@@ -52,6 +52,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q, securi
     function getCraneConfig(craneConfigId,connection) {
 
        var deferred = q.defer();
+
        var selectSchemaQuery = "SELECT CCS.craneConfigSchemaId, CCS.craneConfigSchemaName,C.craneId,C.craneName" +
            " FROM CraneConfigSchema CCS INNER JOIN Cranes C" +
            " ON C.craneConfigSchemaId = CCS.craneConfigSchemaId" +
@@ -71,15 +72,20 @@ module.exports = function(express, poolConnections, logger, configCSM, q, securi
            }
            else {
 
-               resultJSON.craneConfigSchemaId   = result[0].craneConfigSchemaId;
-               resultJSON.craneConfigSchemaName = result[0].craneConfigSchemaName;
+               logger.debug("getCraneConfig Result:" + JSON.stringify(result));
 
-               result.forEach(function(element){
-                   delete element.craneConfigSchemaId;
-                   delete element.craneConfigSchemaName;
-               });
+               if(result && result.length > 0){
+                   resultJSON.craneConfigSchemaId   = result[0].craneConfigSchemaId;
+                   resultJSON.craneConfigSchemaName = result[0].craneConfigSchemaName;
 
-               resultJSON.cranes = result;
+                   result.forEach(function(element){
+                       delete element.craneConfigSchemaId;
+                       delete element.craneConfigSchemaName;
+                   });
+
+                   resultJSON.cranes = result;
+               }
+
                deferred.resolve(resultJSON);
            }
        });
@@ -111,7 +117,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q, securi
 
     craneServerService.createCraneConfigSchema = function createCraneConfigSchema (data,user,connection) {
 
-        logger.debug("Received Data:" +JSON.stringify(data));
+        logger.info("CreateCraneConfigSchema Received Data:" +JSON.stringify(data));
         var deferred = q.defer();
 
         connection.beginTransaction(function(err) {
@@ -147,7 +153,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q, securi
 
                 }).then(function(result){
                     logger.debug("Add Cranes:" +JSON.stringify(result));
-
+                    logger.debug("Crane Config Inserted Id:" +JSON.stringify(craneConfigInsertedId));
                     return securityServerService.createCraneSchemaAccess(user,craneConfigInsertedId,connection);
 
                 }).then(function(result){

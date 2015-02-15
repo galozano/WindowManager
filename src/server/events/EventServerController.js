@@ -1,7 +1,7 @@
 /**
  * Created by gal on 12/5/14.
  */
-module.exports = function(express,poolConnections,logger,configCSM,eventServerService,q) {
+module.exports = function(express,poolConnections,logger,configCSM,eventServerService,q, validator) {
 
     var eventsRouter = express.Router();
 
@@ -47,42 +47,54 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
 
         logger.info("Add Event JSON received: " + JSON.stringify(req.body));
 
-        //TODO:Falta hacer las respectivas validaciones
         var newEvent = req.body;
 
-        var insertQuery = "INSERT INTO Events (eventName,eventArrivingTime,eventDuration,eventStart,eventLength,eventDay,berthId,terminalId) VALUES (:eventName,:eventArrivingTime,:eventDuration,:eventStart,:eventLength,:eventDay,:berthId,:terminalId)";
+        if(newEvent && validator.isNumeric(newEvent.eventDuration) &&
+            validator.isNumeric(newEvent.eventStart) &&
+            validator.isNumeric(newEvent.eventLength) &&
+            validator.isNumeric(newEvent.eventDay) &&
+            validator.isNumeric(newEvent.terminalId) &&
+            validator.isNumeric(newEvent.berthId) &&
+            validator.matches(newEvent.eventArrivingTime, "[0-9]?[0-9]:[0-9][0-9]")){
 
-        poolConnections.getConnection(function(err, connection) {
+            var insertQuery = "INSERT INTO Events (eventName,eventArrivingTime,eventDuration,eventStart,eventLength,eventDay,berthId,terminalId) " +
+                " VALUES (:eventName,:eventArrivingTime,:eventDuration,:eventStart,:eventLength,:eventDay,:berthId,:terminalId)";
 
-            if (err) {
-                logger.error("Error:" + JSON.stringify(err));
-                res.json(configCSM.errors.DATABASE_ERROR);
-                connection.release();
-            }
-            else {
-                connection.query(insertQuery, newEvent, function(err, result) {
+            poolConnections.getConnection(function(err, connection) {
 
-                    if(err) {
-                        logger.error("ERROR Add Events:" + JSON.stringify(err));
-                        res.json(configCSM.errors.DATABASE_ERROR);
-                        connection.release();
-                    }
-                    else
-                    {
-                        logger.debug("Inserted ID:" +result.insertId);
-                        logger.debug("Result for ADD Event:" + JSON.stringify(result));
+                if (err) {
+                    logger.error("Error:" + JSON.stringify(err));
+                    res.json(configCSM.errors.DATABASE_ERROR);
+                    connection.release();
+                }
+                else {
+                    connection.query(insertQuery, newEvent, function(err, result) {
 
-                        eventServerService.getSpecificEvent(result.insertId,connection, function(result){
-                            logger.info("JSON sent:" + JSON.stringify(result));
-                            res.json(result);
-
+                        if(err) {
+                            logger.error("ERROR Add Events:" + JSON.stringify(err));
+                            res.json(configCSM.errors.DATABASE_ERROR);
                             connection.release();
-                        });
-                    }
-                });
-            }
-        });
+                        }
+                        else
+                        {
+                            logger.debug("Inserted ID:" +result.insertId);
+                            logger.debug("Result for ADD Event:" + JSON.stringify(result));
 
+                            eventServerService.getSpecificEvent(result.insertId,connection, function(result){
+                                logger.info("JSON sent:" + JSON.stringify(result));
+                                res.json(result);
+
+                                connection.release();
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            logger.info("JSON SENT:" + JSON.stringify(configCSM.errors.INVALID_INPUT));
+            res.json(configCSM.errors.INVALID_INPUT);
+        }
     });
 
     /**
@@ -94,36 +106,47 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
 
         var editEvent = req.body;
 
-        var updateQuery = "UPDATE Events SET eventArrivingTime = :eventArrivingTime, eventDay = :eventDay, eventDuration = :eventDuration, eventLength = :eventLength, eventName = :eventName, eventStart = :eventStart, berthId = :berthId" +
-            "  WHERE eventId = :eventId";
+        if(editEvent && validator.isNumeric(editEvent.eventDuration) &&
+            validator.isNumeric(editEvent.eventStart) &&
+            validator.isNumeric(editEvent.eventLength) &&
+            validator.isNumeric(editEvent.eventDay) &&
+            validator.isNumeric(editEvent.berthId) &&
+            validator.matches(editEvent.eventArrivingTime, "[0-9]?[0-9]:[0-9][0-9]")){
 
-        poolConnections.getConnection(function(err, connection) {
+            var updateQuery = "UPDATE Events SET eventArrivingTime = :eventArrivingTime, eventDay = :eventDay, eventDuration = :eventDuration, eventLength = :eventLength, eventName = :eventName, eventStart = :eventStart, berthId = :berthId" +
+                "  WHERE eventId = :eventId";
 
-            if (err) {
-                logger.error("Error:" + JSON.stringify(err));
-                res.json(configCSM.errors.DATABASE_ERROR);
-                connection.release();
-            }
-            else {
-                connection.query(updateQuery, editEvent, function(err, result) {
+            poolConnections.getConnection(function(err, connection) {
 
-                    if(err) {
-                        logger.error("ERROR Edit Events:" + JSON.stringify(err));
-                        res.json(configCSM.errors.DATABASE_ERROR);
-                        connection.release();
-                    }
-                    else {
+                if (err) {
+                    logger.error("Error:" + JSON.stringify(err));
+                    res.json(configCSM.errors.DATABASE_ERROR);
+                    connection.release();
+                }
+                else {
+                    connection.query(updateQuery, editEvent, function(err, result) {
 
-                        eventServerService.getSpecificEvent(editEvent.eventId,connection,function(result){
-                            logger.info("JSON sent:" + JSON.stringify(result));
-                            res.json(result);
+                        if(err) {
+                            logger.error("ERROR Edit Events:" + JSON.stringify(err));
+                            res.json(configCSM.errors.DATABASE_ERROR);
                             connection.release();
-                        });
-                    }
-                });
-            }
-        });
+                        }
+                        else {
 
+                            eventServerService.getSpecificEvent(editEvent.eventId,connection,function(result){
+                                logger.info("JSON sent:" + JSON.stringify(result));
+                                res.json(result);
+                                connection.release();
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        else {
+            logger.info("JSON SENT:" + JSON.stringify(configCSM.errors.INVALID_INPUT));
+            res.json(configCSM.errors.INVALID_INPUT);
+        }
     });
 
     /**

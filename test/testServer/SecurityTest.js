@@ -1,11 +1,11 @@
 /**
  * Created by gal on 1/25/15.
  */
-var server =  require('../app.js');
-var scenarioCreator = require("./scenarioCreator.js");
+var server =  require('../../app.js');
+var scenarioCreator = require("./../scenarioCreator.js");
 var expect = require('chai').expect;
 var request = require('request');
-var scenario = require('./scenario.json');
+var scenario = require('./../scenario.json');
 
 describe('Test Security', function() {
 

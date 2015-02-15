@@ -5,10 +5,20 @@
 
     var eventModule = angular.module("EventModule");
 
-    eventModule.service("eventService", ['$http','$log','config','_','alertService','$q','errors',
-        function($http,$log,config,_,alertService,$q,errors) {
+    /**
+     * Handles all the connections of events and cranes with the server
+     */
+    eventModule.service("eventService", ['$http','$log','config','_','alertService','$q','errors', function($http,$log,config,_,alertService,$q,errors) {
+
+        //------------------------------------------------------------------------
+        // Variables
+        //------------------------------------------------------------------------
 
         var eventsList = [];
+
+        //------------------------------------------------------------------------
+        // Private Functions
+        //------------------------------------------------------------------------
 
         function replaceEvent(modifiedEvent) {
 
@@ -19,6 +29,10 @@
                 }
             });
         }
+
+        //------------------------------------------------------------------------
+        // Public Functions
+        //------------------------------------------------------------------------
 
         this.updateEvents = function updateEvents(terminalId) {
 
@@ -130,7 +144,7 @@
         this.editCranes = function editCranes(cranes) {
 
             var deferred = $q.defer();
-            var dataToSend = {json:JSON.stringify(cranes)};
+            var dataToSend = {data:JSON.stringify(cranes)};
 
             $http.post(config.editCranesURL, dataToSend).
                 success(function(data, status, headers, config) {

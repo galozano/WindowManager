@@ -57,7 +57,7 @@ module.exports = function (poolConnections, logger, configCSM, q) {
     //---------------------------------------------------------------------------------
 
     eventServerService.getSpecificEvent = function getSpecificEvent(eventId,connection,callback) {
-        logger.debug("Select specific event");
+        logger.debug("Select specific event:" + JSON.stringify(eventId));
 
         var eventIdJSON = {eventId: eventId};
 
@@ -74,9 +74,10 @@ module.exports = function (poolConnections, logger, configCSM, q) {
                 return q.ninvoke(connection,"query",selectEventsCrane,eventIdJSON);
             }
             else {
-                logger.error("ERROR Add Events Result has no 0");
-                callback(configCSM.errors.DATABASE_ERROR)
+                logger.debug("ERROR Add Events Result has no 0");
+                callback(configCSM.errors.EVENT_INVALID_ID)
             }
+
         }).then(function(result){
 
             logger.debug("Select Cranes Result:" + JSON.stringify(result));

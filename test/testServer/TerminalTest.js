@@ -1,11 +1,11 @@
 /**
  * Created by gal on 12/8/14.
  */
-var server =  require('../app.js');
-var scenarioCreator = require("./scenarioCreator.js");
+var server =  require('../../app.js');
+var scenarioCreator = require("./../scenarioCreator.js");
 var expect = require('chai').expect;
 var request = require('request');
-var scenario = require('./scenario.json');
+var scenario = require('./../scenario.json');
 
 describe('Test Terminals', function() {
 
@@ -133,7 +133,25 @@ describe('Test Terminals', function() {
 
         it("No berths", function(done){
 
-            //TODO:Poner cuando no exista berths
+            var berthSchema = {
+                "terminalConfigSchemaName": "SPRCConfig2",
+                "berths":[]
+            };
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
+                form:{data:JSON.stringify(berthSchema)}
+            };
+
+            request.post(options, function (err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).status).to.equals("ERROR");
+                expect(JSON.parse(body).data).to.exist;
+
+                done();
+            });
         });
     });
 

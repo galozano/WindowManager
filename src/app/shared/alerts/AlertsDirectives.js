@@ -18,13 +18,31 @@
                 $scope.showSuccess = false;
                 $scope.successMessage = "";
 
+                $scope.alertMessages = [];
+
+                $scope.deleteAlert = function(deleteAlert) {
+
+                    var deleteIndex = -1;
+                    $scope.alertMessages.forEach(function(element,index){
+
+                        if(deleteAlert === element) {
+                            deleteIndex = index;
+                        }
+                    });
+
+                    if(deleteIndex > 0)
+                        $scope.alertMessages.splice(deleteIndex,1);
+
+                };
+
                 $scope.$on('AlertEvent', function (event, message) {
 
-                    $log.debug("AlertEvent Call:" + JSON.stringify(message));
+                    var messageObject = {
+                        message: message
+                    };
 
-                    $scope.showError = false;
-                    $scope.showError = true;
-                    $scope.errorMessage = message;
+                    $log.debug("AlertEvent Call:" + JSON.stringify(messageObject));
+                    $scope.alertMessages.push(messageObject);
                 });
 
                 $scope.$on('SuccessMessage', function (event, message) {

@@ -9,7 +9,7 @@ var logger = new winston.Logger({
     transports: [
         new winston.transports.File({
             level: 'info',
-            filename: './src/server/logs/all-logs.log',
+            filename: './logs/all-logs.log',
             handleExceptions: true,
             json: true,
             maxsize: 5242880, //5MB
@@ -25,5 +25,11 @@ var logger = new winston.Logger({
     ],
     exitOnError: false
 });
+
+
+logger.on('logging', function (transport, level, msg, meta) {
+    // [msg] and [meta] have now been logged at [level] to [transport]
+});
+
 
 module.exports = logger;

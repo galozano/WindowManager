@@ -85,6 +85,11 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
 
             var terminalConfigJSON = JSON.parse(req.body.data);
 
+            if(!terminalConfigJSON.berths.length > 0) {
+                res.json(utilitiesCommon.generateResponse(configCSM.errors.INVALID_INPUT,configCSM.status.ERROR));
+                return;
+            }
+
             poolConnections.getConnection(function(err, connection) {
 
                 if (err) {

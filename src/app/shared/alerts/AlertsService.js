@@ -7,6 +7,8 @@
 
     alertModule.service("alertService", ['$log','$rootScope', function($log,$rootScope){
 
+
+
         this.pushMessage = function(alertMessage) {
 
             $log.debug("Alert Message:" + JSON.stringify(alertMessage));

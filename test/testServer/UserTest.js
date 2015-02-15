@@ -2,17 +2,15 @@
  * Created by gal on 1/3/15.
  */
 
-var server =  require('../app.js');
-var scenarioCreator = require("./scenarioCreator.js");
+var server =  require('../../app.js');
+var scenarioCreator = require("./../scenarioCreator.js");
 var expect = require('chai').expect;
 var request = require('request');
-var configCSM = require('../src/server/conf/config.json');
+var configCSM = require('../../src/server/conf/config.json');
 
 describe('Test Users', function() {
 
     before(function(done){
-
-        console.log("Before");
 
         scenarioCreator.prepareScenario(function(events) {
 

@@ -1,12 +1,12 @@
 /**
  * Created by gal on 11/26/14.
  */
-var server =  require('../app.js');
-var scenarioCreator = require("./scenarioCreator.js");
+var server =  require('../../app.js');
+var scenarioCreator = require("./../scenarioCreator.js");
 var expect = require('chai').expect;
 var request = require('request');
-var configCSM = require('../src/server/conf/config.json');
-var scenario = require('./scenario.json');
+var configCSM = require('../../src/server/conf/config.json');
+var scenario = require('./../scenario.json');
 
 describe('Test Events', function() {
 
@@ -70,24 +70,22 @@ describe('Test Events', function() {
         });
     });
 
-
     describe('Add Events', function() {
-
-        var eventJSON = {
-            eventName:"Nuevo Evento",
-            eventArrivingTime:"11:00",
-            eventDuration:50,
-            eventStart:300,
-            eventLength:400,
-            eventDay:3,
-            terminalId:1,
-            berthId:4
-        };
 
         var url = 'http://localhost:3000/events/addEvent';
 
         it('Add One Event', function(done){
 
+            var eventJSON = {
+                eventName:"Nuevo Evento",
+                eventArrivingTime:"11:00",
+                eventDuration:50,
+                eventStart:300,
+                eventLength:400,
+                eventDay:3,
+                terminalId:1,
+                berthId:4
+            };
 
             var options = {
                 url:url,
@@ -108,6 +106,34 @@ describe('Test Events', function() {
                 expect(JSON.parse(body).terminalId).to.eq(1);
                 expect(JSON.parse(body).berthId).to.eq(4);
                 expect(JSON.parse(body).eventCranes).to.have.length(0);
+
+                done();
+            });
+        });
+
+        it('Add One Invalid Event', function(done){
+
+            var eventJSON = {
+                eventName:"Nuevo Evento",
+                eventArrivingTime:"11:00",
+                eventDuration:"ff",
+                eventStart:300,
+                eventLength:400,
+                eventDay:3,
+                terminalId:1,
+                berthId:4
+            };
+
+            var options = {
+                url:url,
+                form:eventJSON,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            };
+
+            request.post(options,function(err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).message).to.eq(configCSM.errors.INVALID_INPUT.message);
 
                 done();
             });
@@ -150,6 +176,34 @@ describe('Test Events', function() {
                 expect(JSON.parse(body).terminalId).to.eq(1);
                 expect(JSON.parse(body).berthId).to.eq(1);
                 expect(JSON.parse(body).eventCranes).to.have.length(0);
+
+                done();
+            });
+        });
+
+        it('Invalid Edit Event 1', function(done) {
+
+            var eventJSON = {
+                "eventName":"Nuevo Evento Editado",
+                "eventArrivingTime":"11ee:00",
+                "eventDuration":50,
+                "eventStart":300,
+                "eventLength":100,
+                "eventDay":3,
+                "eventId":2,
+                "berthId":1
+            };
+
+            var options = {
+                url:url,
+                form:eventJSON,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            };
+
+            request.post(options,function(err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).message).to.eq(configCSM.errors.INVALID_INPUT.message);
 
                 done();
             });

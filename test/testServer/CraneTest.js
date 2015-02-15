@@ -2,12 +2,12 @@
  * Created by gal on 12/28/14.
  */
 
-var server =  require('../app.js');
-var scenarioCreator = require("./scenarioCreator.js");
+var server =  require('../../app.js');
+var scenarioCreator = require("./../scenarioCreator.js");
 var expect = require('chai').expect;
 var request = require('request');
-var configCSM = require('../src/server/conf/config.json');
-var scenario = require('./scenario.json');
+var configCSM = require('../../src/server/conf/config.json');
+var scenario = require('./../scenario.json');
 
 describe('Test Cranes', function() {
 
@@ -34,12 +34,9 @@ describe('Test Cranes', function() {
                 "cranes":[{craneId:2}]
             };
 
-            var editCraneString = JSON.stringify(editCraneJson);
-            console.log(JSON.stringify(scenario.users[0]));
-
             var options = {
                 url:url,
-                form:{json:editCraneString},
+                form:{data:JSON.stringify(editCraneJson)},
                 headers:{"authorization":"Bearer " + scenario.users[0].userToken}
             };
 
@@ -61,12 +58,9 @@ describe('Test Cranes', function() {
                 "cranes":[]
             };
 
-            var editCraneString = JSON.stringify(editCraneJson);
-            console.log(editCraneString);
-
             var options = {
                 url:url,
-                form:{json:editCraneString},
+                form:{data:JSON.stringify(editCraneJson)},
                 headers:{"authorization":"Bearer " + scenario.users[0].userToken}
             };
 
@@ -88,12 +82,9 @@ describe('Test Cranes', function() {
                 "cranes":[]
             };
 
-            var editCraneString = JSON.stringify(editCraneJson);
-            console.log(editCraneString);
-
             var options = {
                 url:url,
-                form:{json:editCraneString},
+                form:{data:JSON.stringify(editCraneJson)},
                 headers:{"authorization":"Bearer " + scenario.users[0].userToken}
             };
 
@@ -169,7 +160,25 @@ describe('Test Cranes', function() {
 
         it("No Cranes", function(done){
 
-            //TODO: poner cuando no existan cranes
+            var craneSchema = {
+                "craneConfigSchemaName": "SPRCCraneConfig2",
+                "cranes":[ ]
+            };
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
+                form:{data:JSON.stringify(craneSchema)}
+            };
+
+            request.post(options,function(err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).data).to.exist;
+                expect(JSON.parse(body).status).to.equals("ERROR");
+
+                done();
+            });
 
         });
     });

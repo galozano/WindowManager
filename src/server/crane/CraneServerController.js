@@ -10,16 +10,13 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
     */
     cranesRouter.post(configCSM.urls.cranes.editCranes, function(req,res) {
 
-        logger.debug("Edit Event Cranes");
-        logger.info(req.body);
-
-        var eventCranes = JSON.parse(req.body.json);
-        logger.info("JSON received: " + JSON.stringify(eventCranes));
-
-        var eventId = {eventId:eventCranes.eventId};
-        var deleteQuery = "DELETE FROM EventsCranes WHERE eventId = :eventId";
+        var eventCranes = JSON.parse(req.body.data);
+        logger.info("Edit Event Cranes JSON received: " + JSON.stringify(eventCranes));
 
         poolConnections.getConnection(function(err, connection) {
+
+            var eventId = {eventId:eventCranes.eventId};
+            var deleteQuery = "DELETE FROM EventsCranes WHERE eventId = :eventId";
 
             if (err) {
                 logger.error("Error:" + JSON.stringify(err));
@@ -27,14 +24,15 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
                 connection.release();
             }
             else {
+
                 q.ninvoke(connection,"query",deleteQuery,eventId).then(function(result){
 
                     logger.debug("Result Delete Query:"+ JSON.stringify(result));
                     return craneServerService.insertEventsCranes(eventCranes.eventId,eventCranes.cranes,connection);
 
-                }).then(function(){
+                }).then(function(resutl){
 
-                    logger.debug("Getting Specific Event");
+                    logger.debug("Insert Event Cranes Result:" + JSON.stringify(resutl));
 
                     eventServerService.getSpecificEvent(eventCranes.eventId,connection,function(result){
                         logger.info("JSON sent:" + JSON.stringify(result));
@@ -47,14 +45,10 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
                         logger.error("ERROR Edit Cranes:" + JSON.stringify(err));
                         res.json(configCSM.errors.DATABASE_ERROR);
                     }
-                    else {
-                        logger.error("Unknown Error:" + JSON.stringify(err));
-                    }
                     connection.release();
                 });
             }
         });
-
     });
 
     /**
@@ -65,9 +59,14 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
         logger.debug("Create Crane Schema");
         logger.info("JSON Received:" + JSON.stringify(req.body));
 
-        if(req.body.data && req.authUser) {
+        if(req.body.data && req.authUser ) {
 
             var cranesJSON = JSON.parse(req.body.data);
+
+            if(!cranesJSON.cranes.length > 0) {
+                res.json(utilitiesCommon.generateResponse(configCSM.errors.INVALID_INPUT,configCSM.status.ERROR));
+                return;
+            }
 
             poolConnections.getConnection(function(err, connection) {
 

@@ -21,11 +21,20 @@
     -webkit-print-color-adjust: exact;
 }
 
-.eventCalendar .event .content {
+.eventCalendar .event .eventInfo {
     padding: 16px 0px 0px 5px;
-    font-size: 11px;
-    height: 50%;
+    font-size: 12px;
     width: auto;
+    height: calc(50% + 1em);
+    overflow: hidden;
+}
+
+.eventCalendar .event .cranesContent {
+    padding: 16px 0px 0px 5px;
+    font-size: 12px;
+    width: auto;
+    height: calc(50% - 1em);
+    overflow: hidden;
 }
 
 .eventCalendar .event .crane {
