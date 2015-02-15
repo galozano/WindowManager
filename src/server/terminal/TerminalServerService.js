@@ -200,15 +200,23 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
      * @param connection - connection to the database
      * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
      */
-    terminalServerService.getTerminalConfigSchemas = function getTerminalConfigSchemas(connection){
+    terminalServerService.getTerminalConfigSchemas = function getTerminalConfigSchemas(user,connection){
 
         var deferred = q.defer();
+
+        var userJSON = {
+            userId: user.userId
+        };
+
         var selectSQL = "SELECT TCS.terminalConfigSchemaId, TCS.terminalConfigSchemaName, B.berthId, B.berthName, B.berthLength, B.berthStart, B.berthSequence" +
-            " FROM TerminalConfigSchema TCS INNER JOIN Berths B" +
-            " ON B.terminalConfigSchemaId = TCS.terminalConfigSchemaId" +
+            " FROM (SELECT TCS1.terminalConfigSchemaId,TCS1.terminalConfigSchemaName FROM TerminalConfigSchema TCS1 INNER JOIN TerminalSchemaAccess TSA" +
+            " ON TCS1.terminalConfigSchemaId = TSA.terminalConfigSchemaId WHERE TSA.rolId = (SELECT rolId" +
+            " FROM Company C WHERE c.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId))) " +
+            " TCS INNER JOIN Berths B ON B.terminalConfigSchemaId = TCS.terminalConfigSchemaId " +
             " ORDER BY TCS.terminalConfigSchemaId";
 
-        q.ninvoke(connection, "query", selectSQL).then(function(result){
+
+        q.ninvoke(connection, "query", selectSQL,userJSON).then(function(result){
 
             var resultList = result[0];
             var sentJSON = [];
@@ -232,7 +240,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
                     newBerth.berthId = element.berthId;
                     newBerth.berthName = element.berthName;
                     newBerth.berthLength =  element.berthLength;
-                    newBerth.berthStart = element.berthStart
+                    newBerth.berthStart = element.berthStart;
                     newBerth.berthSequence = element.berthSequence;
 
                     lastConfigSchema.berths.push(newBerth);
@@ -259,7 +267,11 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
         }).fail(function(err){
             if (err) {
                 logger.error("ERROR:" + JSON.stringify(err));
-                deferred.reject(configCSM.errors.DATABASE_ERROR);
+
+                var message = configCSM.errors.DATABASE_ERROR;
+                message.message = err;
+
+                deferred.reject(message);
             }
         });
 
@@ -373,7 +385,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
      * @param connection - the connection to the database
      * @returns {jQuery.promise|promise.promise|d.promise|promise|.ready.promise|Q.promise|*}
      */
-    terminalServerService.createTerminalConfig = function createTerminalConfig(data,connection) {
+    terminalServerService.createTerminalConfig = function createTerminalConfig(data,user,connection) {
 
         logger.debug("Data Service:" +JSON.stringify(data));
         var deferred = q.defer();
@@ -417,11 +429,17 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
                 }).then(function(result){
 
                     logger.debug("Terminal Config Result 2:" + JSON.stringify(result));
-                    return getTerminalConfigSchema(insertedConfigId,connection);
+
+                    return securityService.createTerminalSchemaAccess(user,insertedConfigId,connection);
 
                 }).then(function(result){
 
                     logger.debug("Terminal Config Result 3:" + JSON.stringify(result));
+                    return getTerminalConfigSchema(insertedConfigId,connection);
+
+                }).then(function(result){
+
+                    logger.debug("Terminal Config Result 4:" + JSON.stringify(result));
 
                     connection.commit(function(err) {
                         if (err) {

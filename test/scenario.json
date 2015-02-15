@@ -69,9 +69,9 @@
     }, {
       "terminalConfigSchemaId":2,
       "terminalConfigSchemaName": "Config 2"
-  },{
-    "terminalConfigSchemaId":3,
-    "terminalConfigSchemaName": "Config 3"
+    },{
+      "terminalConfigSchemaId":3,
+      "terminalConfigSchemaName": "Config 3"
   }],
   "terminals": [{
       "terminalName":"SPRC",
@@ -236,5 +236,27 @@
     "terminalAccessId":2,
     "terminalId":2,
     "rolId":1
+  }],
+  "craneSchemaAccess":[{
+    "craneSchemaAccessId":1,
+    "craneConfigSchemaId":1,
+    "rolId":4
+  },{
+    "craneSchemaAccessId":2,
+    "craneConfigSchemaId":2,
+    "rolId":4
+  }],
+  "terminalSchemaAccess":[{
+    "terminalSchemaAccessId":1,
+    "terminalConfigSchemaId":1,
+    "rolId":4
+  },{
+    "terminalSchemaAccessId":2,
+    "terminalConfigSchemaId":2,
+    "rolId":4
+  },{
+    "terminalSchemaAccessId":3,
+    "terminalConfigSchemaId":3,
+    "rolId":4
   }]
 }

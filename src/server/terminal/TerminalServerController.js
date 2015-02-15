@@ -81,7 +81,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
 
         logger.info("JSON received:" +JSON.stringify(req.body));
 
-        if(req.body.data) {
+        if(req.body.data && req.authUser) {
 
             var terminalConfigJSON = JSON.parse(req.body.data);
 
@@ -93,7 +93,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
                     connection.release();
                 }
                 else {
-                    terminalService.createTerminalConfig(terminalConfigJSON,connection).then(function(result){
+                    terminalService.createTerminalConfig(terminalConfigJSON,req.authUser,connection).then(function(result){
 
                         connection.release();
                         res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
@@ -238,7 +238,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q,terminalSer
                 connection.release();
             }
             else {
-                terminalService.getTerminalConfigSchemas(connection).then(function(result){
+                terminalService.getTerminalConfigSchemas(req.authUser,connection).then(function(result){
                     connection.release();
                     res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
 

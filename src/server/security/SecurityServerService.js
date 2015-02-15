@@ -20,7 +20,7 @@ module.exports = function (poolConnections, logger, configCSM, q) {
     // Public Methods
     //---------------------------------------------------------------------------------
 
-    securityServerService.createTerminalAccess = function createTerminalAccess(user,terminalId, connection) {
+    securityServerService.createTerminalAccess = function createTerminalAccess(user,terminalId,connection) {
 
         logger.debug("Create Terminal Access by Email:" + JSON.stringify(user));
 
@@ -48,6 +48,57 @@ module.exports = function (poolConnections, logger, configCSM, q) {
         return deferred.promise;
     };
 
-    return securityServerService;
+    securityServerService.createCraneSchemaAccess = function createCraneSchemaAccess(user,craneSchemaId,connection){
 
+        logger.debug("Create Crane Schema Access by Email:" + JSON.stringify(user));
+
+        var deferred = q.defer();
+
+        var userEmailJSON = {
+            userEmail:user.userEmail,
+            craneConfigSchemaId:craneSchemaId
+        };
+
+        var insertQuery = "INSERT INTO CraneSchemaAccess (craneConfigSchemaId, rolId)" +
+            " SELECT B.* FROM ( SELECT :craneConfigSchemaId craneConfigSchemaId, C.rolId FROM Company C" +
+            " WHERE C.companyId = (SELECT U.companyId FROM Users U WHERE U.userEmail = :userEmail)) B";
+
+        q.ninvoke(connection,"query", insertQuery, userEmailJSON).then(function(result){
+
+            deferred.resolve();
+
+        }).fail(function(err){
+            deferred.reject(err);
+        });
+
+        return deferred.promise;
+    };
+
+    securityServerService.createTerminalSchemaAccess = function createTerminalSchemaAccess(user,terminalSchemaId,connection){
+
+        logger.debug("Create Terminal Schema Access by Email:" + JSON.stringify(user));
+
+        var deferred = q.defer();
+
+        var userEmailJSON = {
+            userEmail:user.userEmail,
+            terminalConfigSchemaId:terminalSchemaId
+        };
+
+        var insertQuery = "INSERT INTO TerminalSchemaAccess (terminalConfigSchemaId, rolId)" +
+            " SELECT B.* FROM ( SELECT :terminalConfigSchemaId terminalConfigSchemaId, C.rolId FROM Company C" +
+            " WHERE C.companyId = (SELECT U.companyId FROM Users U WHERE U.userEmail = :userEmail)) B";
+
+        q.ninvoke(connection,"query", insertQuery, userEmailJSON).then(function(result){
+
+            deferred.resolve();
+
+        }).fail(function(err){
+            deferred.reject(err);
+        });
+
+        return deferred.promise;
+    };
+
+    return securityServerService;
 };

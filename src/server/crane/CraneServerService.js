@@ -1,7 +1,7 @@
 /**
  * Created by gal on 1/22/15.
  */
-module.exports = function(express, poolConnections, logger, configCSM, q) {
+module.exports = function(express, poolConnections, logger, configCSM, q, securityServerService) {
 
     //---------------------------------------------------------------------------------
     // Variables
@@ -109,7 +109,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
         return promiseList;
     };
 
-    craneServerService.createCraneConfigSchema = function createCraneConfigSchema (data,connection) {
+    craneServerService.createCraneConfigSchema = function createCraneConfigSchema (data,user,connection) {
 
         logger.debug("Received Data:" +JSON.stringify(data));
         var deferred = q.defer();
@@ -146,8 +146,13 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
                     return promises;
 
                 }).then(function(result){
-
                     logger.debug("Add Cranes:" +JSON.stringify(result));
+
+                    return securityServerService.createCraneSchemaAccess(user,craneConfigInsertedId,connection);
+
+                }).then(function(result){
+
+                    logger.debug("Security Cranes:" + JSON.stringify(result));
                     return getCraneConfig(craneConfigInsertedId,connection);
 
                 }).then(function(result){
@@ -226,16 +231,24 @@ module.exports = function(express, poolConnections, logger, configCSM, q) {
         return  deferred.promise;
     };
 
-    craneServerService.getCranesSchemasConfigs = function getCranesSchemasConfigs(connection) {
+    craneServerService.getCranesSchemasConfigs = function getCranesSchemasConfigs(user,connection) {
 
         var deferred = q.defer();
 
+        var userJSON = {
+          userId: user.userId
+        };
+
         var sqlQuery = "SELECT CCS.craneConfigSchemaId, CCS.craneConfigSchemaName, C.craneId, C.craneName" +
-            " FROM CraneConfigSchema CCS INNER JOIN Cranes C " +
-            " ON CCS.craneConfigSchemaId = C.craneConfigSchemaId " +
+            " FROM ( SELECT CCS1.craneConfigSchemaId,CCS1.craneConfigSchemaName" +
+            " FROM CraneConfigSchema CCS1 INNER JOIN CraneSchemaAccess CSA" +
+            " ON CCS1.craneConfigSchemaId = CSA.craneConfigSchemaId WHERE CSA.rolId =" +
+            " (SELECT rolId FROM Company C WHERE c.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId))) CCS " +
+            " INNER JOIN Cranes C ON CCS.craneConfigSchemaId = C.craneConfigSchemaId" +
             " ORDER BY CCS.craneConfigSchemaId";
 
-        q.ninvoke(connection, "query", sqlQuery).then(function(result){
+
+        q.ninvoke(connection, "query", sqlQuery, userJSON).then(function(result){
 
             var resultList = result[0];
             var sentJSON = [];

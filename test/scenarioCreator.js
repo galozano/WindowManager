@@ -41,8 +41,10 @@ function clearDatabase( ) {
             deleteEvents:"DELETE FROM Events",
             deleteTerminals:"DELETE FROM Terminals",
             deleteBerths: "DELETE FROM Berths",
+            deleteTerminalSchemaAccess:"DELETE FROM TerminalSchemaAccess",
             deleteTerminalConfigSchema:"DELETE FROM TerminalConfigSchema",
             deleteCranes: "DELETE FROM Cranes",
+            deleteCraneSchemaAccess:"DELETE FROM CraneSchemaAccess",
             deleteCraneConfigSchema: "DELETE FROM CraneConfigSchema",
             deleteDayName: "DELETE FROM Day",
             deleteUsers: "DELETE FROM Users",
@@ -140,6 +142,14 @@ function insertInformation ( ) {
             insertTerminalAccess:{
                 query:"INSERT INTO TerminalAccess (terminalAccessId,terminalId,rolId) VALUES (:terminalAccessId,:terminalId, :rolId)",
                 value:scenario.terminalAccess
+            },
+            insertCraneSchemaAccess:{
+                query:"INSERT INTO CraneSchemaAccess (craneSchemaAccessId,craneConfigSchemaId,rolId) VALUES (:craneSchemaAccessId,:craneConfigSchemaId,:rolId)",
+                value:scenario.craneSchemaAccess
+            },
+            insertTerminalSchemaAccess:{
+                query:"INSERT INTO TerminalSchemaAccess (terminalSchemaAccessId,terminalConfigSchemaId,rolId) VALUES (:terminalSchemaAccessId,:terminalConfigSchemaId,:rolId)",
+                value:scenario.terminalSchemaAccess
             }
         };
 

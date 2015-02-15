@@ -57,12 +57,15 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
 
     });
 
+    /**
+     * Create Crane Schema
+     */
     cranesRouter.post(configCSM.urls.cranes.createCraneSchema, function(req,res){
 
         logger.debug("Create Crane Schema");
         logger.info("JSON Received:" + JSON.stringify(req.body));
 
-        if(req.body.data) {
+        if(req.body.data && req.authUser) {
 
             var cranesJSON = JSON.parse(req.body.data);
 
@@ -74,7 +77,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
                     connection.release();
                 }
                 else {
-                    craneServerService.createCraneConfigSchema(cranesJSON,connection).then(function (result){
+                    craneServerService.createCraneConfigSchema(cranesJSON,req.authUser,connection).then(function (result){
 
                         connection.release();
                         res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
@@ -95,6 +98,9 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
         }
     });
 
+    /**
+     *
+     */
     cranesRouter.post(configCSM.urls.cranes.deleteCraneSchema, function(req,res){
 
         logger.debug("Delete Crane Schema");
@@ -133,6 +139,9 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
         }
     });
 
+    /**
+     *
+     */
     cranesRouter.get(configCSM.urls.cranes.getCranesSchemas, function(req, res){
 
         poolConnections.getConnection(function(err, connection) {
@@ -144,7 +153,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
             }
             else {
 
-                craneServerService.getCranesSchemasConfigs(connection).then(function(result) {
+                craneServerService.getCranesSchemasConfigs(req.authUser,connection).then(function(result) {
 
                     connection.release();
                     res.json(utilitiesCommon.generateResponse(result,configCSM.status.OK));
