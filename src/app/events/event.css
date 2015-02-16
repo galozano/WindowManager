@@ -1,4 +1,9 @@
-.eventCalendar .table>thead>tr>th,.eventCalendar .table>tbody>tr>th, .eventCalendar .table>tfoot>tr>th,.eventCalendar .table>thead>tr>td,.eventCalendar .table>tbody>tr>td,.eventCalendar .table>tfoot>tr>td {
+.eventCalendar .table>thead>tr>th,
+.eventCalendar .table>tbody>tr>th,
+.eventCalendar .table>tfoot>tr>th,
+.eventCalendar .table>thead>tr>td,
+.eventCalendar .table>tbody>tr>td,
+.eventCalendar .table>tfoot>tr>td {
     padding: 3px;
     text-align: center;
 }
@@ -92,6 +97,7 @@
     background: black;
 }
 
+
 .eventCalendar .event .craneSelection {
 
     position: absolute;
@@ -105,8 +111,22 @@
     text-align: center;
     color: black;
     cursor: pointer;
-
 }
+
+.eventCalendar .event .viewEvent {
+    position: absolute;
+    z-index: 3;
+    right: 45px;
+    top: 0;
+    padding: 3px;
+    height: 20px;
+    overflow: hidden;
+    font-size: 11px;
+    text-align: center;
+    color: black;
+    cursor: pointer;
+}
+
 
 .eventCalendar .nav li {
     padding-left:10px ;

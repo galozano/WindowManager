@@ -8,8 +8,7 @@
     /**
      * Event Controller to handle all Events logic
      */
-    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','alertService','_','eventService','terminalService',
-        function($http, $log, $scope, $routeParams, config, alertService, _, eventService, terminalService) {
+    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','alertService','_','eventService','terminalService', function($http, $log, $scope, $routeParams, config, alertService, _, eventService, terminalService) {
 
         //------------------------------------------------------------------------
         // Router Params
@@ -39,6 +38,9 @@
         //Show current crane list of an specific event when selected
         $scope.cranesList = [];
         $scope.calendarLoaded = false;
+
+        $scope.viewEvent = {};
+
 
         //------------------------------------------------------------------------
         // Initialization
@@ -319,6 +321,12 @@
             }, function(err){
                 alertService.pushMessage(err);
             });
+        };
+
+        $scope.viewEventModal = function(viewEvent){
+
+            $log.debug("View Event:" + JSON.stringify(viewEvent));
+            $scope.viewEvent = viewEvent;
         };
 
     }]);

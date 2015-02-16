@@ -49,7 +49,8 @@
                 moveEvent:'&moveEvent',
                 editEventModal:'&editEventModal',
                 deleteEvent: '&deleteEvent',
-                editCranesModal:'&editCranesModal'
+                editCranesModal:'&editCranesModal',
+                viewEventModal:'&viewEventModal'
             },
             controller:['$scope','tableProp',function($scope,tableProp){
 
