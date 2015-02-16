@@ -213,7 +213,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
             " ON TCS1.terminalConfigSchemaId = TSA.terminalConfigSchemaId WHERE TSA.rolId = (SELECT rolId" +
             " FROM Company C WHERE c.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId))) " +
             " TCS INNER JOIN Berths B ON B.terminalConfigSchemaId = TCS.terminalConfigSchemaId " +
-            " ORDER BY TCS.terminalConfigSchemaId";
+            " ORDER BY TCS.terminalConfigSchemaId, B.berthSequence";
 
 
         q.ninvoke(connection, "query", selectSQL,userJSON).then(function(result){
