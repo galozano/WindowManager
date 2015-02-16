@@ -94,10 +94,16 @@
                     var arrivingSec = parseInt(splitArray[1],10);
 
                     var totalHours = (24 * (element.eventDay - 1)) + (arrivingHour + duration) + (arrivingSec/60);
+                    var arrivingTimeHours = (24 * (element.eventDay - 1)) + (arrivingHour) + (arrivingSec/60);
 
                     $log.debug("Evento:" + JSON.stringify(element) + " Total Hours:" + totalHours);
 
-                    if(totalHours > 168){
+                    if(arrivingTimeHours > 168) {
+                        element.eventArrivingTime = "00:00";
+                        element.eventDay = 1;
+                        element.eventCalculatedDuration = element.eventDuration;
+                    }
+                    else if(totalHours > 168){
                         $log.debug("Mayo que 168:" + totalHours);
 
                         element.eventCalculatedDuration = element.eventDuration - (totalHours-168);

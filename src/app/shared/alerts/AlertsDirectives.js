@@ -10,7 +10,7 @@
             restrict: 'E',
             templateUrl:'./app/shared/alerts/alerts.html',
             replace: true,
-            controller:['$scope', function($scope) {
+            controller:['$scope','$timeout', function($scope,$timeout) {
 
                 $scope.errorMessage = "";
                 $scope.showError = false;
@@ -30,7 +30,7 @@
                         }
                     });
 
-                    if(deleteIndex > 0)
+                    if(deleteIndex > -1)
                         $scope.alertMessages.splice(deleteIndex,1);
 
                 };
@@ -42,6 +42,14 @@
                     };
 
                     $log.debug("AlertEvent Call:" + JSON.stringify(messageObject));
+
+                    $timeout(function(){
+
+                        $log.debug("Timeout function:" + JSON.stringify(messageObject));
+                        $scope.deleteAlert(messageObject);
+
+                    }, 10000);
+
                     $scope.alertMessages.push(messageObject);
                 });
 
