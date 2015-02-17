@@ -189,7 +189,7 @@
                                     <th ng-hide="viewMode">Option</th>
                                 </tr>
                                 <tr ng-repeat="berth in newBerthSchema.berths">
-                                    <td>{{$index + 1}}</td>
+                                    <td>{{berth.berthSequence}}</td>
                                     <td>{{berth.berthName}}</td>
                                     <td>{{berth.berthLength}}</td>
                                     <td>

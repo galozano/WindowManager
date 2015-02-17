@@ -38,7 +38,7 @@
         }
     }]);
 
-    eventModule.directive('event', ['$log','$document', function($log,$document) {
+    eventModule.directive('event', ['$log','$document','tableProp', function($log,$document,tableProp) {
         return {
             restrict: 'E',
             templateUrl: './app/events/event.html',
@@ -49,9 +49,10 @@
                 moveEvent:'&moveEvent',
                 editEventModal:'&editEventModal',
                 deleteEvent: '&deleteEvent',
-                editCranesModal:'&editCranesModal'
+                editCranesModal:'&editCranesModal',
+                viewEventModal:'&viewEventModal'
             },
-            controller:['$scope','tableProp',function($scope,tableProp){
+            controller:['$scope',function($scope){
 
                 //Add the number of padding number to the number pass
                 function pad(num, size) {
@@ -108,8 +109,17 @@
                     var y = eventCSS.top;
                     var berthLengthMeters = terminal.totalLength;
 
+                    var eventDay = 0;
+
+                    //Analyze if its on the very top
+                    if(y - tableProp.tableTopHeaderHeight == 0){
+                        eventDay =1;
+                    }else{
+                        //Get the day where th event is
+                        eventDay  = (Math.ceil((y - tableProp.tableTopHeaderHeight)/tableProp.tableDayHeight));
+                    }
+
                     var eventStart = (x - tableProp.tableLeftHeaderWidth) * (berthLengthMeters/(tableProp.tableTotalWidth-tableProp.tableLeftHeaderWidth));
-                    var eventDay = (Math.ceil((y - tableProp.tableTopHeaderHeight)/tableProp.tableDayHeight));
                     var eventArrivingTime = ((y - tableProp.tableTopHeaderHeight) % tableProp.tableDayHeight) * (tableProp.hoursInDay/tableProp.tableDayHeightNoBorder) ;
 
                     var difference = parseInt((eventArrivingTime - parseInt(eventArrivingTime)) *100);
@@ -144,7 +154,6 @@
 
                     return movedEvent;
                 }
-
             }],
             link:function(scope, elem, attrs) {
 
@@ -191,10 +200,21 @@
                     y = event.pageY - startY;
                     x = event.pageX - startX;
 
-                    elem.css({
-                        top: y + 'px',
-                        left: x + 'px'
-                    });
+                    if(y < tableProp.tableTopHeaderHeight) {
+                        y = tableProp.tableTopHeaderHeight;
+                    }
+
+                    if(x < tableProp.tableLeftHeaderWidth){
+                        x = tableProp.tableLeftHeaderWidth;
+                    }
+
+                    if(x < tableProp.tableTotalWidth){
+
+                        elem.css({
+                            top: y + 'px',
+                            left: x + 'px'
+                        });
+                    }
                 }
 
                 function mouseup() {
@@ -206,17 +226,23 @@
                         top:y
                     };
 
-                    var changedEvent = scope.CSSToEvent(eventCSS,scope.terminal);
 
-                    scope.event.eventDay = changedEvent.eventDay;
-                    scope.event.eventStart = parseInt(changedEvent.eventStart);
-                    scope.event.eventArrivingTime = changedEvent.eventArrivingTime;
-                    scope.event.berthId = changedEvent.berthId;
+                    $log.debug("Mouse up:" + JSON.stringify(eventCSS));
 
-                    scope.moveEvent(scope.event);
-                    scope.$apply();
+                    if(eventCSS.left < tableProp.tableTotalWidth){
 
-                    $log.debug("New scope event:" + JSON.stringify(scope.event));
+                        var changedEvent = scope.CSSToEvent(eventCSS,scope.terminal);
+
+                        scope.event.eventDay = changedEvent.eventDay;
+                        scope.event.eventStart = parseInt(changedEvent.eventStart);
+                        scope.event.eventArrivingTime = changedEvent.eventArrivingTime;
+                        scope.event.berthId = changedEvent.berthId;
+
+                        scope.moveEvent(scope.event);
+                        scope.$apply();
+
+                        $log.debug("New scope event:" + JSON.stringify(scope.event));
+                    }
                 }
             }
         };

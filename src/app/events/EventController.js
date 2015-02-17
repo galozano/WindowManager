@@ -8,8 +8,7 @@
     /**
      * Event Controller to handle all Events logic
      */
-    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','alertService','_','eventService','terminalService',
-        function($http, $log, $scope, $routeParams, config, alertService, _, eventService, terminalService) {
+    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','alertService','_','eventService','terminalService', function($http, $log, $scope, $routeParams, config, alertService, _, eventService, terminalService) {
 
         //------------------------------------------------------------------------
         // Router Params
@@ -39,6 +38,9 @@
         //Show current crane list of an specific event when selected
         $scope.cranesList = [];
         $scope.calendarLoaded = false;
+
+        $scope.viewEvent = {};
+
 
         //------------------------------------------------------------------------
         // Initialization
@@ -92,10 +94,16 @@
                     var arrivingSec = parseInt(splitArray[1],10);
 
                     var totalHours = (24 * (element.eventDay - 1)) + (arrivingHour + duration) + (arrivingSec/60);
+                    var arrivingTimeHours = (24 * (element.eventDay - 1)) + (arrivingHour) + (arrivingSec/60);
 
                     $log.debug("Evento:" + JSON.stringify(element) + " Total Hours:" + totalHours);
 
-                    if(totalHours > 168){
+                    if(arrivingTimeHours > 168) {
+                        element.eventArrivingTime = "00:00";
+                        element.eventDay = 1;
+                        element.eventCalculatedDuration = element.eventDuration;
+                    }
+                    else if(totalHours > 168){
                         $log.debug("Mayo que 168:" + totalHours);
 
                         element.eventCalculatedDuration = element.eventDuration - (totalHours-168);
@@ -319,6 +327,12 @@
             }, function(err){
                 alertService.pushMessage(err);
             });
+        };
+
+        $scope.viewEventModal = function(viewEvent){
+
+            $log.debug("View Event:" + JSON.stringify(viewEvent));
+            $scope.viewEvent = viewEvent;
         };
 
     }]);

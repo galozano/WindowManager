@@ -24,7 +24,7 @@
     <div class="container" ng-show="calendarLoaded">
         <div class="calendar">
             <div ng-repeat="event in events">
-                <event class="event" delete-event="deleteEvent(event)" edit-cranes-modal="editCranesModal(event)" move-event="moveEvent(event)" edit-event-modal="editEventModal(event)" event="event" terminal-info="terminal" eventChange="eventChange"></event>
+                <event class="event" delete-event="deleteEvent(event)" edit-cranes-modal="editCranesModal(event)" move-event="moveEvent(event)" edit-event-modal="editEventModal(event)" view-event-modal="viewEventModal(event)" event="event" terminal-info="terminal" eventChange="eventChange"></event>
             </div>
             <table-gen terminal-info="terminal" hours="hours"></table-gen>
         </div>
@@ -120,7 +120,7 @@
             </form>
         </div>
     </div>
-</div>
+    </div>
 
     <!-- Edit Crane Modal -->
     <div class="modal fade" id="craneModal" tabindex="-1" role="dialog" aria-labelledby="craneModalLabel" aria-hidden="true">
@@ -146,5 +146,56 @@
             </div>
         </div>
     </div>
-</div>
+    </div>
+
+    <!-- View Event-->
+    <div class="modal fade" id="eventViewModal" tabindex="-1" role="dialog" aria-labelledby="eventViewModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="eventViewModalLabel">Event - {{viewEvent.eventName}}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Event Information</h5>
+                            <table class="table table-striped">
+                                <tr>
+                                    <td>ETA:</td>
+                                    <td>{{viewEvent.eventArrivingTime}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Duration:</td>
+                                    <td>{{viewEvent.eventDuration}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Berth Start:</td>
+                                    <td>{{viewEvent.eventStart}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Event Length:</td>
+                                    <td>{{viewEvent.eventLength}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Crane Info</h5>
+                            <table  class="table table-striped">
+                                <tr>
+                                    <th>Crane Name</th>
+                                </tr>
+                                <tr ng-repeat="crane in viewEvent.eventCranes">
+                                    <td>{{crane.craneName}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

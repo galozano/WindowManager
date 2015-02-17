@@ -1,17 +1,14 @@
 
+    <div class="eventInfo" >
+        {{event.eventName}} <br/>
+        ETA: {{event.eventArrivingTime}} <br/>
+        Duration: {{event.eventDuration}} h
+    </div>
+    <div class="cranesContent">
+        <div ng-repeat="crane in event.eventCranes" class="crane" tooltips title="{{crane.craneName}}" tooltip-side="bottom"/>
+    </div>
 
-<div class="eventInfo" >
-    {{event.eventName}} <br/>
-    ETA: {{event.eventArrivingTime}} <br/>
-    Duration: {{event.eventDuration}} h
-</div>
-<div class="cranesContent">
-    <div ng-repeat="crane in event.eventCranes" class="crane" tooltips title="{{crane.craneName}}" tooltip-side="bottom"/>
-</div>
-<!--<div class="content">-->
-    <!---->
-<!--</div>-->
-<div class="modifier" ng-hide="event.isCutEvent" ng-click="editEventModal({event:event})" data-toggle="modal" data-target="#eventModal"><span class="glyphicon glyphicon-pencil"></span></div>
-<div class="remover" ng-hide="event.isCutEvent" ng-click="deleteEvent({event:event})"><span class="glyphicon glyphicon-remove" ></span></div>
-<div class="craneSelection" ng-hide="event.isCutEvent"  ng-click="editCranesModal({event:event})" data-toggle="modal" data-target="#craneModal"><span class="glyphicon glyphicon-tasks"></span></div>
-
+    <div class="modifier" ng-hide="event.isCutEvent" ng-click="editEventModal({event:event})" data-toggle="modal" data-target="#eventModal"><span class="glyphicon glyphicon-pencil"></span></div>
+    <div class="remover" ng-hide="event.isCutEvent" ng-click="deleteEvent({event:event})"><span class="glyphicon glyphicon-remove" ></span></div>
+    <div class="craneSelection" ng-hide="event.isCutEvent"  ng-click="editCranesModal({event:event})" data-toggle="modal" data-target="#craneModal"><span class="glyphicon glyphicon-tasks"></span></div>
+    <div class="viewEvent"  ng-hide="event.isCutEvent"  ng-click="viewEventModal({event:event})" data-toggle="modal" data-target="#eventViewModal"><span class="glyphicon glyphicon-eye-open"></span></div>
