@@ -34,6 +34,7 @@
 .nav-stacked>li{float:none}
 .nav-pills>li.active>a,.nav-pills>li.active>a:focus,.nav-pills>li.active>a:hover{color:inherit;background-color:inherit}
 .terminals .dropdown-menu{right:0;left:auto}
+.terminals #craneGrossProductivity{width:100px}
 .alertDirective #errorAlert{position:absolute;right:0;z-index:2000;margin-right:10px}
 .alertDirective li{list-style-type:none}
 .alertDirective button.close{margin-left:10px}

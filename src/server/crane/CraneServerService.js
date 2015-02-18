@@ -33,7 +33,8 @@ module.exports = function(express, poolConnections, logger, configCSM, q, securi
 
     function addCrane(crane,connection) {
         var deferred = q.defer();
-        var insertCraneSQL = "INSERT INTO Cranes (craneName,craneConfigSchemaId) VALUES (:craneName,:craneConfigSchemaId)";
+        var insertCraneSQL = "INSERT INTO Cranes (craneName,craneConfigSchemaId,craneGrossProductivity) " +
+            " VALUES (:craneName,:craneConfigSchemaId,:craneGrossProductivity)";
 
         connection.query(insertCraneSQL, crane, function (err, result) {
 
@@ -53,7 +54,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q, securi
 
        var deferred = q.defer();
 
-       var selectSchemaQuery = "SELECT CCS.craneConfigSchemaId, CCS.craneConfigSchemaName,C.craneId,C.craneName" +
+       var selectSchemaQuery = "SELECT CCS.craneConfigSchemaId, CCS.craneConfigSchemaName,C.craneId,C.craneName, C.craneGrossProductivity " +
            " FROM CraneConfigSchema CCS INNER JOIN Cranes C" +
            " ON C.craneConfigSchemaId = CCS.craneConfigSchemaId" +
            " WHERE CCS.craneConfigSchemaId = :craneConfigSchemaId";

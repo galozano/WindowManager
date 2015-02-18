@@ -6,7 +6,7 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
     var eventsRouter = express.Router();
 
     /**
-     * @Name: Get Events
+     * Get Events
      * @Descripcion: Returns all the events from an specific terminal
      */
     eventsRouter.get(configCSM.urls.events.getEvents + '/:terminalId', function (req, res) {
@@ -41,7 +41,8 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
     });
 
     /**
-     *
+     *  Add Event
+     * @Descripcion: Adds a new Event
      */
     eventsRouter.post(configCSM.urls.events.addEvent,function(req,res) {
 
@@ -98,7 +99,8 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
     });
 
     /**
-     *
+     * Edit Event
+     * @Descripcion: Edit information of an specific event
      */
     eventsRouter.post(configCSM.urls.events.editEvent, function(req,res) {
 
@@ -150,7 +152,8 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
     });
 
     /**
-     *
+     *  Delete Event
+     *  @Descripcion: Deletes an event with ID Given
      */
     eventsRouter.post(configCSM.urls.events.deleteEvent,function(req,res) {
 
@@ -220,7 +223,6 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
             }
         });
     });
-
 
 
     return eventsRouter;

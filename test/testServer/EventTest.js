@@ -46,6 +46,7 @@ describe('Test Events', function() {
                 expect(JSON.parse(body)[0].eventDay).to.equals(3);
 
                 expect(JSON.parse(body)[0].eventCranes).to.have.length(2);
+                expect(JSON.parse(body)[0].eventCranes[0].craneGrossProductivity).to.equals(45.3);
 
                 done();
             });

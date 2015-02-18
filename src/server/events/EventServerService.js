@@ -19,7 +19,7 @@ module.exports = function (poolConnections, logger, configCSM, q) {
 
         var eventList = [];
         var promisesList = [];
-        var queryCranes = "SELECT C.craneId,C.craneName FROM EventsCranes EC INNER JOIN Cranes C ON C.craneId = EC.craneId WHERE EC.eventId = :eventId";
+        var queryCranes = "SELECT C.craneId,C.craneName,C.craneGrossProductivity FROM EventsCranes EC INNER JOIN Cranes C ON C.craneId = EC.craneId WHERE EC.eventId = :eventId";
 
         for(var i = 0; i < rawEvents.length ; i++) {
 
@@ -62,7 +62,7 @@ module.exports = function (poolConnections, logger, configCSM, q) {
         var eventIdJSON = {eventId: eventId};
 
         var selectEventQuery = "SELECT eventId,eventArrivingTime,eventDay,eventDuration,eventLength,eventName,eventStart,berthId,terminalId FROM Events WHERE eventId = :eventId";
-        var selectEventsCrane = "SELECT C.craneId,C.craneName FROM EventsCranes EC INNER JOIN Cranes C ON C.craneId = EC.craneId WHERE EC.eventId = :eventId";
+        var selectEventsCrane = "SELECT C.craneId,C.craneName,C.craneGrossProductivity FROM EventsCranes EC INNER JOIN Cranes C ON C.craneId = EC.craneId WHERE EC.eventId = :eventId";
         var resultEvent = {};
 
         q.ninvoke(connection,"query",selectEventQuery,eventIdJSON).then(function(result){

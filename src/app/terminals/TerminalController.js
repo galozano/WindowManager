@@ -102,6 +102,7 @@
             $log.debug("New Berth Schema to Add:" + angular.toJson(newBerthSchema));
 
             if(newBerthSchema
+                && newBerthSchema.terminalConfigSchemaName
                 && newBerthSchema.terminalConfigSchemaName != ""
                 && newBerthSchema.berths
                 && newBerthSchema.berths.length > 0){
@@ -124,7 +125,7 @@
 
             $log.debug("New crane:" + JSON.stringify(newCrane));
 
-            if(newCrane) {
+            if(newCrane && !$scope.craneForm.$invalid) {
                 if(!$scope.newCraneSchema.cranes)
                     $scope.newCraneSchema.cranes = [];
 
@@ -152,6 +153,7 @@
             $log.debug("New Crane Schema to Add:" + JSON.stringify(newCraneSchema));
 
             if(newCraneSchema
+                && newCraneSchema.craneConfigSchemaName
                 && newCraneSchema.craneConfigSchemaName != ""
                 && newCraneSchema.cranes
                 && newCraneSchema.cranes.length > 0){
@@ -179,8 +181,8 @@
                 terminalService.createTerminal(newTerminal).then(function(result){
 
                     $scope.terminals = result;
-                    $scope.newTerminal = {};
                     $('#terminalModal').modal('hide');
+                    $scope.newTerminal = {};
 
                 }, function(err){
                     alertService.pushMessage(err);
@@ -259,5 +261,6 @@
                 });
             }
         };
+
     }]);
 })();

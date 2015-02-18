@@ -88,14 +88,17 @@
   "cranes": [{
       "craneId":1,
       "craneName":"G1",
+      "craneGrossProductivity":45.3,
       "craneConfigSchemaId":1
     },{
       "craneId":2,
       "craneName":"G2",
+      "craneGrossProductivity":40.0,
       "craneConfigSchemaId":1
     },{
       "craneId":3,
       "craneName":"P2",
+      "craneGrossProductivity":30.0,
       "craneConfigSchemaId":2
     }
   ],
