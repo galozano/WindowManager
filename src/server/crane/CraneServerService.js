@@ -1,7 +1,7 @@
 /**
  * Created by gal on 1/22/15.
  */
-module.exports = function(express, poolConnections, logger, configCSM, q, securityServerService) {
+module.exports = function(express, poolConnections, logger, configCSM, q, securityServerService,eventServerService) {
 
     //---------------------------------------------------------------------------------
     // Variables
@@ -103,12 +103,18 @@ module.exports = function(express, poolConnections, logger, configCSM, q, securi
         logger.debug("Insert All Cranes:" +JSON.stringify(cranes));
 
         var promiseList = [];
-        var insertQuery = "INSERT INTO EventsCranes (eventId,craneId) VALUES (:eventId,:craneId)";
+        var insertQuery = "INSERT INTO EventsCranes (eventId,craneId,ecAssignedPercentage) VALUES (:eventId,:craneId,:ecAssignedPercentage)";
 
         for(var i = 0; i < cranes.length ; i++) {
 
             var crane = cranes[i];
-            var eventCrane = {eventId:eventId,craneId:crane.craneId};
+            var eventCrane = {
+                eventId:eventId,
+                craneId:crane.craneId,
+                ecAssignedPercentage:crane.ecAssignedPercentage
+            };
+
+            logger.debug("Inserted Crane:" + JSON.stringify(eventCrane));
 
             promiseList.push(q.ninvoke(connection,"query",insertQuery,eventCrane));
         }
@@ -306,6 +312,52 @@ module.exports = function(express, poolConnections, logger, configCSM, q, securi
         });
 
         return deferred.promise;
+    };
+
+    craneServerService.editCranes = function editCranes(data, connection){
+
+        var deferred = q.defer();
+
+        var eventCranes = data;
+
+        var eventId = {eventId:eventCranes.eventId};
+        var deleteQuery = "DELETE FROM EventsCranes WHERE eventId = :eventId";
+
+        connection.beginTransaction(function(err){
+            q.ninvoke(connection,"query",deleteQuery,eventId).then(function(result){
+
+                logger.debug("Result Delete Query:"+ JSON.stringify(result));
+                return craneServerService.insertEventsCranes(eventCranes.eventId,eventCranes.cranes,connection);
+
+            }).then(function(resutl){
+
+                logger.debug("Insert Event Cranes Result:" + JSON.stringify(resutl));
+
+                eventServerService.getSpecificEvent(eventCranes.eventId,connection,function(result){
+                    connection.commit(function(err) {
+                        if (err) {
+                            connection.rollback(function() {
+                                logger.error("Commit Error:" + JSON.stringify(err));
+                                deferred.reject(configCSM.errors.DATABASE_ERROR);
+                            });
+                        }
+                        else {
+                            logger.info("Callback:" + JSON.stringify(result));
+                            deferred.resolve(result);
+                        }
+                    });
+                });
+
+            }).fail(function(err){
+
+                connection.rollback(function() {
+                    logger.error("Error:" + JSON.stringify(err));
+                    deferred.reject(configCSM.errors.DATABASE_ERROR);
+                });
+            });
+        });
+
+        return  deferred.promise;
     };
 
     return craneServerService;

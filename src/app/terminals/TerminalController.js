@@ -35,9 +35,14 @@
         // Initialization
         //------------------------------------------------------------------------
 
+        /**
+         * Called when page is loaded to initialize the page
+         */
         init();
 
-        //Get all terminals
+        /**
+         * Get all terminals
+         */
         function init() {
 
             terminalService.getTerminals().then(function(result){

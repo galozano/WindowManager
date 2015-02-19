@@ -31,7 +31,10 @@ describe('Test Cranes', function() {
 
             var editCraneJson = {
                 "eventId": 1,
-                "cranes":[{craneId:2}]
+                "cranes":[{
+                    "craneId":2,
+                    "ecAssignedPercentage":50
+                }]
             };
 
             var options = {
@@ -46,6 +49,7 @@ describe('Test Cranes', function() {
 
                 expect(JSON.parse(body).eventId).to.eq(1);
                 expect(JSON.parse(body).eventCranes).to.have.length(1);
+                expect(JSON.parse(body).eventCranes[0].ecAssignedPercentage).to.eq(50);
 
                 done();
             });
@@ -125,7 +129,7 @@ describe('Test Cranes', function() {
         });
     });
 
-    describe.only("Add Crane Schema", function(){
+    describe("Add Crane Schema", function(){
 
         var url = 'http://localhost:3000/cranes/createCraneSchema';
 

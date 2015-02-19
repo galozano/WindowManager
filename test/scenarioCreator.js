@@ -120,7 +120,7 @@ function insertInformation ( ) {
                 value:scenario.cranes
             },
             insertCranesEvents: {
-                query:"INSERT INTO EventsCranes (craneId,eventId) VALUES (:craneId,:eventId)",
+                query:"INSERT INTO EventsCranes (craneId,eventId,ecAssignedPercentage) VALUES (:craneId,:eventId,:ecAssignedPercentage)",
                 value:scenario.eventsCranes
             },
             insertRolType: {

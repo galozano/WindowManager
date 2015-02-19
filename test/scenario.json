@@ -155,10 +155,12 @@
   "eventsCranes": [
     {
       "eventId": 1,
-      "craneId": 1
+      "craneId": 1,
+      "ecAssignedPercentage":50
     },{
       "eventId":1,
-      "craneId":2
+      "craneId":2,
+      "ecAssignedPercentage":33.3
     }
   ],
   "day":[{

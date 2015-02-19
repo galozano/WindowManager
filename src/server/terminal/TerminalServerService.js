@@ -157,7 +157,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
             "ORDER BY B.berthSequence";
 
         //Get all the cranes of the terminal
-        var query3 = "SELECT C.craneId,C.craneName " +
+        var query3 = "SELECT C.craneId,C.craneName, C.craneGrossProductivity " +
             "FROM Terminals T,CraneConfigSchema CCS,Cranes C " +
             "WHERE T.craneConfigSchemaId = CCS.craneConfigSchemaId " +
             "AND CCS.craneConfigSchemaId = C.craneConfigSchemaId " +

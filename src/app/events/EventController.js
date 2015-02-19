@@ -121,6 +121,16 @@
                     else {
                         element.eventCalculatedDuration = element.eventDuration;
                     }
+
+                    var eventProductivity = 0;
+                    //Calculate Total Productivity
+
+                    element.eventCranes.forEach(function(crane){
+                        eventProductivity += crane.craneGrossProductivity * (crane.ecAssignedPercentage/100);
+                    });
+
+                    element.eventProductivity = eventProductivity;
+
                 });
             }
 
@@ -265,35 +275,35 @@
 
             $log.debug("Edit Cranes Modal:" + JSON.stringify(event));
 
-            var cranesIdEvents = [];
             var terminalCranes = $scope.terminal.cranes;
             var eventCranes = event.eventCranes;
             $scope.newEvent = event;
 
             var cranesList = [];
 
-            for(var i = 0 ; i < eventCranes.length ; i++) {
-                var eventCrane = eventCranes[i];
-                cranesIdEvents.push(eventCrane.craneId);
-            }
-
             $log.debug("Terminal Cranes:" + JSON.stringify(terminalCranes));
 
             for(var j = 0 ; j < terminalCranes.length ; j++) {
                 var crane = terminalCranes[j];
-                var value = false;
 
-                if(_.contains(cranesIdEvents,crane.craneId)){
-                    value = true;
+                for(var k = 0; k < eventCranes.length; k++){
+
+                    var eventCrane = eventCranes[k];
+
+                    if(eventCrane.craneId == crane.craneId){
+
+                        var temp = {
+                            craneId:crane.craneId,
+                            craneName:crane.craneName,
+                            ecAssignedPercentage: eventCrane.ecAssignedPercentage,
+                            craneGrossProductivity:crane.craneGrossProductivity,
+                            value:true
+                        };
+
+                        cranesList.push(temp);
+                    }
+
                 }
-
-                var temp = {
-                    craneId:crane.craneId,
-                    craneName:crane.craneName,
-                    value:value
-                };
-
-                cranesList.push(temp);
             }
 
             $log.debug("Crane Final List:" + JSON.stringify(cranesList));
@@ -314,7 +324,10 @@
                 var crane = cranesList[i];
 
                 if(crane.value) {
-                    eventCranes.push({craneId:crane.craneId});
+                    eventCranes.push({
+                        craneId:crane.craneId,
+                        ecAssignedPercentage:crane.ecAssignedPercentage
+                    });
                 }
             }
 
