@@ -252,16 +252,16 @@
     "rolId":4
   }],
   "terminalSchemaAccess":[{
-    "terminalSchemaAccessId":1,
-    "terminalConfigSchemaId":1,
-    "rolId":4
-  },{
-    "terminalSchemaAccessId":2,
-    "terminalConfigSchemaId":2,
-    "rolId":4
-  },{
-    "terminalSchemaAccessId":3,
-    "terminalConfigSchemaId":3,
-    "rolId":4
+      "terminalSchemaAccessId":1,
+      "terminalConfigSchemaId":1,
+      "rolId":4
+    },{
+      "terminalSchemaAccessId":2,
+      "terminalConfigSchemaId":2,
+      "rolId":4
+    },{
+      "terminalSchemaAccessId":3,
+      "terminalConfigSchemaId":3,
+      "rolId":4
   }]
 }
