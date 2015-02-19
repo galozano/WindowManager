@@ -30,8 +30,6 @@ describe('Test Events', function() {
             //Terminal 1
             var finalURL = url + "/1";
 
-            console.log("URL:" + finalURL);
-
             var options = {
                 url:finalURL,
                 headers:{"authorization":"Bearer " + scenario.users[0].userToken}
@@ -46,6 +44,8 @@ describe('Test Events', function() {
                 expect(JSON.parse(body)[0].eventDay).to.equals(3);
 
                 expect(JSON.parse(body)[0].eventCranes).to.have.length(2);
+                expect(JSON.parse(body)[0].eventCranes[0].craneGrossProductivity).to.equals(45.3);
+                expect(JSON.parse(body)[0].eventCranes[0].ecAssignedPercentage).to.equals(50);
 
                 done();
             });

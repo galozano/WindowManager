@@ -255,10 +255,12 @@
                             <table class="table">
                                 <tr>
                                     <th>Crane Name</th>
+                                    <th>Productivity</th>
                                     <th ng-hide="viewMode">Option</th>
                                 </tr>
                                 <tr ng-repeat="crane in newCraneSchema.cranes">
                                     <td>{{crane.craneName}}</td>
+                                    <td>{{crane.craneGrossProductivity}}</td>
                                     <td ng-hide="viewMode"><button type="button" class="btn btn-danger" ng-click="deleteCrane(crane)">Delete</button></td>
                                 </tr>
                                 <tr ng-hide="viewMode">
@@ -267,6 +269,12 @@
                                             <span class="error" ng-show="craneForm.craneName.$error.maxLength">Crane Name too long</span>
                                         </div>
                                         <input type="text" name="craneName" id="craneName" ng-model="newCrane.craneName" class="form-control"  maxlength="20" required/>
+                                    </td>
+                                    <td>
+                                        <div class="formError" ng-show="craneForm.craneGrossProductivity.$invalid && craneForm.craneGrossProductivity.$dirty || craneForm.$submitted">
+                                            <span class="error" ng-show="craneForm.craneGrossProductivity.$error.number">Invalid Productivity</span>
+                                        </div>
+                                        <input type="number" name="craneGrossProductivity" id="craneGrossProductivity" ng-model="newCrane.craneGrossProductivity" class="form-control"  size="5" required/>
                                     </td>
                                     <td>
                                         <button type="submit" class="btn btn-primary" ng-click="addNewCrane(newCrane)">Add</button>

@@ -132,6 +132,11 @@
     padding-left:10px ;
 }
 
+.eventCalendar #ecAssignedPercentage {
+    width: 70px;
+    margin-left: 20px;
+}
+
 @media print {
     .event {
         background-color: #DFF0D7 !important;

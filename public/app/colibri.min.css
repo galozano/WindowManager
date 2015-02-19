@@ -11,6 +11,7 @@
 .eventCalendar .event .craneSelection{position:absolute;z-index:3;right:30px;top:0;padding:3px;height:20px;overflow:hidden;font-size:11px;text-align:center;color:#000;cursor:pointer}
 .eventCalendar .event .viewEvent{position:absolute;z-index:3;right:45px;top:0;padding:3px;height:20px;overflow:hidden;font-size:11px;text-align:center;color:#000;cursor:pointer}
 .eventCalendar .nav li{padding-left:10px}
+.eventCalendar #ecAssignedPercentage{width:70px;margin-left:20px}
 @media print{.event{background-color:#DFF0D7!important}}
 .login{background:url(/images/loginBackground.jpg);position:fixed;width:100%;height:100%;top:0;left:0}
 .login .jumbotron{text-align:center;width:30rem;border-radius:.5rem;top:0;bottom:0;left:0;right:0;position:absolute;margin:auto;background-color:#fff;padding:2rem;height:500px}
@@ -34,6 +35,7 @@
 .nav-stacked>li{float:none}
 .nav-pills>li.active>a,.nav-pills>li.active>a:focus,.nav-pills>li.active>a:hover{color:inherit;background-color:inherit}
 .terminals .dropdown-menu{right:0;left:auto}
+.terminals #craneGrossProductivity{width:100px}
 .alertDirective #errorAlert{position:absolute;right:0;z-index:2000;margin-right:10px}
 .alertDirective li{list-style-type:none}
 .alertDirective button.close{margin-left:10px}

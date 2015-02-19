@@ -15,9 +15,6 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
 
         poolConnections.getConnection(function(err, connection) {
 
-            var eventId = {eventId:eventCranes.eventId};
-            var deleteQuery = "DELETE FROM EventsCranes WHERE eventId = :eventId";
-
             if (err) {
                 logger.error("Error:" + JSON.stringify(err));
                 res.json(configCSM.errors.DATABASE_ERROR);
@@ -25,27 +22,12 @@ module.exports = function(express, poolConnections, logger, configCSM, q, eventS
             }
             else {
 
-                q.ninvoke(connection,"query",deleteQuery,eventId).then(function(result){
-
-                    logger.debug("Result Delete Query:"+ JSON.stringify(result));
-                    return craneServerService.insertEventsCranes(eventCranes.eventId,eventCranes.cranes,connection);
-
-                }).then(function(resutl){
-
-                    logger.debug("Insert Event Cranes Result:" + JSON.stringify(resutl));
-
-                    eventServerService.getSpecificEvent(eventCranes.eventId,connection,function(result){
-                        logger.info("JSON sent:" + JSON.stringify(result));
-                        res.json(result);
-                        connection.release();
-                    });
-
-                }).fail(function(err){
-                    if(err) {
-                        logger.error("ERROR Edit Cranes:" + JSON.stringify(err));
-                        res.json(configCSM.errors.DATABASE_ERROR);
-                    }
+                craneServerService.editCranes(eventCranes,connection).then(function(result){
                     connection.release();
+                    res.json(result);
+                }).fail(function(err){
+                    connection.release();
+                    res.json(configCSM.errors.DATABASE_ERROR);
                 });
             }
         });

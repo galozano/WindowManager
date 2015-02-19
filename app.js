@@ -73,7 +73,7 @@ var securityServerController = require('./src/server/security/SecurityServerCont
 var eventServerService  = require('./src/server/events/EventServerService.js')(poolConnections,logger,configCSM,q);
 var eventServerController = require('./src/server/events/EventServerController.js')(express,poolConnections,logger,configCSM,eventServerService,q,validator);
 
-var craneServerService = require('./src/server/crane/CraneServerService.js')(express,poolConnections,logger,configCSM,q,securityServerService);
+var craneServerService = require('./src/server/crane/CraneServerService.js')(express,poolConnections,logger,configCSM,q,securityServerService,eventServerService);
 var craneServerController = require('./src/server/crane/CraneServerController.js')(express,poolConnections,logger,configCSM,q,eventServerService,craneServerService, utilitiesCommon);
 
 var terminalServerService = require('./src/server/terminal/TerminalServerService.js')(express,poolConnections,logger,configCSM,q,securityServerService);

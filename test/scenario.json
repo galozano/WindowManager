@@ -88,14 +88,17 @@
   "cranes": [{
       "craneId":1,
       "craneName":"G1",
+      "craneGrossProductivity":45.3,
       "craneConfigSchemaId":1
     },{
       "craneId":2,
       "craneName":"G2",
+      "craneGrossProductivity":40.0,
       "craneConfigSchemaId":1
     },{
       "craneId":3,
       "craneName":"P2",
+      "craneGrossProductivity":30.0,
       "craneConfigSchemaId":2
     }
   ],
@@ -152,10 +155,12 @@
   "eventsCranes": [
     {
       "eventId": 1,
-      "craneId": 1
+      "craneId": 1,
+      "ecAssignedPercentage":50
     },{
       "eventId":1,
-      "craneId":2
+      "craneId":2,
+      "ecAssignedPercentage":33.3
     }
   ],
   "day":[{
@@ -247,16 +252,16 @@
     "rolId":4
   }],
   "terminalSchemaAccess":[{
-    "terminalSchemaAccessId":1,
-    "terminalConfigSchemaId":1,
-    "rolId":4
-  },{
-    "terminalSchemaAccessId":2,
-    "terminalConfigSchemaId":2,
-    "rolId":4
-  },{
-    "terminalSchemaAccessId":3,
-    "terminalConfigSchemaId":3,
-    "rolId":4
+      "terminalSchemaAccessId":1,
+      "terminalConfigSchemaId":1,
+      "rolId":4
+    },{
+      "terminalSchemaAccessId":2,
+      "terminalConfigSchemaId":2,
+      "rolId":4
+    },{
+      "terminalSchemaAccessId":3,
+      "terminalConfigSchemaId":3,
+      "rolId":4
   }]
 }

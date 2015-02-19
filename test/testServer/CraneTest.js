@@ -31,7 +31,10 @@ describe('Test Cranes', function() {
 
             var editCraneJson = {
                 "eventId": 1,
-                "cranes":[{craneId:2}]
+                "cranes":[{
+                    "craneId":2,
+                    "ecAssignedPercentage":50
+                }]
             };
 
             var options = {
@@ -46,6 +49,7 @@ describe('Test Cranes', function() {
 
                 expect(JSON.parse(body).eventId).to.eq(1);
                 expect(JSON.parse(body).eventCranes).to.have.length(1);
+                expect(JSON.parse(body).eventCranes[0].ecAssignedPercentage).to.eq(50);
 
                 done();
             });
@@ -134,9 +138,11 @@ describe('Test Cranes', function() {
             var craneSchema = {
                 "craneConfigSchemaName": "SPRCCraneConfig1",
                 "cranes":[{
-                    "craneName": "Crane 1"
+                    "craneName": "Crane 1",
+                    "craneGrossProductivity": 45.3
                 }, {
-                    "craneName": "Crane 2"
+                    "craneName": "Crane 2",
+                    "craneGrossProductivity": 50
                 }]
             };
 
@@ -153,6 +159,7 @@ describe('Test Cranes', function() {
                 expect(JSON.parse(body).status).to.equals("OK");
                 expect(JSON.parse(body).data.craneConfigSchemaName).to.equals("SPRCCraneConfig1");
                 expect(JSON.parse(body).data.cranes).to.have.length(2);
+                expect(JSON.parse(body).data.cranes[0].craneGrossProductivity).to.equals(45.3);
 
                 done();
             });

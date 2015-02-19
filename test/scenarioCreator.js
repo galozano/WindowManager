@@ -116,11 +116,11 @@ function insertInformation ( ) {
                 value:scenario.events
             },
             insertCranes: {
-                query:"INSERT INTO Cranes (craneId,craneName,craneConfigSchemaId) VALUES (:craneId,:craneName,:craneConfigSchemaId)",
+                query:"INSERT INTO Cranes (craneId,craneName,craneGrossProductivity,craneConfigSchemaId) VALUES (:craneId,:craneName,:craneGrossProductivity,:craneConfigSchemaId)",
                 value:scenario.cranes
             },
             insertCranesEvents: {
-                query:"INSERT INTO EventsCranes (craneId,eventId) VALUES (:craneId,:eventId)",
+                query:"INSERT INTO EventsCranes (craneId,eventId,ecAssignedPercentage) VALUES (:craneId,:eventId,:ecAssignedPercentage)",
                 value:scenario.eventsCranes
             },
             insertRolType: {
