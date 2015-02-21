@@ -4,4 +4,4 @@ bower_components
 node_modules
 logs
 build
-public/app
+public

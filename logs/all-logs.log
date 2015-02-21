@@ -3208,3 +3208,4 @@
 {"level":"info","message":"JSON sent:{\"terminalId\":6,\"terminalName\":\"Con Draft\",\"terminalConfigSchemaName\":\"Nuevo con Draft\",\"totalLength\":355,\"berths\":[{\"berthId\":40,\"berthName\":\"Nuevo\",\"berthLength\":122,\"berthSequence\":1,\"berthStart\":1,\"berthDraft\":200},{\"berthId\":41,\"berthName\":\"Nuevo2\",\"berthLength\":233,\"berthSequence\":2,\"berthStart\":0,\"berthDraft\":22}],\"cranes\":[{\"craneId\":1,\"craneName\":\"G1\",\"craneGrossProductivity\":45.3},{\"craneId\":2,\"craneName\":\"G2\",\"craneGrossProductivity\":40}]}","timestamp":"2015-02-21T02:22:42.498Z"}
 {"level":"info","message":"Terminal Id Received:6","timestamp":"2015-02-21T02:22:42.573Z"}
 {"level":"info","message":"JSON sent:[]","timestamp":"2015-02-21T02:22:42.579Z"}
+{"level":"info","message":"App listening at http://0.0.0.0:3000 \n","timestamp":"2015-02-21T02:25:24.051Z"}
