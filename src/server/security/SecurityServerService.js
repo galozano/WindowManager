@@ -27,15 +27,13 @@ module.exports = function (poolConnections, logger, configCSM, q) {
         var deferred = q.defer();
 
         var userEmailJSON = {
-            userEmail:user.userEmail,
+            userId:user.userId,
             terminalId:terminalId
         };
 
         var insertQuery = "INSERT INTO TerminalAccess (terminalId, rolId) SELECT B.* FROM (" +
             " SELECT :terminalId terminalId,C.rolId FROM Company C" +
-            " WHERE C.companyId = (SELECT U.companyId FROM Users U WHERE U.userEmail = :userEmail) UNION" +
-            " SELECT :terminalId terminalId,U2.rolId FROM Users U2" +
-            " WHERE U2.userEmail = :userEmail) B";
+            " WHERE C.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId)) B";
 
         q.ninvoke(connection,"query", insertQuery, userEmailJSON).then(function(result){
 
@@ -55,13 +53,13 @@ module.exports = function (poolConnections, logger, configCSM, q) {
         var deferred = q.defer();
 
         var userEmailJSON = {
-            userEmail:user.userEmail,
+            userId:user.userId,
             craneConfigSchemaId:craneSchemaId
         };
 
         var insertQuery = "INSERT INTO CraneSchemaAccess (craneConfigSchemaId, rolId)" +
             " SELECT B.* FROM ( SELECT :craneConfigSchemaId craneConfigSchemaId, C.rolId FROM Company C" +
-            " WHERE C.companyId = (SELECT U.companyId FROM Users U WHERE U.userEmail = :userEmail)) B";
+            " WHERE C.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId)) B";
 
         q.ninvoke(connection,"query", insertQuery, userEmailJSON).then(function(result){
 
@@ -81,13 +79,13 @@ module.exports = function (poolConnections, logger, configCSM, q) {
         var deferred = q.defer();
 
         var userEmailJSON = {
-            userEmail:user.userEmail,
+            userId:user.userId,
             terminalConfigSchemaId:terminalSchemaId
         };
 
         var insertQuery = "INSERT INTO TerminalSchemaAccess (terminalConfigSchemaId, rolId)" +
             " SELECT B.* FROM ( SELECT :terminalConfigSchemaId terminalConfigSchemaId, C.rolId FROM Company C" +
-            " WHERE C.companyId = (SELECT U.companyId FROM Users U WHERE U.userEmail = :userEmail)) B";
+            " WHERE C.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId)) B";
 
         q.ninvoke(connection,"query", insertQuery, userEmailJSON).then(function(result){
 

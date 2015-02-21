@@ -52,7 +52,7 @@ describe('Test Security', function() {
 
             var addTerminalAccess = {
                 terminalId: 1,
-                rolId:1
+                rolId:4
             };
 
             var options = {
