@@ -78,7 +78,7 @@
 
         function updateEventList(pEventsList) {
 
-            $log.info("Event List: " + JSON.stringify(pEventsList));
+            $log.debug("Event List: " + JSON.stringify(pEventsList));
 
             var eventsList = angular.copy(pEventsList);
 
@@ -134,7 +134,7 @@
                 });
             }
 
-            $log.info("Event List Changed: " + JSON.stringify(eventsList));
+            $log.debug("Event List Changed: " + JSON.stringify(eventsList));
             $scope.events = eventsList;
         }
 

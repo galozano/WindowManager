@@ -5,6 +5,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":1,
       "berthSequence":5,
+      "berthDraft":100,
       "berthStart":false
     }, {
       "berthId":2,
@@ -12,6 +13,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":1,
       "berthSequence":2,
+      "berthDraft":100,
       "berthStart":false
     }, {
       "berthId":3,
@@ -19,6 +21,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":1,
       "berthSequence":3,
+      "berthDraft":140,
       "berthStart":false
     }, {
       "berthId":4,
@@ -26,6 +29,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":1,
       "berthSequence":1,
+      "berthDraft":120,
       "berthStart":true
     }, {
       "berthId":5,
@@ -33,6 +37,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":1,
       "berthSequence":4,
+      "berthDraft":10,
       "berthStart":false
     }, {
       "berthId":6,
@@ -40,6 +45,7 @@
       "berthLength":800,
       "terminalConfigSchemaId":2,
       "berthSequence":1,
+      "berthDraft":30,
       "berthStart":true
     }, {
       "berthId":7,
@@ -47,6 +53,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":2,
       "berthSequence":2,
+      "berthDraft":200,
       "berthStart":true
     }, {
       "berthId":8,
@@ -54,6 +61,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":2,
       "berthSequence":3,
+      "berthDraft":200,
       "berthStart":true
     },{
       "berthId":9,
@@ -61,6 +69,7 @@
       "berthLength":1000,
       "terminalConfigSchemaId":3,
       "berthSequence":1,
+      "berthDraft":100,
       "berthStart":true
   }],
   "terminalConfigurationsSchemas": [{

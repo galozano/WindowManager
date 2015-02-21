@@ -34,7 +34,13 @@
                     console.debug("Terminal 3:" + JSON.stringify($scope.terminal));
                     createTerminalViewObject($scope.terminal);
                 });
-            }]
+            }],
+            link:function(scope, elem, attrs) {
+
+                var topHeight = $('#tableTopHeader').height();
+
+                $log.info("TOP HEIGHT:" + topHeight);
+            }
         }
     }]);
 

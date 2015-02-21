@@ -184,6 +184,7 @@
                                 <tr>
                                     <th>Sequence</th>
                                     <th>Berth Name</th>
+                                    <th>Berth Draft</th>
                                     <th>Berth Length</th>
                                     <th>Start?</th>
                                     <th ng-hide="viewMode">Option</th>
@@ -191,6 +192,7 @@
                                 <tr ng-repeat="berth in newBerthSchema.berths">
                                     <td>{{berth.berthSequence}}</td>
                                     <td>{{berth.berthName}}</td>
+                                    <td>{{berth.berthDraft}}</td>
                                     <td>{{berth.berthLength}}</td>
                                     <td>
                                         <span class="glyphicon glyphicon-ok" ng-show="berth.berthStart"></span>
@@ -205,6 +207,12 @@
                                             <span class="error" ng-show="berthForm.berthName.$error.maxLength">Berth Name too long</span>
                                         </div>
                                         <input type="text" name="berthName" id="berthName" ng-model="newBerth.berthName" class="form-control"  maxlength="20" required/>
+                                    </td>
+                                    <td>
+                                        <div class="formError" ng-show="berthForm.berthDraft.$invalid && berthForm.berthDraft.$dirty || berthForm.$submitted">
+                                            <span class="error" ng-show="berthForm.berthDraft.$error.number">Invalid Input</span>
+                                        </div>
+                                        <input type="number" name="berthDraft" id="berthDraft" ng-model="newBerth.berthDraft" class="form-control" required/>
                                     </td>
                                     <td>
                                         <div class="formError" ng-show="berthForm.berthLength.$invalid && berthForm.berthLength.$dirty || berthForm.$submitted">
