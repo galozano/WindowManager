@@ -3209,3 +3209,4 @@
 {"level":"info","message":"Terminal Id Received:6","timestamp":"2015-02-21T02:22:42.573Z"}
 {"level":"info","message":"JSON sent:[]","timestamp":"2015-02-21T02:22:42.579Z"}
 {"level":"info","message":"App listening at http://0.0.0.0:3000 \n","timestamp":"2015-02-21T02:25:24.051Z"}
+{"level":"info","message":"App listening at http://0.0.0.0:3000 \n","timestamp":"2015-02-21T02:26:06.387Z"}
