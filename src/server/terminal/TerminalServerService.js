@@ -120,12 +120,12 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
         var deferred = q.defer();
 
         var parameters = {
-            rolId: user.rolId
+            userId: user.userId
         };
 
         var query2 = "SELECT T.terminalId, T.terminalName, T.terminalConfigSchemaId, T.craneConfigSchemaId " +
             "FROM Terminals AS T INNER JOIN TerminalAccess AS TA ON TA.terminalId = T.terminalId " +
-            "WHERE TA.rolId = :rolId;";
+            "WHERE TA.rolId = (SELECT rolId FROM Company C WHERE c.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId))";
 
         connection.query(query2,parameters,function(err, result) {
 
@@ -222,8 +222,8 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
 
         var selectSQL = "SELECT TCS.terminalConfigSchemaId, TCS.terminalConfigSchemaName, B.berthId, B.berthName, B.berthLength, B.berthStart, B.berthSequence, B.berthDraft" +
             " FROM (SELECT TCS1.terminalConfigSchemaId,TCS1.terminalConfigSchemaName FROM TerminalConfigSchema TCS1 INNER JOIN TerminalSchemaAccess TSA" +
-            " ON TCS1.terminalConfigSchemaId = TSA.terminalConfigSchemaId WHERE TSA.rolId = (SELECT rolId" +
-            " FROM Company C WHERE c.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId))) " +
+            " ON TCS1.terminalConfigSchemaId = TSA.terminalConfigSchemaId WHERE TSA.rolId = " +
+            " (SELECT rolId FROM Company C WHERE c.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId))) " +
             " TCS INNER JOIN Berths B ON B.terminalConfigSchemaId = TCS.terminalConfigSchemaId " +
             " ORDER BY TCS.terminalConfigSchemaId, B.berthSequence";
 
@@ -529,8 +529,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
 
         return  deferred.promise;
     };
-
-
+    
 
     return terminalServerService;
 };

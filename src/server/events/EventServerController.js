@@ -26,7 +26,7 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
                     connection.release();
                 }
                 else {
-                    eventServerService.getEvents(terminalId,req.authUser.rolId,connection,function(result) {
+                    eventServerService.getEvents(terminalId,req.authUser,connection,function(result) {
                         logger.info("JSON sent:" + JSON.stringify(result));
                         res.json(result);
                         connection.release();
