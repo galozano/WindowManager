@@ -220,7 +220,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
             userId: user.userId
         };
 
-        var selectSQL = "SELECT TCS.terminalConfigSchemaId, TCS.terminalConfigSchemaName, B.berthId, B.berthName, B.berthLength, B.berthStart, B.berthSequence" +
+        var selectSQL = "SELECT TCS.terminalConfigSchemaId, TCS.terminalConfigSchemaName, B.berthId, B.berthName, B.berthLength, B.berthStart, B.berthSequence, B.berthDraft" +
             " FROM (SELECT TCS1.terminalConfigSchemaId,TCS1.terminalConfigSchemaName FROM TerminalConfigSchema TCS1 INNER JOIN TerminalSchemaAccess TSA" +
             " ON TCS1.terminalConfigSchemaId = TSA.terminalConfigSchemaId WHERE TSA.rolId = (SELECT rolId" +
             " FROM Company C WHERE c.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId))) " +
@@ -254,6 +254,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
                     newBerth.berthLength =  element.berthLength;
                     newBerth.berthStart = element.berthStart;
                     newBerth.berthSequence = element.berthSequence;
+                    newBerth.berthDraft = element.berthDraft;
 
                     lastConfigSchema.berths.push(newBerth);
                 }
@@ -266,6 +267,7 @@ module.exports = function(express,poolConnections,logger,configCSM,q, securitySe
                     newBerth.berthLength =  element.berthLength;
                     newBerth.berthStart = element.berthStart
                     newBerth.berthSequence = element.berthSequence;
+                    newBerth.berthDraft = element.berthDraft;
 
                     lastConfigSchema.berths.push(newBerth);
                 }
