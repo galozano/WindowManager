@@ -286,24 +286,27 @@
             for(var j = 0 ; j < terminalCranes.length ; j++) {
                 var crane = terminalCranes[j];
 
+                var temp = {
+                    craneId:crane.craneId,
+                    craneName:crane.craneName,
+                    ecAssignedPercentage: 0,
+                    craneGrossProductivity:crane.craneGrossProductivity,
+                    value:false
+                };
+
                 for(var k = 0; k < eventCranes.length; k++){
 
                     var eventCrane = eventCranes[k];
 
                     if(eventCrane.craneId == crane.craneId){
-
-                        var temp = {
-                            craneId:crane.craneId,
-                            craneName:crane.craneName,
-                            ecAssignedPercentage: eventCrane.ecAssignedPercentage,
-                            craneGrossProductivity:crane.craneGrossProductivity,
-                            value:true
-                        };
-
-                        cranesList.push(temp);
+                        temp.craneGrossProductivity = crane.craneGrossProductivity;
+                        temp.ecAssignedPercentage = eventCrane.ecAssignedPercentage;
+                        temp.value = true;
                     }
 
                 }
+
+                cranesList.push(temp);
             }
 
             $log.debug("Crane Final List:" + JSON.stringify(cranesList));
