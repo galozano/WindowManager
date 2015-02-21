@@ -103,7 +103,7 @@ function insertInformation ( ) {
                 value:scenario.craneConfigurationSchemas
             },
             insertBerth:{
-                query:"INSERT INTO Berths (berthId,berthName,berthLength,terminalConfigSchemaId,berthSequence,berthStart) VALUES (:berthId,:berthName,:berthLength,:terminalConfigSchemaId,:berthSequence,:berthStart)",
+                query:"INSERT INTO Berths (berthId,berthName,berthLength,terminalConfigSchemaId,berthSequence,berthDraft,berthStart) VALUES (:berthId,:berthName,:berthLength,:terminalConfigSchemaId,:berthSequence,:berthDraft,:berthStart)",
                 value:scenario.berths
             },
             insertTerminals:{

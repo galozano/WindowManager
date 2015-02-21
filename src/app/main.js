@@ -68,7 +68,7 @@
     app.constant('tableProp',{
         tableDayHeight: 84,
         tableDayHeightNoBorder: 84,
-        tableTopHeaderHeight: 29,
+        tableTopHeaderHeight: 48, //29,
         tableLeftHeaderWidth: 100,
         tableTotalWidth: 1099,
         cellHourHeight: 3.5, //TableDayHeight/12 cells

@@ -58,6 +58,7 @@ describe('Test Terminals', function() {
                 expect(JSON.parse(body).terminalId).to.equals(1);
                 expect(JSON.parse(body).totalLength).to.equals(1200);
                 expect(JSON.parse(body).berths[0].berthSequence).to.equals(1);
+                expect(JSON.parse(body).berths[0].berthDraft).to.equals(30);
                 expect(JSON.parse(body).berths[2].berthSequence).to.equals(3);
                 expect(JSON.parse(body).cranes).to.have.length(2);
                 expect(JSON.parse(body).berths).to.have.length(3);
@@ -104,11 +105,13 @@ describe('Test Terminals', function() {
                     "berthName": "Berth 1",
                     "berthLength":200,
                     "berthSequence":1,
+                    "berthDraft":100,
                     "berthStart":true
                 }, {
                     "berthName": "Berth 2",
                     "berthLength":200,
                     "berthSequence":2,
+                    "berthDraft":100,
                     "berthStart":false
                 }]
             };
@@ -126,6 +129,7 @@ describe('Test Terminals', function() {
                 expect(JSON.parse(body).data).to.exist;
                 expect(JSON.parse(body).data.terminalConfigSchemaName).to.equals("SPRCConfig1");
                 expect(JSON.parse(body).data.berths).to.have.length(2);
+                expect(JSON.parse(body).data.berths[0].berthDraft).to.equals(100);
 
                 done();
             });
