@@ -3,5 +3,5 @@ projectFilesBackup
 bower_components
 node_modules
 build
-./public
-./logs
+public
+logs
