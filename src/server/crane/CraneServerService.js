@@ -252,7 +252,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q, securi
           userId: user.userId
         };
 
-        var sqlQuery = "SELECT CCS.craneConfigSchemaId, CCS.craneConfigSchemaName, C.craneId, C.craneName" +
+        var sqlQuery = "SELECT CCS.craneConfigSchemaId, CCS.craneConfigSchemaName, C.craneId, C.craneName, C.craneGrossProductivity" +
             " FROM ( SELECT CCS1.craneConfigSchemaId,CCS1.craneConfigSchemaName" +
             " FROM CraneConfigSchema CCS1 INNER JOIN CraneSchemaAccess CSA" +
             " ON CCS1.craneConfigSchemaId = CSA.craneConfigSchemaId WHERE CSA.rolId =" +
@@ -284,6 +284,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q, securi
 
                     newCrane.craneId = element.craneId;
                     newCrane.craneName = element.craneName;
+                    newCrane.craneGrossProductivity = element.craneGrossProductivity;
 
                     lastConfigSchema.cranes.push(newCrane);
                 }
@@ -293,11 +294,11 @@ module.exports = function(express, poolConnections, logger, configCSM, q, securi
 
                     newCrane.craneId = element.craneId;
                     newCrane.craneName = element.craneName;
+                    newCrane.craneGrossProductivity = element.craneGrossProductivity;
 
                     lastConfigSchema.cranes.push(newCrane);
                 }
             });
-
 
             if(lastConfigSchema)
                 sentJSON.push(lastConfigSchema);

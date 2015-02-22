@@ -66,15 +66,15 @@
      * Table Calendar Table properties
      */
     app.constant('tableProp',{
-        tableDayHeight: 84,
-        tableDayHeightNoBorder: 84,
-        tableTopHeaderHeight: 48, //29,
-        tableLeftHeaderWidth: 100,
-        tableTotalWidth: 1099,
+        tableDayHeight: 84.0,
+        tableDayHeightNoBorder: 84.0,
+        tableTopHeaderHeight: 48.0, //29,
+        tableLeftHeaderWidth: 100.0,
+        tableTotalWidth: 1099.0,
         cellHourHeight: 3.5, //TableDayHeight/12 cells
-        hoursInDay: 24,
-        minutesHour: 60,
-        totalPixelLength:999
+        hoursInDay: 24.0,
+        minutesHour: 60.0,
+        totalPixelLength:999.0
     });
 
     //--------------------------------------------------------------------
