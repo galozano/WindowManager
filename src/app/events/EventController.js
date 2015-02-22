@@ -160,6 +160,7 @@
                 "eventLength":newEvent.eventLength,
                 "eventDay":newEvent.eventDay,
                 "berthId":newEvent.berthId,
+                "eventColor":newEvent.eventColor,
                 "terminalId":terminalId
             };
 
@@ -202,6 +203,7 @@
                 "eventDay":newEvent.eventDay,
                 "eventId":newEvent.eventId,
                 "berthId":newEvent.berthId,
+                "eventColor":newEvent.eventColor,
                 "terminalId":terminalId
             };
 
@@ -258,7 +260,8 @@
                 "eventLength":newEvent.eventLength,
                 "eventDay":newEvent.eventDay,
                 "eventId":newEvent.eventId,
-                "berthId":newEvent.berthId
+                "berthId":newEvent.berthId,
+                "eventColor":newEvent.eventColor
             };
 
             eventService.editEvent(eventJSON).then(function(result){

@@ -61,7 +61,7 @@ module.exports = function (poolConnections, logger, configCSM, q) {
 
         var eventIdJSON = {eventId: eventId};
 
-        var selectEventQuery = "SELECT eventId,eventArrivingTime,eventDay,eventDuration,eventLength,eventName,eventStart,berthId,terminalId FROM Events WHERE eventId = :eventId";
+        var selectEventQuery = "SELECT eventId,eventArrivingTime,eventDay,eventDuration,eventLength,eventName,eventColor,eventStart,berthId,terminalId FROM Events WHERE eventId = :eventId";
         var selectEventsCrane = "SELECT C.craneId,C.craneName,C.craneGrossProductivity,EC.ecAssignedPercentage FROM EventsCranes EC INNER JOIN Cranes C ON C.craneId = EC.craneId WHERE EC.eventId = :eventId";
         var resultEvent = {};
 
@@ -104,7 +104,7 @@ module.exports = function (poolConnections, logger, configCSM, q) {
             userId:user.userId
         };
 
-        var eventsQuery = "SELECT eventId,eventArrivingTime,eventDay,eventDuration,eventLength,eventName,eventStart,berthId " +
+        var eventsQuery = "SELECT eventId,eventArrivingTime,eventDay,eventDuration,eventLength,eventName,eventColor,eventStart,berthId " +
             "FROM Events WHERE terminalId = (SELECT terminalId FROM TerminalAccess WHERE terminalId = :terminalId " +
             "AND rolId = (SELECT rolId FROM Company C WHERE c.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId)))";
 

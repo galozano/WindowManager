@@ -58,8 +58,8 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
             validator.isNumeric(newEvent.berthId) &&
             validator.matches(newEvent.eventArrivingTime, "[0-9]?[0-9]:[0-9][0-9]")){
 
-            var insertQuery = "INSERT INTO Events (eventName,eventArrivingTime,eventDuration,eventStart,eventLength,eventDay,berthId,terminalId) " +
-                " VALUES (:eventName,:eventArrivingTime,:eventDuration,:eventStart,:eventLength,:eventDay,:berthId,:terminalId)";
+            var insertQuery = "INSERT INTO Events (eventName,eventColor,eventArrivingTime,eventDuration,eventStart,eventLength,eventDay,berthId,terminalId) " +
+                " VALUES (:eventName,:eventColor,:eventArrivingTime,:eventDuration,:eventStart,:eventLength,:eventDay,:berthId,:terminalId)";
 
             poolConnections.getConnection(function(err, connection) {
 
@@ -115,7 +115,7 @@ module.exports = function(express,poolConnections,logger,configCSM,eventServerSe
             validator.isNumeric(editEvent.berthId) &&
             validator.matches(editEvent.eventArrivingTime, "[0-9]?[0-9]:[0-9][0-9]")){
 
-            var updateQuery = "UPDATE Events SET eventArrivingTime = :eventArrivingTime, eventDay = :eventDay, eventDuration = :eventDuration, eventLength = :eventLength, eventName = :eventName, eventStart = :eventStart, berthId = :berthId" +
+            var updateQuery = "UPDATE Events SET eventArrivingTime = :eventArrivingTime,eventColor = :eventColor, eventDay = :eventDay, eventDuration = :eventDuration, eventLength = :eventLength, eventName = :eventName, eventStart = :eventStart, berthId = :berthId" +
                 "  WHERE eventId = :eventId";
 
             poolConnections.getConnection(function(err, connection) {

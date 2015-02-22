@@ -111,8 +111,8 @@ function insertInformation ( ) {
                 value:scenario.terminals
             },
             insertEvents: {
-                query:"INSERT INTO Events (eventId,eventName,eventArrivingTime,eventDuration,eventStart,eventLength,eventDay,terminalId,berthId) " +
-                    "VALUES (:eventId,:eventName,:eventArrivingTime,:eventDuration,:eventStart,:eventLength,:eventDay,:terminalId,:berthId)",
+                query:"INSERT INTO Events (eventId,eventName,eventColor,eventArrivingTime,eventDuration,eventStart,eventLength,eventDay,terminalId,berthId) " +
+                    "VALUES (:eventId,:eventName,:eventColor,:eventArrivingTime,:eventDuration,:eventStart,:eventLength,:eventDay,:terminalId,:berthId)",
                 value:scenario.events
             },
             insertCranes: {

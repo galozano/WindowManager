@@ -18,9 +18,8 @@
 
 .eventCalendar .event {
     position: absolute;
-    border: 1px solid #3a87ad;
+    border: 1px solid;
     color: #ffffff;
-    background-color: #00A3D6;
     cursor: move;
     z-index: 1;
     -webkit-print-color-adjust: exact;

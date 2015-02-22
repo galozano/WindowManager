@@ -31,7 +31,7 @@
                 }
 
                 $scope.$watch('terminal', function(newTerminalInfo){
-                    console.debug("Terminal 3:" + JSON.stringify($scope.terminal));
+                    $log.debug("Terminal 3:" + JSON.stringify($scope.terminal));
                     createTerminalViewObject($scope.terminal);
                 });
             }],
@@ -39,7 +39,7 @@
 
                 var topHeight = $('#tableTopHeader').height();
 
-                $log.info("TOP HEIGHT:" + topHeight);
+                $log.debug("TOP HEIGHT:" + topHeight);
             }
         }
     }]);
@@ -183,6 +183,8 @@
                         top: eventCSS.top,
                         left: eventCSS.left
                     });
+
+                    $(elem).css('background-color', eventCopy.eventColor);
 
                     startX = eventCSS.left;
                     startY = eventCSS.top;

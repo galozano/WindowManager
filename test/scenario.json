@@ -114,6 +114,7 @@
   "events" :[{
       "eventId":1,
       "eventName":"Servicio Longanisa",
+      "eventColor":"#00A3D6",
       "eventArrivingTime":"07:00",
       "eventDuration":50,
       "eventStart":300,
@@ -124,6 +125,7 @@
     }, {
       "eventId":2,
       "eventName":"Servicio el huerto",
+      "eventColor":"#00A3D6",
       "eventArrivingTime":"11:00",
       "eventDuration":20,
       "eventStart":500,
@@ -134,6 +136,7 @@
     }, {
       "eventId":3,
       "eventName":"Servicio Noche",
+      "eventColor":"#00A3D6",
       "eventArrivingTime":"20:00",
       "eventDuration":20,
       "eventStart":200,
@@ -144,6 +147,7 @@
     }, {
       "eventId":4,
       "eventName":"Servicio Prueba 5",
+      "eventColor":"#00A3D6",
       "eventArrivingTime":"14:00",
       "eventDuration":80,
       "eventStart":500,
