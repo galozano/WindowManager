@@ -28,7 +28,7 @@ module.exports = function (poolConnections, logger, configCSM, q) {
             var eventPush = (function(e){
                 var deferred = q.defer();
                 var eventIdJSON = {eventId:e.eventId};
-                logger.info("Getting cranes of event:" + e.eventId);
+                logger.debug("Getting cranes of event:" + e.eventId);
 
                 connection.query(queryCranes, eventIdJSON, function (err, result) {
 
