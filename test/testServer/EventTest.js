@@ -42,6 +42,7 @@ describe('Test Events', function() {
 
                 expect(JSON.parse(body)[0].berthId).to.equals(6);
                 expect(JSON.parse(body)[0].eventDay).to.equals(3);
+                expect(JSON.parse(body)[0].eventColor).to.equals("#00A3D6");
 
                 expect(JSON.parse(body)[0].eventCranes).to.have.length(2);
                 expect(JSON.parse(body)[0].eventCranes[0].craneGrossProductivity).to.equals(45.3);
@@ -78,6 +79,7 @@ describe('Test Events', function() {
 
             var eventJSON = {
                 eventName:"Nuevo Evento",
+                eventColor:"#00A3D6",
                 eventArrivingTime:"11:00",
                 eventDuration:50,
                 eventStart:300,
@@ -98,6 +100,7 @@ describe('Test Events', function() {
                 expect(resp.statusCode).to.equals(200);
 
                 expect(JSON.parse(body).eventName).to.eq("Nuevo Evento");
+                expect(JSON.parse(body).eventColor).to.eq("#00A3D6");
                 expect(JSON.parse(body).eventArrivingTime).to.eq("11:00");
                 expect(JSON.parse(body).eventDuration).to.eq(50);
                 expect(JSON.parse(body).eventStart).to.eq(300);
@@ -140,7 +143,7 @@ describe('Test Events', function() {
         });
     });
 
-    describe('Edit Events', function() {
+    describe.only('Edit Events', function() {
 
         var url = 'http://localhost:3000/events/editEvent';
 
@@ -148,6 +151,7 @@ describe('Test Events', function() {
 
             var eventJSON = {
                 "eventName":"Nuevo Evento Editado",
+                "eventColor":"#00A3D5",
                 "eventArrivingTime":"11:00",
                 "eventDuration":50,
                 "eventStart":300,
@@ -168,6 +172,7 @@ describe('Test Events', function() {
                 expect(resp.statusCode).to.equals(200);
 
                 expect(JSON.parse(body).eventName).to.eq("Nuevo Evento Editado");
+                expect(JSON.parse(body).eventColor).to.eq("#00A3D5");
                 expect(JSON.parse(body).eventArrivingTime).to.eq("11:00");
                 expect(JSON.parse(body).eventDuration).to.eq(50);
                 expect(JSON.parse(body).eventStart).to.eq(300);
@@ -185,6 +190,7 @@ describe('Test Events', function() {
 
             var eventJSON = {
                 "eventName":"Nuevo Evento Editado",
+                "eventColor":"#00A3D6",
                 "eventArrivingTime":"11ee:00",
                 "eventDuration":50,
                 "eventStart":300,

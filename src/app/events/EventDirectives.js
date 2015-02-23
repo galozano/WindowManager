@@ -31,7 +31,7 @@
                 }
 
                 $scope.$watch('terminal', function(newTerminalInfo){
-                    console.debug("Terminal 3:" + JSON.stringify($scope.terminal));
+                    $log.debug("Terminal 3:" + JSON.stringify($scope.terminal));
                     createTerminalViewObject($scope.terminal);
                 });
             }],
@@ -39,7 +39,7 @@
 
                 var topHeight = $('#tableTopHeader').height();
 
-                $log.info("TOP HEIGHT:" + topHeight);
+                $log.debug("TOP HEIGHT:" + topHeight);
             }
         }
     }]);
@@ -80,11 +80,17 @@
                     $log.debug("Modified Event:" + JSON.stringify(event));
 
                     var splitArray = event.eventArrivingTime.split(":");
-                    var arrivingTime = parseInt(splitArray[0],10);
-                    var arrivingTimeSec = parseInt(splitArray[1],10);
+                    //var arrivingTime = parseInt(splitArray[0],10);
+                    //var arrivingTimeSec = parseInt(splitArray[1],10);
+
+                    var arrivingTime = parseFloat(splitArray[0]);
+                    var arrivingTimeSec = parseFloat(splitArray[1]);
 
                     var top = ((event.eventDay - 1) * tableProp.tableDayHeight)  +  ((tableProp.tableDayHeightNoBorder/tableProp.hoursInDay) * arrivingTime) +  tableProp.tableTopHeaderHeight;
                     var bottom = ((event.eventDay - 1) * tableProp.tableDayHeight)  +  ((tableProp.tableDayHeightNoBorder/tableProp.hoursInDay) * (arrivingTime + event.eventCalculatedDuration)) +  tableProp.tableTopHeaderHeight;
+
+                    $log.debug("Event Calculated TOP:"+ top);
+                    $log.debug("Event Calculated BOTTOM:"+ bottom);
 
                     //Calculate the amount of px to add to the top and bottom
                     var topSec = (arrivingTimeSec/tableProp.minutesHour) * tableProp.cellHourHeight;
@@ -128,11 +134,15 @@
                     var eventStart = (x - tableProp.tableLeftHeaderWidth) * (berthLengthMeters/(tableProp.tableTotalWidth-tableProp.tableLeftHeaderWidth));
                     var eventArrivingTime = ((y - tableProp.tableTopHeaderHeight) % tableProp.tableDayHeight) * (tableProp.hoursInDay/tableProp.tableDayHeightNoBorder) ;
 
-                    var difference = parseInt((eventArrivingTime - parseInt(eventArrivingTime)) *100);
-                    $log.debug("Event Arriving Time:" + difference);
+                    eventArrivingTime = Math.round(eventArrivingTime * 100) / 100;
+
+                    $log.debug("Event Arriving Time:" + eventArrivingTime);
+
+                    var difference = parseInt((eventArrivingTime - parseInt(eventArrivingTime)) * 100);
+                    $log.debug("Event Arriving Time Difference:" + difference);
 
                     //Calculate the minutes based on the difference of the actual and specific arriving time
-                    var arrivingMinutes = (difference/100) * tableProp.minutesHour;
+                    var arrivingMinutes = Math.floor((difference/100) * tableProp.minutesHour);
                     $log.debug("Event Arriving Minutes:" + arrivingMinutes);
 
                     var arrivingTimeFormat = pad(parseInt(eventArrivingTime,10),2) + ":" + pad(parseInt(arrivingMinutes,10),2);
@@ -149,6 +159,7 @@
 
                     $log.debug("Berth Id: " + berthId);
                     eventStart = eventStart - terminal.mainBerths[berthId].sumLength;
+                    eventStart = parseInt(eventStart);
                     $log.debug("Event Start After: " + eventStart);
 
                     var movedEvent = {
@@ -183,6 +194,8 @@
                         top: eventCSS.top,
                         left: eventCSS.left
                     });
+
+                    $(elem).css('background-color', eventCopy.eventColor);
 
                     startX = eventCSS.left;
                     startY = eventCSS.top;
@@ -227,11 +240,13 @@
                     $document.off('mousemove', mousemove);
                     $document.off('mouseup', mouseup);
 
+                    x = Math.round(x);
+                    y = Math.round(y);
+
                     var eventCSS = {
                         left: x,
                         top:y
                     };
-
 
                     $log.debug("Mouse up:" + JSON.stringify(eventCSS));
 
@@ -240,7 +255,7 @@
                         var changedEvent = scope.CSSToEvent(eventCSS,scope.terminal);
 
                         scope.event.eventDay = changedEvent.eventDay;
-                        scope.event.eventStart = parseInt(changedEvent.eventStart);
+                        scope.event.eventStart = changedEvent.eventStart;
                         scope.event.eventArrivingTime = changedEvent.eventArrivingTime;
                         scope.event.berthId = changedEvent.berthId;
 

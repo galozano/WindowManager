@@ -18,9 +18,8 @@
 
 .eventCalendar .event {
     position: absolute;
-    border: 1px solid #3a87ad;
+    border: 1px solid;
     color: #ffffff;
-    background-color: #00A3D6;
     cursor: move;
     z-index: 1;
     -webkit-print-color-adjust: exact;
@@ -97,7 +96,6 @@
     background: black;
 }
 
-
 .eventCalendar .event .craneSelection {
 
     position: absolute;
@@ -127,7 +125,6 @@
     cursor: pointer;
 }
 
-
 .eventCalendar .nav li {
     padding-left:10px ;
 }
@@ -138,7 +135,7 @@
 }
 
 @media print {
-    .event {
+    .eventCalendar .event {
         background-color: #DFF0D7 !important;
     }
 }

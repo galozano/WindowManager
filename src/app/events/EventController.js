@@ -14,31 +14,60 @@
         // Router Params
         //------------------------------------------------------------------------
 
+        /**
+         * The Terminal id being visualized
+         */
         var terminalId = $routeParams.terminalId;
+
         $log.debug("TERMINAL ID:" + terminalId);
 
         //------------------------------------------------------------------------
         // Scope Variables
         //------------------------------------------------------------------------
 
-        //All the events of the specific terminal selected
+        /**
+         * All the events of the specific terminal selected
+         */
         $scope.events = [];
 
-        //Information about the terminal being analyzed
+        /**
+         *  Information about the terminal being analyzed
+         */
         $scope.terminal = "";
 
-        //General Hour and day information to create tables
+        /**
+         * General Hour and day information to create tables
+         */
         $scope.hours = ['1','2','3','4','5','6','7','8','9','10','11','12'];
+
+        /**
+         * The days of the week to show in the event modal
+         */
         $scope.days = [{dayId:1,dayName:"Monday"},{dayId:2,dayName:"Tuesday"},{dayId:3,dayName:"Wednesday"},{dayId:4,dayName:"Thursday"},{dayId:5,dayName:"Friday"},{dayId:6,dayName:"Saturday"},{dayId:7,dayName:"Sunday"}];
 
-        //Form Elements
+        /**
+         * Handles the create event modal to show the edit or create button
+         */
         $scope.editable = false;
+
+        /**
+         * The new event being create of edited
+         */
         $scope.newEvent = "";
 
-        //Show current crane list of an specific event when selected
+        /**
+         *  Show current crane list of an specific event when selected
+         */
         $scope.cranesList = [];
+
+        /**
+         * Waits for the calendar to be paint to show the events
+         */
         $scope.calendarLoaded = false;
 
+        /**
+         * The event being visualized on the viewEvent modal
+         */
         $scope.viewEvent = {};
 
 
@@ -48,6 +77,9 @@
 
         init();
 
+        /**
+         * Looks fo  the events of the current terminal
+         */
         function getEvents() {
 
             eventService.updateEvents(terminalId).then(function(result){
@@ -58,6 +90,9 @@
             });
         }
 
+        /**
+         * Initialize the terminal page by loading the terminal and the events
+         */
         function init( ) {
 
             terminalService.getTerminal(terminalId).then(function(result){
@@ -76,6 +111,10 @@
         // Private Functions
         //------------------------------------------------------------------------
 
+        /**
+         * Updates the events and handles events that are at the end of the week
+         * @param pEventsList - the event lis
+         */
         function updateEventList(pEventsList) {
 
             $log.debug("Event List: " + JSON.stringify(pEventsList));
@@ -160,6 +199,7 @@
                 "eventLength":newEvent.eventLength,
                 "eventDay":newEvent.eventDay,
                 "berthId":newEvent.berthId,
+                "eventColor":newEvent.eventColor,
                 "terminalId":terminalId
             };
 
@@ -202,6 +242,7 @@
                 "eventDay":newEvent.eventDay,
                 "eventId":newEvent.eventId,
                 "berthId":newEvent.berthId,
+                "eventColor":newEvent.eventColor,
                 "terminalId":terminalId
             };
 
@@ -258,7 +299,8 @@
                 "eventLength":newEvent.eventLength,
                 "eventDay":newEvent.eventDay,
                 "eventId":newEvent.eventId,
-                "berthId":newEvent.berthId
+                "berthId":newEvent.berthId,
+                "eventColor":newEvent.eventColor
             };
 
             eventService.editEvent(eventJSON).then(function(result){
@@ -289,7 +331,7 @@
                 var temp = {
                     craneId:crane.craneId,
                     craneName:crane.craneName,
-                    ecAssignedPercentage: 0,
+                    ecAssignedPercentage: 100,
                     craneGrossProductivity:crane.craneGrossProductivity,
                     value:false
                 };
