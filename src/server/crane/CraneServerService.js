@@ -256,7 +256,7 @@ module.exports = function(express, poolConnections, logger, configCSM, q, securi
             " FROM ( SELECT CCS1.craneConfigSchemaId,CCS1.craneConfigSchemaName" +
             " FROM CraneConfigSchema CCS1 INNER JOIN CraneSchemaAccess CSA" +
             " ON CCS1.craneConfigSchemaId = CSA.craneConfigSchemaId WHERE CSA.rolId =" +
-            " (SELECT rolId FROM Company C WHERE c.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId))) CCS " +
+            " (SELECT rolId FROM Company CO WHERE CO.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId))) CCS " +
             " INNER JOIN Cranes C ON CCS.craneConfigSchemaId = C.craneConfigSchemaId" +
             " ORDER BY CCS.craneConfigSchemaId";
 
