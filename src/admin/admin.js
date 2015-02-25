@@ -5,63 +5,72 @@
 var request = require('request');
 var configCSM = require('../../server/conf/config.json');
 
-var userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJGaXN0TmFtZSI6Ikd1c3Rhdm8iLCJ1c2VyTGFzdE5hbWUiOiJMb3phbm8iLCJ1c2VyRW1haWwiOiJndXN0YXZvQGdtYWlsLmNvbSJ9.XifH3qwM6y7MCdMbAxr0kIlendSuo1OVH29kU2vAEpM';
+//var userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJGaXN0TmFtZSI6Ikd1c3Rhdm8iLCJ1c2VyTGFzdE5hbWUiOiJMb3phbm8iLCJ1c2VyRW1haWwiOiJndXN0YXZvQGdtYWlsLmNvbSJ9.XifH3qwM6y7MCdMbAxr0kIlendSuo1OVH29kU2vAEpM';
+var userToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyRmlyc3ROYW1lIjoiR3VzdGF2byIsInVzZXJMYXN0TmFtZSI6IkxvemFubyIsInVzZXJFbWFpbCI6ImdhbG96YW5vQGtlbGdhbC5jb20iLCJ1c2VyUGFzc3dvcmQiOiJndWFzdGEiLCJpYXQiOjE0MjE3MTY5MDZ9.hP-mpswf2MTU9EehIxJ9dwI7uIgiVXVWrYEXUG4S6kQ';
+
 
 function addUser() {
 
-    var url = 'http://localhost:3000' + configCSM.urls.users.main + configCSM.urls.users.createUser;
+    //var url = 'http://localhost:3000' + configCSM.urls.users.main + configCSM.urls.users.createUser;
     //var url = 'http://colibri.kelgal.com' + configCSM.urls.users.main + configCSM.urls.users.createUser;
 
     var newUser = {
-        "userFirstName":"Gustavo",
-        "userLastName":"Lozano",
-        "userEmail":"galozano@kelgal.com",
-        "userPassword":"guasta"
+        "userFirstName":"Arturo",
+        "userLastName":"Mondragon",
+        "userEmail":"arturo.mondragon@hamburgsud.com",
+        "userPassword":"arturo.12345+"
     };
 
     request.post({url:url, form:newUser}, function (err, resp, body) {
 
-       console.log(body);
+        console.log(err);
+        console.log(resp);
+        console.log(body);
     });
 }
 
 function createTerminal( ) {
 
-    var urlCrane = 'http://localhost:3000' + configCSM.urls.cranes.main + configCSM.urls.cranes.createCraneSchema;
+    //var urlCrane = 'http://localhost:3000' + configCSM.urls.cranes.main + configCSM.urls.cranes.createCraneSchema;
     //var urlCrane = 'http://colibri.kelgal.com' + configCSM.urls.cranes.main + configCSM.urls.cranes.createCraneSchema;
 
-    var urlBerth = 'http://localhost:3000' + configCSM.urls.terminals.main + configCSM.urls.terminals.createTerminalSchema;
+    //var urlBerth = 'http://localhost:3000' + configCSM.urls.terminals.main + configCSM.urls.terminals.createTerminalSchema;
     //var urlBerth = 'http://colibri.kelgal.com'  + configCSM.urls.terminals.main + configCSM.urls.terminals.createTerminalSchema;
 
-    var urlTerminal = 'http://localhost:3000' + configCSM.urls.terminals.main + configCSM.urls.terminals.createTerminal;
+    //var urlTerminal = 'http://localhost:3000' + configCSM.urls.terminals.main + configCSM.urls.terminals.createTerminal;
     //var urlTerminal = 'http://colibri.kelgal.com' + configCSM.urls.terminals.main + configCSM.urls.terminals.createTerminal;
 
     var berthSchema = {
-        "terminalConfigSchemaName": "Config Terminal",
+        "terminalConfigSchemaName": "TestSchema",
         "berths":[{
-            "berthName": "Berth 1 11",
+            "berthName": "Berth 1",
             "berthLength":500,
             "berthSequence":1,
             "berthStart":true
         }, {
-            "berthName": "Berth 2 22",
+            "berthName": "Berth 2",
             "berthLength":400,
             "berthSequence":2,
             "berthStart":false
+        }, {
+            "berthName": "Berth 3",
+            "berthLength":300,
+            "berthSequence":3,
+            "berthStart":true
         }]
     };
 
     var craneSchema = {
-        "craneConfigSchemaName": "Congig Crane de Prueba",
+        "craneConfigSchemaName": "TestSchema",
         "cranes":[{
-            "craneName": "Crane 1 Bakana"
+            "craneName": "Crane 1"
         }, {
-            "craneName": "Crane 2 Chevre"
+            "craneName": "Crane 2"
         }]
     };
 
     var terminal = {
-        "terminalName":"Terminal de Prueba"
+        "terminalName":"Test Terminal"
     };
 
     var optionsCrane = {
@@ -104,12 +113,12 @@ function createTerminal( ) {
 
 function addTerminalAccess( ) {
 
-    var urlSec = 'http://localhost:3000' + configCSM.urls.security.main + configCSM.urls.security.addTerminalAccess;
-    //var urlSec = 'http://colibri.kelgal.com' + configCSM.urls.security.main + configCSM.urls.security.addTerminalAccess;
+    //var urlSec = 'http://localhost:3000' + configCSM.urls.security.main + configCSM.urls.security.addTerminalAccess;
+    var urlSec = 'http://colibri.kelgal.com' + configCSM.urls.security.main + configCSM.urls.security.addTerminalAccess;
 
     var addTerminalAccess = {
         terminalId: 1,
-        rolId:2
+        rolId:4
     };
 
     var options = {
@@ -120,11 +129,13 @@ function addTerminalAccess( ) {
 
     request.post(options, function (err, resp, body) {
 
+        console.log(err);
+        console.log(resp);
         console.log(body);
     });
 
 }
 
-addTerminalAccess();
+//addTerminalAccess();
 //createTerminal();
 //addUser();

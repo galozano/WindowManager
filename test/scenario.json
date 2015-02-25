@@ -5,6 +5,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":1,
       "berthSequence":5,
+      "berthDraft":100,
       "berthStart":false
     }, {
       "berthId":2,
@@ -12,6 +13,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":1,
       "berthSequence":2,
+      "berthDraft":100,
       "berthStart":false
     }, {
       "berthId":3,
@@ -19,6 +21,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":1,
       "berthSequence":3,
+      "berthDraft":140,
       "berthStart":false
     }, {
       "berthId":4,
@@ -26,6 +29,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":1,
       "berthSequence":1,
+      "berthDraft":120,
       "berthStart":true
     }, {
       "berthId":5,
@@ -33,6 +37,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":1,
       "berthSequence":4,
+      "berthDraft":10,
       "berthStart":false
     }, {
       "berthId":6,
@@ -40,6 +45,7 @@
       "berthLength":800,
       "terminalConfigSchemaId":2,
       "berthSequence":1,
+      "berthDraft":30,
       "berthStart":true
     }, {
       "berthId":7,
@@ -47,6 +53,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":2,
       "berthSequence":2,
+      "berthDraft":200,
       "berthStart":true
     }, {
       "berthId":8,
@@ -54,6 +61,7 @@
       "berthLength":200,
       "terminalConfigSchemaId":2,
       "berthSequence":3,
+      "berthDraft":200,
       "berthStart":true
     },{
       "berthId":9,
@@ -61,6 +69,7 @@
       "berthLength":1000,
       "terminalConfigSchemaId":3,
       "berthSequence":1,
+      "berthDraft":100,
       "berthStart":true
   }],
   "terminalConfigurationsSchemas": [{
@@ -69,9 +78,9 @@
     }, {
       "terminalConfigSchemaId":2,
       "terminalConfigSchemaName": "Config 2"
-  },{
-    "terminalConfigSchemaId":3,
-    "terminalConfigSchemaName": "Config 3"
+    },{
+      "terminalConfigSchemaId":3,
+      "terminalConfigSchemaName": "Config 3"
   }],
   "terminals": [{
       "terminalName":"SPRC",
@@ -88,20 +97,24 @@
   "cranes": [{
       "craneId":1,
       "craneName":"G1",
+      "craneGrossProductivity":45.3,
       "craneConfigSchemaId":1
     },{
       "craneId":2,
       "craneName":"G2",
+      "craneGrossProductivity":40.0,
       "craneConfigSchemaId":1
     },{
       "craneId":3,
       "craneName":"P2",
+      "craneGrossProductivity":30.0,
       "craneConfigSchemaId":2
     }
   ],
   "events" :[{
       "eventId":1,
       "eventName":"Servicio Longanisa",
+      "eventColor":"#00A3D6",
       "eventArrivingTime":"07:00",
       "eventDuration":50,
       "eventStart":300,
@@ -112,6 +125,7 @@
     }, {
       "eventId":2,
       "eventName":"Servicio el huerto",
+      "eventColor":"#00A3D6",
       "eventArrivingTime":"11:00",
       "eventDuration":20,
       "eventStart":500,
@@ -122,6 +136,7 @@
     }, {
       "eventId":3,
       "eventName":"Servicio Noche",
+      "eventColor":"#00A3D6",
       "eventArrivingTime":"20:00",
       "eventDuration":20,
       "eventStart":200,
@@ -132,6 +147,7 @@
     }, {
       "eventId":4,
       "eventName":"Servicio Prueba 5",
+      "eventColor":"#00A3D6",
       "eventArrivingTime":"14:00",
       "eventDuration":80,
       "eventStart":500,
@@ -152,10 +168,12 @@
   "eventsCranes": [
     {
       "eventId": 1,
-      "craneId": 1
+      "craneId": 1,
+      "ecAssignedPercentage":50
     },{
       "eventId":1,
-      "craneId":2
+      "craneId":2,
+      "ecAssignedPercentage":33.3
     }
   ],
   "day":[{
@@ -183,6 +201,9 @@
   "rolType":[{
      "rolTypeId":1,
      "rolTypeName":"User"
+  },{
+    "rolTypeId":2,
+    "rolTypeName":"Company"
   }],
   "rol":[{
      "rolId":1,
@@ -190,15 +211,22 @@
   }, {
       "rolId":2,
       "rolTypeId":1
+  }, {
+    "rolId":3,
+    "rolTypeId":2
+  }, {
+    "rolId":4,
+    "rolTypeId":2
   }],
   "users":[{
-      "userId":1,
-      "userFirstName":"Gustavo",
-      "userLastName":"Lozano",
-      "userEmail":"gustavo@gmail.com",
-      "userPassword":"754bd9fce61ff2b32dbb1071ed6f813fd5a8d940d36f4fe4f66829268cb492d3",
-      "userToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJGaXN0TmFtZSI6Ikd1c3Rhdm8iLCJ1c2VyTGFzdE5hbWUiOiJMb3phbm8iLCJ1c2VyRW1haWwiOiJndXN0YXZvQGdtYWlsLmNvbSJ9.XifH3qwM6y7MCdMbAxr0kIlendSuo1OVH29kU2vAEpM",
-      "rolId":1
+    "userId":1,
+    "userFirstName":"Gustavo",
+    "userLastName":"Lozano",
+    "userEmail":"gustavo@gmail.com",
+    "userPassword":"754bd9fce61ff2b32dbb1071ed6f813fd5a8d940d36f4fe4f66829268cb492d3",
+    "userToken":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJGaXN0TmFtZSI6Ikd1c3Rhdm8iLCJ1c2VyTGFzdE5hbWUiOiJMb3phbm8iLCJ1c2VyRW1haWwiOiJndXN0YXZvQGdtYWlsLmNvbSJ9.XifH3qwM6y7MCdMbAxr0kIlendSuo1OVH29kU2vAEpM",
+    "rolId":1,
+    "companyId":2
   },{
     "userId":2,
     "userFirstName":"Rafael",
@@ -206,15 +234,47 @@
     "userEmail":"rperez@gmail.com",
     "userPassword":"754bd9fce61ff2b32dbb1071ed6f813fd5a8d940d36f4fe4f66829268cb492d3",
     "userToken":"qwM6y7MCdMbAxr0kIlendSuo1OVH29kU2vAEpM",
-    "rolId":2
+    "rolId":2,
+    "companyId":1
+  }],
+  "companies":[{
+    "companyId":1,
+    "companyName":"SPRC",
+    "rolId":3
+  },{
+    "companyId":2,
+    "companyName":"Hambursud",
+    "rolId":4
   }],
   "terminalAccess":[{
     "terminalAccessId":1,
     "terminalId":1,
-    "rolId":1
+    "rolId":4
   },{
     "terminalAccessId":2,
     "terminalId":2,
-    "rolId":1
+    "rolId":4
+  }],
+  "craneSchemaAccess":[{
+    "craneSchemaAccessId":1,
+    "craneConfigSchemaId":1,
+    "rolId":4
+  },{
+    "craneSchemaAccessId":2,
+    "craneConfigSchemaId":2,
+    "rolId":4
+  }],
+  "terminalSchemaAccess":[{
+      "terminalSchemaAccessId":1,
+      "terminalConfigSchemaId":1,
+      "rolId":4
+    },{
+      "terminalSchemaAccessId":2,
+      "terminalConfigSchemaId":2,
+      "rolId":4
+    },{
+      "terminalSchemaAccessId":3,
+      "terminalConfigSchemaId":3,
+      "rolId":4
   }]
 }

@@ -1,9 +1,12 @@
 <div class="calendarTable">
 <table class="table table-bordered">
 <thead>
-<tr>
-    <td style="width: 100px;"></td>
-    <td ng-repeat="berth in terminal.berths" style="width: {{berth.pixelLength}}px">{{berth.berthName}} - {{berth.berthLength}} m</td>
+<tr >
+    <td id="tableTopHeader" style="width: 100px;"></td>
+    <td ng-repeat="berth in terminal.berths" style="width: {{berth.pixelLength}}px">
+       <div>{{berth.berthName}}</div>
+       <div>{{berth.berthLength}} - {{berth.berthDraft}} </div>
+    </td>
 </tr>
 </thead>
 <tbody>

@@ -21,6 +21,9 @@
         "NavigationModule",
         "UserModule"]);
 
+    /**
+     * List of all the Web Services URL of the server
+     */
     app.constant('config',{
         getEventURL:'/events/getEvents',
         addEventURL:'/events/addEvent',
@@ -30,7 +33,48 @@
         getTerminalURL:'/terminals/getTerminal',
         editCranesURL:'/cranes/editEventCranes',
         loginUserURL:'/users/login',
-        changePasswordURL:'/users/password'
+        changePasswordURL:'/users/password',
+        getTerminalConfigSchemas:'/terminals/getTerminalConfigSchemas',
+        createTerminalSchema:'/terminals/createTerminalSchema',
+        getCranesSchemas: '/cranes/getCranesSchemas',
+        createCraneSchema:'/cranes/createCraneSchema',
+        createTerminal:'/terminals/createTerminal',
+        deleteTerminal:'terminals/deleteTerminal',
+        deleteTerminalSchema:'terminals/deleteTerminalSchema',
+        deleteCraneSchema:'/cranes/deleteCraneSchema'
+    });
+
+    /**
+     * List of possible errors on the client side
+     */
+    app.constant('errors',{
+        connectionError: {
+            "userMessage": "Connection error, please contact Colibri support",
+            "message": "Connection error, please contact Colibri support",
+            "type": "ERROR",
+            "code":"CONNECTION_ERROR"
+        },
+        dataError:{
+            "userMessage": "Data error, please contact Colibri support",
+            "message": "Error on the data received by the server, it is not compatible",
+            "type": "ERROR",
+            "code":"DATA_ERROR"
+        }
+    });
+
+    /**
+     * Table Calendar Table properties
+     */
+    app.constant('tableProp',{
+        tableDayHeight: 84.0,
+        tableDayHeightNoBorder: 84.0,
+        tableTopHeaderHeight: 48.0, //29,
+        tableLeftHeaderWidth: 100.0,
+        tableTotalWidth: 1099.0,
+        cellHourHeight: 3.5, //TableDayHeight/12 cells
+        hoursInDay: 24.0,
+        minutesHour: 60.0,
+        totalPixelLength:999.0
     });
 
     //--------------------------------------------------------------------

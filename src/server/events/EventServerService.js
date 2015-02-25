@@ -19,7 +19,7 @@ module.exports = function (poolConnections, logger, configCSM, q) {
 
         var eventList = [];
         var promisesList = [];
-        var queryCranes = "SELECT C.craneId,C.craneName FROM EventsCranes EC INNER JOIN Cranes C ON C.craneId = EC.craneId WHERE EC.eventId = :eventId";
+        var queryCranes = "SELECT C.craneId,C.craneName,C.craneGrossProductivity,EC.ecAssignedPercentage FROM EventsCranes EC INNER JOIN Cranes C ON C.craneId = EC.craneId WHERE EC.eventId = :eventId";
 
         for(var i = 0; i < rawEvents.length ; i++) {
 
@@ -28,7 +28,7 @@ module.exports = function (poolConnections, logger, configCSM, q) {
             var eventPush = (function(e){
                 var deferred = q.defer();
                 var eventIdJSON = {eventId:e.eventId};
-                logger.info("Getting cranes of event:" + e.eventId);
+                logger.debug("Getting cranes of event:" + e.eventId);
 
                 connection.query(queryCranes, eventIdJSON, function (err, result) {
 
@@ -57,12 +57,12 @@ module.exports = function (poolConnections, logger, configCSM, q) {
     //---------------------------------------------------------------------------------
 
     eventServerService.getSpecificEvent = function getSpecificEvent(eventId,connection,callback) {
-        logger.debug("Select specific event");
+        logger.debug("Select specific event:" + JSON.stringify(eventId));
 
         var eventIdJSON = {eventId: eventId};
 
-        var selectEventQuery = "SELECT eventId,eventArrivingTime,eventDay,eventDuration,eventLength,eventName,eventStart,berthId,terminalId FROM Events WHERE eventId = :eventId";
-        var selectEventsCrane = "SELECT C.craneId,C.craneName FROM EventsCranes EC INNER JOIN Cranes C ON C.craneId = EC.craneId WHERE EC.eventId = :eventId";
+        var selectEventQuery = "SELECT eventId,eventArrivingTime,eventDay,eventDuration,eventLength,eventName,eventColor,eventStart,berthId,terminalId FROM Events WHERE eventId = :eventId";
+        var selectEventsCrane = "SELECT C.craneId,C.craneName,C.craneGrossProductivity,EC.ecAssignedPercentage FROM EventsCranes EC INNER JOIN Cranes C ON C.craneId = EC.craneId WHERE EC.eventId = :eventId";
         var resultEvent = {};
 
         q.ninvoke(connection,"query",selectEventQuery,eventIdJSON).then(function(result){
@@ -74,9 +74,10 @@ module.exports = function (poolConnections, logger, configCSM, q) {
                 return q.ninvoke(connection,"query",selectEventsCrane,eventIdJSON);
             }
             else {
-                logger.error("ERROR Add Events Result has no 0");
-                callback(configCSM.errors.DATABASE_ERROR)
+                logger.debug("ERROR Add Events Result has no 0");
+                callback(configCSM.errors.EVENT_INVALID_ID)
             }
+
         }).then(function(result){
 
             logger.debug("Select Cranes Result:" + JSON.stringify(result));
@@ -95,16 +96,17 @@ module.exports = function (poolConnections, logger, configCSM, q) {
         });
     };
 
-    eventServerService.getEvents = function getEvents(terminalId,rolId,connection, callback) {
+    eventServerService.getEvents = function getEvents(terminalId,user,connection, callback) {
         logger.debug("Obtaining Events:" + terminalId);
 
         var terminalIdJSON = {
             terminalId: terminalId,
-            rolId:rolId
+            userId:user.userId
         };
 
-        var eventsQuery = "SELECT eventId,eventArrivingTime,eventDay,eventDuration,eventLength,eventName,eventStart,berthId " +
-            "FROM Events WHERE terminalId = (SELECT terminalId FROM TerminalAccess WHERE terminalId = :terminalId AND rolId = :rolId)";
+        var eventsQuery = "SELECT eventId,eventArrivingTime,eventDay,eventDuration,eventLength,eventName,eventColor,eventStart,berthId " +
+            "FROM Events WHERE terminalId = (SELECT terminalId FROM TerminalAccess WHERE terminalId = :terminalId " +
+            "AND rolId = (SELECT rolId FROM Company C WHERE C.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId)))";
 
         logger.debug("Get Events Query: " + eventsQuery);
 

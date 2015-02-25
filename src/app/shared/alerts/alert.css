@@ -1,0 +1,15 @@
+
+.alertDirective #errorAlert {
+    position: absolute;
+    right: 0;
+    z-index: 2000;
+    margin-right: 10px;
+}
+
+.alertDirective li {
+    list-style-type: none;
+}
+
+.alertDirective button.close{
+    margin-left: 10px;
+}

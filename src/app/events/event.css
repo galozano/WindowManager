@@ -1,4 +1,9 @@
-.eventCalendar .table>thead>tr>th,.eventCalendar .table>tbody>tr>th, .eventCalendar .table>tfoot>tr>th,.eventCalendar .table>thead>tr>td,.eventCalendar .table>tbody>tr>td,.eventCalendar .table>tfoot>tr>td {
+.eventCalendar .table>thead>tr>th,
+.eventCalendar .table>tbody>tr>th,
+.eventCalendar .table>tfoot>tr>th,
+.eventCalendar .table>thead>tr>td,
+.eventCalendar .table>tbody>tr>td,
+.eventCalendar .table>tfoot>tr>td {
     padding: 3px;
     text-align: center;
 }
@@ -13,19 +18,27 @@
 
 .eventCalendar .event {
     position: absolute;
-    border: 1px solid #3a87ad;
+    border: 1px solid;
     color: #ffffff;
-    background-color: #00A3D6;
     cursor: move;
     z-index: 1;
     -webkit-print-color-adjust: exact;
 }
 
-.eventCalendar .event .content {
+.eventCalendar .event .eventInfo {
     padding: 16px 0px 0px 5px;
-    font-size: 11px;
-    height: 50%;
+    font-size: 12px;
     width: auto;
+    height: calc(50% + 1em);
+    overflow: hidden;
+}
+
+.eventCalendar .event .cranesContent {
+    padding: 16px 0px 0px 5px;
+    font-size: 12px;
+    width: auto;
+    height: calc(50% - 1em);
+    overflow: hidden;
 }
 
 .eventCalendar .event .crane {
@@ -96,15 +109,33 @@
     text-align: center;
     color: black;
     cursor: pointer;
+}
 
+.eventCalendar .event .viewEvent {
+    position: absolute;
+    z-index: 3;
+    right: 45px;
+    top: 0;
+    padding: 3px;
+    height: 20px;
+    overflow: hidden;
+    font-size: 11px;
+    text-align: center;
+    color: black;
+    cursor: pointer;
 }
 
 .eventCalendar .nav li {
     padding-left:10px ;
 }
 
+.eventCalendar #ecAssignedPercentage {
+    width: 70px;
+    margin-left: 20px;
+}
+
 @media print {
-    .event {
+    .eventCalendar .event {
         background-color: #DFF0D7 !important;
     }
 }

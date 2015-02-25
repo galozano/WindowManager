@@ -2,33 +2,36 @@
 <alerts-display></alerts-display>
 
 <div class="eventCalendar">
-<div class="container">
-    <div class="row">
-        <div class="col-md-4">
-            <div class="pull-left">
-                <h2>{{terminal.terminalName}}</h2>
+
+    <!-- Top Menu -->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="pull-left">
+                    <h2>{{terminal.terminalName}}</h2>
+                </div>
             </div>
-        </div>
-        <div class="col-md-8">
-            <div class="pull-right">
-                <button type="button" class="btn btn-primary navbar-btn"  ng-click="updateEvents()">Update</button>
-                <button type="button" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#eventModal" ng-click="changeButton()">Create Event</button>
+            <div class="col-md-8">
+                <div class="pull-right">
+                    <button type="button" id="updateEvent" class="btn btn-primary navbar-btn"  ng-click="updateEvents()">Update</button>
+                    <button type="button" id="createEvent" class="btn btn-primary navbar-btn" data-toggle="modal" data-target="#eventModal" ng-click="changeButton()">Create Event</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="container" ng-show="calendarLoaded">
-    <div class="calendar">
-        <div ng-repeat="event in events">
-            <event event="event"></event>
+    <!-- Calendar -->
+    <div class="container" ng-show="calendarLoaded">
+        <div class="calendar">
+            <div ng-repeat="event in events">
+                <event class="event" delete-event="deleteEvent(event)" edit-cranes-modal="editCranesModal(event)" move-event="moveEvent(event)" edit-event-modal="editEventModal(event)" view-event-modal="viewEventModal(event)" event="event" terminal-info="terminal" eventChange="eventChange"></event>
+            </div>
+            <table-gen terminal-info="terminal" hours="hours"></table-gen>
         </div>
-        <table-gen></table-gen>
     </div>
-</div>
 
-<!-- Create Event and Edit modal -->
-<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <!-- Create Event and Edit modal -->
+    <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -107,35 +110,58 @@
                             </div>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="inputEventColor" class="col-sm-2 control-label">Color:</label>
+                        <div class="col-sm-10">
+                            <select id="inputEventColor" name="eventColor" ng-model="newEvent.eventColor" class="form-control" required>
+                                <option value="#FB4316">Red</option>
+                                <option value="#EE8307">Orange</option>
+                                <option value="#CFBF12">Yellow</option>
+                                <option value="#9EDBA3">Green</option>
+                                <option value="#08CCBE">Blue</option>
+                            </select>
+                            <div class="formError" ng-show="eventForm.eventColor.$invalid && eventForm.eventColor.$dirty || eventForm.$submitted">
+                                <span class="error" ng-show="eventForm.eventColor.$error.required">Color Required</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" ng-hide="editable" ng-click="addNewEvent(newEvent)">Create Event</button>
+                <button type="submit" id="addEventsBtn" class="btn btn-primary" ng-hide="editable" ng-click="addNewEvent(newEvent)">Create Event</button>
                 <button type="submit" class="btn btn-primary" data-dismiss="modal" ng-show="editable" ng-click="editEvent(newEvent)">Edit Event</button>
             </div>
             </form>
         </div>
     </div>
-</div>
+    </div>
 
-<!-- Edit Crane Modal -->
-<div class="modal fade" id="craneModal" tabindex="-1" role="dialog" aria-labelledby="craneModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-sm">
+    <!-- Edit Crane Modal -->
+    <div class="modal fade" id="craneModal" tabindex="-1" role="dialog" aria-labelledby="craneModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                 <h4 class="modal-title" id="craneModalLabel">Edit Crane - {{newEvent.eventName}}</h4>
             </div>
             <div class="modal-body">
-                <div class="row" ng-repeat="crane in cranesList">
-                    <div class="col-md-1">
-                        <input type="checkbox" ng-model="crane.value" />
-                    </div>
-                    <div class="col-md-1">
-                        <span>{{crane.craneName}}</span>
-                    </div>
-                </div>
+                <table class="table">
+                    <tr>
+                        <th>Assigned</th>
+                        <th>Crane</th>
+                        <th>Crane Prod.</th>
+                        <th>% Assigned</th>
+                        <th>Assigned Prod.</th>
+                    </tr>
+                    <tr ng-repeat="crane in cranesList">
+                        <td><input type="checkbox" ng-model="crane.value" /></td>
+                        <td><span>{{crane.craneName}}</span></td>
+                        <td><span>{{crane.craneGrossProductivity}}</span></td>
+                        <td><input type="number" id="ecAssignedPercentage" name="ecAssignedPercentage" class="form-control" ng-model="crane.ecAssignedPercentage"  /></td>
+                        <td><span>{{crane.craneGrossProductivity * (crane.ecAssignedPercentage/100) | number:2}}</span></td>
+                    </tr>
+                </table>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -143,5 +169,64 @@
             </div>
         </div>
     </div>
-</div>
+    </div>
+
+    <!-- View Event-->
+    <div class="modal fade" id="eventViewModal" tabindex="-1" role="dialog" aria-labelledby="eventViewModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="eventViewModalLabel">Event - {{viewEvent.eventName}}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <h5>Event Information</h5>
+                            <table class="table table-striped">
+                                <tr>
+                                    <td>ETA:</td>
+                                    <td>{{viewEvent.eventArrivingTime}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Duration:</td>
+                                    <td>{{viewEvent.eventDuration}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Berth Start:</td>
+                                    <td>{{viewEvent.eventStart}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Event Length:</td>
+                                    <td>{{viewEvent.eventLength}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Event Productivity:</td>
+                                    <td>{{viewEvent.eventProductivity}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-8">
+                            <h5>Crane Info</h5>
+                            <table  class="table table-striped">
+                                <tr>
+                                    <th>Crane Name</th>
+                                    <th>Crane Productivity</th>
+                                    <th>% Assigned</th>
+                                </tr>
+                                <tr ng-repeat="crane in viewEvent.eventCranes">
+                                    <td>{{crane.craneName}}</td>
+                                    <td>{{crane.craneGrossProductivity}}</td>
+                                    <td>{{crane.ecAssignedPercentage}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

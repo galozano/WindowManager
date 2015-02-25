@@ -2,12 +2,12 @@
  * Created by gal on 12/28/14.
  */
 
-var server =  require('../app.js');
-var scenarioCreator = require("./scenarioCreator.js");
+var server =  require('../../app.js');
+var scenarioCreator = require("./../scenarioCreator.js");
 var expect = require('chai').expect;
 var request = require('request');
-var configCSM = require('../server/conf/config.json');
-var scenario = require('./scenario.json');
+var configCSM = require('../../src/server/conf/config.json');
+var scenario = require('./../scenario.json');
 
 describe('Test Cranes', function() {
 
@@ -31,15 +31,15 @@ describe('Test Cranes', function() {
 
             var editCraneJson = {
                 "eventId": 1,
-                "cranes":[{craneId:2}]
+                "cranes":[{
+                    "craneId":2,
+                    "ecAssignedPercentage":50
+                }]
             };
-
-            var editCraneString = JSON.stringify(editCraneJson);
-            console.log(JSON.stringify(scenario.users[0]));
 
             var options = {
                 url:url,
-                form:{json:editCraneString},
+                form:{data:JSON.stringify(editCraneJson)},
                 headers:{"authorization":"Bearer " + scenario.users[0].userToken}
             };
 
@@ -49,6 +49,7 @@ describe('Test Cranes', function() {
 
                 expect(JSON.parse(body).eventId).to.eq(1);
                 expect(JSON.parse(body).eventCranes).to.have.length(1);
+                expect(JSON.parse(body).eventCranes[0].ecAssignedPercentage).to.eq(50);
 
                 done();
             });
@@ -61,12 +62,9 @@ describe('Test Cranes', function() {
                 "cranes":[]
             };
 
-            var editCraneString = JSON.stringify(editCraneJson);
-            console.log(editCraneString);
-
             var options = {
                 url:url,
-                form:{json:editCraneString},
+                form:{data:JSON.stringify(editCraneJson)},
                 headers:{"authorization":"Bearer " + scenario.users[0].userToken}
             };
 
@@ -88,12 +86,9 @@ describe('Test Cranes', function() {
                 "cranes":[]
             };
 
-            var editCraneString = JSON.stringify(editCraneJson);
-            console.log(editCraneString);
-
             var options = {
                 url:url,
-                form:{json:editCraneString},
+                form:{data:JSON.stringify(editCraneJson)},
                 headers:{"authorization":"Bearer " + scenario.users[0].userToken}
             };
 
@@ -143,9 +138,11 @@ describe('Test Cranes', function() {
             var craneSchema = {
                 "craneConfigSchemaName": "SPRCCraneConfig1",
                 "cranes":[{
-                    "craneName": "Crane 1"
+                    "craneName": "Crane 1",
+                    "craneGrossProductivity": 45.3
                 }, {
-                    "craneName": "Crane 2"
+                    "craneName": "Crane 2",
+                    "craneGrossProductivity": 50
                 }]
             };
 
@@ -159,12 +156,62 @@ describe('Test Cranes', function() {
 
                 expect(resp.statusCode).to.equals(200);
                 expect(JSON.parse(body).data).to.exist;
+                expect(JSON.parse(body).status).to.equals("OK");
                 expect(JSON.parse(body).data.craneConfigSchemaName).to.equals("SPRCCraneConfig1");
                 expect(JSON.parse(body).data.cranes).to.have.length(2);
+                expect(JSON.parse(body).data.cranes[0].craneGrossProductivity).to.equals(45.3);
+
+                done();
+            });
+        });
+
+        it("No Cranes", function(done){
+
+            var craneSchema = {
+                "craneConfigSchemaName": "SPRCCraneConfig2",
+                "cranes":[ ]
+            };
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken},
+                form:{data:JSON.stringify(craneSchema)}
+            };
+
+            request.post(options,function(err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).data).to.exist;
+                expect(JSON.parse(body).status).to.equals("ERROR");
 
                 done();
             });
 
+        });
+    });
+
+    describe("Get Cranes Schema Config", function() {
+
+        var url = 'http://localhost:3000/cranes/getCranesSchemas';
+
+        it("Get Cranes", function(done){
+
+            var options = {
+                url:url,
+                headers:{"authorization":"Bearer " + scenario.users[0].userToken}
+            };
+
+            request.get(options,function(err, resp, body) {
+
+                expect(resp.statusCode).to.equals(200);
+                expect(JSON.parse(body).data).to.exist;
+                expect(JSON.parse(body).data).to.have.length(2);
+                expect(JSON.parse(body).data[0].craneConfigSchemaId).to.equals(1);
+                expect(JSON.parse(body).data[0].craneConfigSchemaName).to.equals("SPRC Schema");
+                expect(JSON.parse(body).data[0].cranes).to.have.length(2);
+
+                done();
+            });
         });
     });
 

@@ -4,7 +4,7 @@
 
 var mysql = require('mysql');
 var q = require('q');
-var configCSM = require('../server/conf/config.json');
+var configCSM = require('../src/server/conf/config.json');
 var scenario = require('../test/scenario.json');
 
 //-------------------------------------------------------------
@@ -41,11 +41,14 @@ function clearDatabase( ) {
             deleteEvents:"DELETE FROM Events",
             deleteTerminals:"DELETE FROM Terminals",
             deleteBerths: "DELETE FROM Berths",
+            deleteTerminalSchemaAccess:"DELETE FROM TerminalSchemaAccess",
             deleteTerminalConfigSchema:"DELETE FROM TerminalConfigSchema",
             deleteCranes: "DELETE FROM Cranes",
+            deleteCraneSchemaAccess:"DELETE FROM CraneSchemaAccess",
             deleteCraneConfigSchema: "DELETE FROM CraneConfigSchema",
             deleteDayName: "DELETE FROM Day",
             deleteUsers: "DELETE FROM Users",
+            deleteCompany: "DELETE FROM Company",
             deleteRol:"DELETE FROM Rol",
             deleteRolType:"DELETE FROM RolType"
         };
@@ -100,7 +103,7 @@ function insertInformation ( ) {
                 value:scenario.craneConfigurationSchemas
             },
             insertBerth:{
-                query:"INSERT INTO Berths (berthId,berthName,berthLength,terminalConfigSchemaId,berthSequence,berthStart) VALUES (:berthId,:berthName,:berthLength,:terminalConfigSchemaId,:berthSequence,:berthStart)",
+                query:"INSERT INTO Berths (berthId,berthName,berthLength,terminalConfigSchemaId,berthSequence,berthDraft,berthStart) VALUES (:berthId,:berthName,:berthLength,:terminalConfigSchemaId,:berthSequence,:berthDraft,:berthStart)",
                 value:scenario.berths
             },
             insertTerminals:{
@@ -108,16 +111,16 @@ function insertInformation ( ) {
                 value:scenario.terminals
             },
             insertEvents: {
-                query:"INSERT INTO Events (eventId,eventName,eventArrivingTime,eventDuration,eventStart,eventLength,eventDay,terminalId,berthId) " +
-                    "VALUES (:eventId,:eventName,:eventArrivingTime,:eventDuration,:eventStart,:eventLength,:eventDay,:terminalId,:berthId)",
+                query:"INSERT INTO Events (eventId,eventName,eventColor,eventArrivingTime,eventDuration,eventStart,eventLength,eventDay,terminalId,berthId) " +
+                    "VALUES (:eventId,:eventName,:eventColor,:eventArrivingTime,:eventDuration,:eventStart,:eventLength,:eventDay,:terminalId,:berthId)",
                 value:scenario.events
             },
             insertCranes: {
-                query:"INSERT INTO Cranes (craneId,craneName,craneConfigSchemaId) VALUES (:craneId,:craneName,:craneConfigSchemaId)",
+                query:"INSERT INTO Cranes (craneId,craneName,craneGrossProductivity,craneConfigSchemaId) VALUES (:craneId,:craneName,:craneGrossProductivity,:craneConfigSchemaId)",
                 value:scenario.cranes
             },
             insertCranesEvents: {
-                query:"INSERT INTO EventsCranes (craneId,eventId) VALUES (:craneId,:eventId)",
+                query:"INSERT INTO EventsCranes (craneId,eventId,ecAssignedPercentage) VALUES (:craneId,:eventId,:ecAssignedPercentage)",
                 value:scenario.eventsCranes
             },
             insertRolType: {
@@ -128,13 +131,25 @@ function insertInformation ( ) {
                 query:"INSERT INTO Rol (rolId,rolTypeId) VALUES (:rolId,:rolTypeId)",
                 value:scenario.rol
             },
+            insertCompanies:{
+                query:"INSERT INTO Company (companyId,companyName,rolId) VALUES (:companyId,:companyName,:rolId)",
+                value:scenario.companies
+            },
             insertUsers: {
-                query:"INSERT INTO Users (userId,userFirstName,userLastName,userEmail,userPassword,userToken,rolId) VALUES (:userId,:userFirstName,:userLastName,:userEmail,:userPassword,:userToken,:rolId)",
+                query:"INSERT INTO Users (userId,userFirstName,userLastName,userEmail,userPassword,userToken,rolId,companyId) VALUES (:userId,:userFirstName,:userLastName,:userEmail,:userPassword,:userToken,:rolId,:companyId)",
                 value:scenario.users
             },
             insertTerminalAccess:{
                 query:"INSERT INTO TerminalAccess (terminalAccessId,terminalId,rolId) VALUES (:terminalAccessId,:terminalId, :rolId)",
                 value:scenario.terminalAccess
+            },
+            insertCraneSchemaAccess:{
+                query:"INSERT INTO CraneSchemaAccess (craneSchemaAccessId,craneConfigSchemaId,rolId) VALUES (:craneSchemaAccessId,:craneConfigSchemaId,:rolId)",
+                value:scenario.craneSchemaAccess
+            },
+            insertTerminalSchemaAccess:{
+                query:"INSERT INTO TerminalSchemaAccess (terminalSchemaAccessId,terminalConfigSchemaId,rolId) VALUES (:terminalSchemaAccessId,:terminalConfigSchemaId,:rolId)",
+                value:scenario.terminalSchemaAccess
             }
         };
 

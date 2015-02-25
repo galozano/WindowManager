@@ -7,9 +7,11 @@
 
     alertModule.service("alertService", ['$log','$rootScope', function($log,$rootScope){
 
+
+
         this.pushMessage = function(alertMessage) {
 
-            $log.debug("Alert Message:" + alertMessage);
+            $log.debug("Alert Message:" + JSON.stringify(alertMessage));
             $log.error('Error:' + JSON.stringify(alertMessage));
 
             if(alertMessage.message)
@@ -20,7 +22,7 @@
 
         this.pushSuccessMessage = function(successMessage) {
 
-            $log.debug("Success Message:" + successMessage);
+            $log.debug("Success Message:" + JSON.stringify(successMessage));
             $rootScope.$broadcast('SuccessMessage', successMessage);
         };
 

@@ -84,7 +84,7 @@ module.exports = function(express, poolConnections, configCSM,logger, q) {
             //Sen error message
             res.sendStatus(403);
         }
-    }
+    };
 
     return middlewareAuthentication;
 

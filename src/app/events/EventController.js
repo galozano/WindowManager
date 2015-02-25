@@ -8,38 +8,68 @@
     /**
      * Event Controller to handle all Events logic
      */
-    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','alertService','_',
-        function($http,$log,$scope,$routeParams,config,alertService,_) {
+    eventModule.controller("EventController", ['$http','$log','$scope','$routeParams','config','alertService','_','eventService','terminalService', function($http, $log, $scope, $routeParams, config, alertService, _, eventService, terminalService) {
 
         //------------------------------------------------------------------------
         // Router Params
         //------------------------------------------------------------------------
 
+        /**
+         * The Terminal id being visualized
+         */
         var terminalId = $routeParams.terminalId;
+
         $log.debug("TERMINAL ID:" + terminalId);
 
         //------------------------------------------------------------------------
         // Scope Variables
         //------------------------------------------------------------------------
 
-        //All the events of the specific terminal selected
+        /**
+         * All the events of the specific terminal selected
+         */
         $scope.events = [];
 
-        //Information about the terminal being analyzed
+        /**
+         *  Information about the terminal being analyzed
+         */
         $scope.terminal = "";
 
-        //General Hour and day information to create tables
+        /**
+         * General Hour and day information to create tables
+         */
         $scope.hours = ['1','2','3','4','5','6','7','8','9','10','11','12'];
+
+        /**
+         * The days of the week to show in the event modal
+         */
         $scope.days = [{dayId:1,dayName:"Monday"},{dayId:2,dayName:"Tuesday"},{dayId:3,dayName:"Wednesday"},{dayId:4,dayName:"Thursday"},{dayId:5,dayName:"Friday"},{dayId:6,dayName:"Saturday"},{dayId:7,dayName:"Sunday"}];
 
-        //Form Elements
+        /**
+         * Handles the create event modal to show the edit or create button
+         */
         $scope.editable = false;
+
+        /**
+         * The new event being create of edited
+         */
         $scope.newEvent = "";
 
-        //Show current crane list of an specific event when selected
+        /**
+         *  Show current crane list of an specific event when selected
+         */
         $scope.cranesList = [];
 
+        /**
+         * Waits for the calendar to be paint to show the events
+         */
         $scope.calendarLoaded = false;
+
+        /**
+         * The event being visualized on the viewEvent modal
+         */
+        $scope.viewEvent = {};
+
 
         //------------------------------------------------------------------------
         // Initialization
@@ -47,103 +77,105 @@
 
         init();
 
+        /**
+         * Looks fo  the events of the current terminal
+         */
         function getEvents() {
-            $http.get(config.getEventURL+"/"+terminalId).
-                success(function(data, status, headers, config) {
 
-                    $log.debug("Received Events:" + JSON.stringify(data));
+            eventService.updateEvents(terminalId).then(function(result){
 
-                    if(data.message) {
-                        $log.debug("Error getting events");
-                        alertService.pushMessage(data);
-                    }
-                    else {
-                        $scope.events = data;
-                    }
-
-                }).
-                error(function(data, status, headers, config) {
-
-                    alertService.pushMessage("Connection Error");
-                });
+                updateEventList(result);
+            },function(err){
+                alertService.pushMessage(err);
+            });
         }
 
-        function constructMainBerths(berths) {
-            var berthsMainLength  = new Object();
+        /**
+         * Initialize the terminal page by loading the terminal and the events
+         */
+        function init( ) {
 
-            //Hago un array de los berths con start true y su longitude
-            var sum = 0;
-            var lastBerthId = "";
+            terminalService.getTerminal(terminalId).then(function(result){
 
-            for(var i = 0 ; i < berths.length ; i++) {
+                $scope.terminal = result;
+                //createTerminalViewObject($scope.terminal);
+                getEvents();
+                $scope.calendarLoaded = true;
 
-                var berth = berths[i];
-
-                if(berth.berthStart) {
-                    berthsMainLength[berth.berthId] = {sumLength: sum,berthName: berth.berthName, berthId:berth.berthId};
-                }
-
-                sum += berth.berthLength;
-            }
-
-            $scope.terminal.mainBerths = berthsMainLength;
-            $log.debug("Modified Terminal:" + JSON.stringify($scope.terminal));
-        }
-
-        function createTerminalViewObject(data) {
-
-            var totalBerthLength = data.totalLength;
-
-            //TODO:Quitar esto de aqui
-            var totalPixelLength = 999;
-
-            for(var i = 0; i < data.berths.length ; i ++) {
-
-                var berth = data.berths[i];
-                berth.pixelLength = (totalPixelLength/totalBerthLength) * berth.berthLength;
-            }
-
-            $log.debug("New Terminal Data:" + JSON.stringify(data));
-        }
-
-        function getTerminalInformation( ) {
-
-            $http.get(config.getTerminalURL+"/"+terminalId).
-                success(function(data, status, headers, config) {
-
-                    $log.debug("Terminal Info Received:" + JSON.stringify(data));
-
-                    //Validate is message is an error
-                    if(data.type) {
-                        alertService.pushMessage(data);
-                    }
-                    else {
-
-                        createTerminalViewObject(data);
-                        $scope.terminal = data;
-
-                        if(data.berths) {
-                            constructMainBerths(data.berths);
-                            getEvents();
-                            $scope.calendarLoaded = true;
-                        }
-                        else
-                            alertService.pushMessage("Unable to load events");
-                    }
-                }).
-                error(function(data, status, headers, config) {
-                    alertService.pushMessage("Connection Error");
-                });
-        }
-
-        function init() {
-            getTerminalInformation( );
+            }, function(err){
+                alertService.pushMessage(err);
+            });
         }
 
         //------------------------------------------------------------------------
         // Private Functions
         //------------------------------------------------------------------------
 
+        /**
+         * Updates the events and handles events that are at the end of the week
+         * @param pEventsList - the event lis
+         */
+        function updateEventList(pEventsList) {
+
+            $log.debug("Event List: " + JSON.stringify(pEventsList));
+
+            var eventsList = angular.copy(pEventsList);
+
+            if($scope.terminal) {
+
+                eventsList.forEach(function(element){
+
+                    var arrivingTime = element.eventArrivingTime;
+                    var duration = element.eventDuration;
+
+                    var splitArray = arrivingTime.split(":");
+                    var arrivingHour = parseInt(splitArray[0],10);
+                    var arrivingSec = parseInt(splitArray[1],10);
+
+                    var totalHours = (24 * (element.eventDay - 1)) + (arrivingHour + duration) + (arrivingSec/60);
+                    var arrivingTimeHours = (24 * (element.eventDay - 1)) + (arrivingHour) + (arrivingSec/60);
+
+                    $log.debug("Evento:" + JSON.stringify(element) + " Total Hours:" + totalHours);
+
+                    if(arrivingTimeHours > 168) {
+                        element.eventArrivingTime = "00:00";
+                        element.eventDay = 1;
+                        element.eventCalculatedDuration = element.eventDuration;
+                    }
+                    else if(totalHours > 168){
+                        $log.debug("Mayo que 168:" + totalHours);
+
+                        element.eventCalculatedDuration = element.eventDuration - (totalHours-168);
+                        $log.debug("Evento Nuevo:" + JSON.stringify(element));
+
+                        //Create the new event for the top of the calendar
+                        var cutEvent = angular.copy(element);
+                        cutEvent.eventArrivingTime = "00:00";
+                        cutEvent.eventDay = 1;
+                        cutEvent.eventCalculatedDuration = (totalHours-168);
+                        cutEvent.isCutEvent = true;
+
+                        eventsList.push(cutEvent);
+                    }
+                    else {
+                        element.eventCalculatedDuration = element.eventDuration;
+                    }
+
+                    var eventProductivity = 0;
+                    //Calculate Total Productivity
+
+                    element.eventCranes.forEach(function(crane){
+                        eventProductivity += crane.craneGrossProductivity * (crane.ecAssignedPercentage/100);
+                    });
+
+                    element.eventProductivity = eventProductivity;
+
+                });
+            }
+
+            $log.debug("Event List Changed: " + JSON.stringify(eventsList));
+            $scope.events = eventsList;
+        }
 
         //------------------------------------------------------------------------
         // Scope Functions
@@ -151,16 +183,13 @@
 
         $scope.addNewEvent = function(newEvent) {
 
-            $log.debug("New Event");
+            $log.debug("New Event:" + JSON.stringify(newEvent));
 
             if ($scope.eventForm.$invalid) {
                 $log.debug("Invalid Form");
                 $scope.eventForm.showValidation = true;
                 return;
             }
-
-            var eventToAdd = angular.copy(newEvent);
-            $log.debug("Event to Add:" + JSON.stringify(eventToAdd));
 
             var eventJSON = {
                 "eventName":newEvent.eventName,
@@ -170,27 +199,20 @@
                 "eventLength":newEvent.eventLength,
                 "eventDay":newEvent.eventDay,
                 "berthId":newEvent.berthId,
+                "eventColor":newEvent.eventColor,
                 "terminalId":terminalId
             };
 
-            $http.post(config.addEventURL, eventJSON).
-                success(function(data, status, headers, config) {
+            if(!$scope.editable){
+                eventService.addNewEvent(eventJSON).then(function(result){
+                    updateEventList(result);
+                    $('#eventModal').modal('hide');
+                    $scope.newEvent = "";
 
-                    $log.debug("Add Event Received Data:" + JSON.stringify(data));
-
-                    if(data.message) {
-                        alertService.pushMessage(data);
-                    }
-                    else {
-                        $scope.events.push(data);
-                        $('#eventModal').modal('hide');
-                        $scope.newEvent = "";
-                    }
-
-                }).
-                error(function(data, status, headers, config) {
-                    alertService.pushMessage("Connection Error");
+                },function(err){
+                    alertService.pushMessage(err);
                 });
+            }
         };
 
         $scope.changeButton = function() {
@@ -199,13 +221,11 @@
             $scope.editable = false;
             $scope.eventForm.$setPristine();
             $scope.newEvent = "";
-
         };
 
         $scope.editEvent = function(newEvent) {
 
-            $log.debug("Edit Event");
-            $log.debug("Edited Event:" + JSON.stringify(newEvent));
+            $log.debug("Edit Event:" + JSON.stringify(newEvent));
 
             if ($scope.eventForm.$invalid) {
                 $log.debug("Form is Invalid");
@@ -222,35 +242,29 @@
                 "eventDay":newEvent.eventDay,
                 "eventId":newEvent.eventId,
                 "berthId":newEvent.berthId,
+                "eventColor":newEvent.eventColor,
                 "terminalId":terminalId
             };
 
-            $http.post(config.editEventURL, eventJSON).
-                success(function(data, status, headers, config) {
-
-                    //TODO:Mostar un mensaje de que funciono en algun lado
-                    $log.debug("Received Edit Data:" + JSON.stringify(data));
-                    getEvents();
-                }).
-                error(function(data, status, headers, config) {
-
-                    //TODO:Manage the error and send a message to the scope
-                    alertService.pushMessage("Connection Error");
+            if($scope.editable){
+                eventService.editEvent(eventJSON).then(function(result){
+                    updateEventList(result);
+                }, function(err){
+                    alertService.pushMessage(err);
                 });
 
-            if( $scope.eventChange)
-                $scope.eventChange = false;
-            else
-                $scope.eventChange = true;
+                if( $scope.eventChange)
+                    $scope.eventChange = false;
+                else
+                    $scope.eventChange = true;
 
-            $scope.newEvent = {};
-
+                $scope.newEvent = {};
+            }
         };
 
         $scope.editEventModal = function(event) {
 
-            $log.debug("Edit Event Modal");
-            $log.debug("Event to edit:" + JSON.stringify(event));
+            $log.debug("Event to edit Modal:" + JSON.stringify(event));
 
             $scope.newEvent = angular.copy(event);
             $scope.editable = true;
@@ -258,21 +272,13 @@
 
         $scope.deleteEvent = function(event) {
 
-            $log.debug("Delete Event");
-            $log.debug(event);
+            $log.debug("Delete Event:" + JSON.stringify(event));
 
-            $http.post(config.deleteEventURL, {eventId:event.eventId}).
-                success(function(data, status, headers, config) {
-
-                    //TODO:Mostar un mensaje de que funciono en algun lado
-                    $log.debug("Received Delete Data:" + JSON.stringify(data));
-                    getEvents();
-
-                }).
-                error(function(data, status, headers, config) {
-
-                    alertService.pushMessage("Connection Error");
-                });
+            eventService.deleteEvent(event.eventId).then(function(result){
+                updateEventList(result);
+            }, function(err) {
+                alertService.pushMessage(err);
+            });
         };
 
         $scope.updateEvents = function() {
@@ -283,7 +289,6 @@
 
         $scope.moveEvent = function(newEvent) {
 
-            $log.debug("Move Event");
             $log.debug("Moved Event: " + JSON.stringify(newEvent));
 
             var eventJSON = {
@@ -294,56 +299,59 @@
                 "eventLength":newEvent.eventLength,
                 "eventDay":newEvent.eventDay,
                 "eventId":newEvent.eventId,
-                "berthId":newEvent.berthId
+                "berthId":newEvent.berthId,
+                "eventColor":newEvent.eventColor
             };
 
-            $http.post(config.editEventURL, eventJSON).
-                success(function(data, status, headers, config) {
-                    $log.debug("Received Edit Data:" + JSON.stringify(data));
+            eventService.editEvent(eventJSON).then(function(result){
+                //$scope.events = result;
 
-                }).
-                error(function(data, status, headers, config) {
+                updateEventList(result);
 
-                    alertService.pushMessage("Connection Error");
-                });
+            }, function(err){
+                alertService.pushMessage(err);
+            });
         };
 
         $scope.editCranesModal = function(event) {
 
             $log.debug("Edit Cranes Modal:" + JSON.stringify(event));
 
-            var cranesIdEvents = [];
             var terminalCranes = $scope.terminal.cranes;
             var eventCranes = event.eventCranes;
             $scope.newEvent = event;
 
             var cranesList = [];
 
-            for(var i = 0 ; i < eventCranes.length ; i++) {
-                var eventCrane = eventCranes[i];
-                cranesIdEvents.push(eventCrane.craneId);
-            }
-
             $log.debug("Terminal Cranes:" + JSON.stringify(terminalCranes));
 
             for(var j = 0 ; j < terminalCranes.length ; j++) {
                 var crane = terminalCranes[j];
-                var value = false;
-
-                if(_.contains(cranesIdEvents,crane.craneId)){
-                    value = true;
-                }
 
                 var temp = {
                     craneId:crane.craneId,
                     craneName:crane.craneName,
-                    value:value
+                    ecAssignedPercentage: 100,
+                    craneGrossProductivity:crane.craneGrossProductivity,
+                    value:false
                 };
+
+                for(var k = 0; k < eventCranes.length; k++){
+
+                    var eventCrane = eventCranes[k];
+
+                    if(eventCrane.craneId == crane.craneId){
+                        temp.craneGrossProductivity = crane.craneGrossProductivity;
+                        temp.ecAssignedPercentage = eventCrane.ecAssignedPercentage;
+                        temp.value = true;
+                    }
+
+                }
 
                 cranesList.push(temp);
             }
 
-            $log.debug("Crane Final List:" + JSON.stringify(cranesList))
+            $log.debug("Crane Final List:" + JSON.stringify(cranesList));
             $scope.cranesList = cranesList;
         };
 
@@ -361,28 +369,29 @@
                 var crane = cranesList[i];
 
                 if(crane.value) {
-                    eventCranes.push({craneId:crane.craneId});
+                    eventCranes.push({
+                        craneId:crane.craneId,
+                        ecAssignedPercentage:crane.ecAssignedPercentage
+                    });
                 }
             }
 
             sendJSON.cranes = eventCranes;
             $log.debug("JSON to Send:" + JSON.stringify(sendJSON));
 
-            var dataToSend = {json:JSON.stringify(sendJSON)};
-
-            $http.post(config.editCranesURL, dataToSend).
-                success(function(data, status, headers, config) {
-
-                    $log.debug("Received Edit Crane Data:" + JSON.stringify(data));
-                    $('#craneModal').modal('hide');
-                    getEvents();
-                }).
-                error(function(data, status, headers, config) {
-
-                    alertService.pushMessage("Connection Error");
-                });
+            eventService.editCranes(sendJSON).then(function(result){
+                updateEventList(result);
+                $('#craneModal').modal('hide');
+            }, function(err){
+                alertService.pushMessage(err);
+            });
         };
+
+        $scope.viewEventModal = function(viewEvent){
+
+            $log.debug("View Event:" + JSON.stringify(viewEvent));
+            $scope.viewEvent = viewEvent;
+        };
+
     }]);
-
-
 })();

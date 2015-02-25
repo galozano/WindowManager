@@ -14,13 +14,15 @@
             "deleteTerminal":"/deleteTerminal",
             "createTerminal":"/createTerminal",
             "createTerminalSchema":"/createTerminalSchema",
-            "deleteTerminalSchema":"/deleteTerminalSchema"
+            "deleteTerminalSchema":"/deleteTerminalSchema",
+            "getTerminalConfigSchemas":"/getTerminalConfigSchemas"
         },
         "cranes":{
             "main": "/cranes",
             "editCranes":"/editEventCranes",
             "createCraneSchema":"/createCraneSchema",
-            "deleteCraneSchema":"/deleteCraneSchema"
+            "deleteCraneSchema":"/deleteCraneSchema",
+            "getCranesSchemas":"/getCranesSchemas"
         },
         "users":{
             "main":"/users",

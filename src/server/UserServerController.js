@@ -120,8 +120,8 @@ module.exports = function(express,poolConnections,configCSM,logger,q,validator,j
             newUser.userToken = jwt.sign(newUser,configCSM.server.JWTSecret);
 
             var queryInsertRol = "INSERT INTO Rol (rolTypeId) VALUES (1)";
-            var queryInsertUser = "INSERT INTO Users (userFirstName,userLastName,userEmail,userPassword,userToken,rolId) " +
-                "VALUES (:userFirstName,:userLastName,:userEmail,SHA2(:userPassword,256),:userToken,:rolId)";
+            var queryInsertUser = "INSERT INTO Users (userFirstName,userLastName,userEmail,userPassword,userToken,rolId,companyId) " +
+                "VALUES (:userFirstName,:userLastName,:userEmail,SHA2(:userPassword,256),:userToken,:rolId,:companyId)";
 
             poolConnections.getConnection(function(err, connection) {
 
