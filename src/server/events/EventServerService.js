@@ -106,7 +106,7 @@ module.exports = function (poolConnections, logger, configCSM, q) {
 
         var eventsQuery = "SELECT eventId,eventArrivingTime,eventDay,eventDuration,eventLength,eventName,eventColor,eventStart,berthId " +
             "FROM Events WHERE terminalId = (SELECT terminalId FROM TerminalAccess WHERE terminalId = :terminalId " +
-            "AND rolId = (SELECT rolId FROM Company C WHERE c.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId)))";
+            "AND rolId = (SELECT rolId FROM Company C WHERE C.companyId = (SELECT U.companyId FROM Users U WHERE U.userId = :userId)))";
 
         logger.debug("Get Events Query: " + eventsQuery);
 
