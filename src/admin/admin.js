@@ -3,7 +3,7 @@
  */
 
 var request = require('request');
-var configCSM = require('../../server/conf/config.json');
+var configCSM = require('../server/conf/config.json');
 
 //var userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsInVzZXJGaXN0TmFtZSI6Ikd1c3Rhdm8iLCJ1c2VyTGFzdE5hbWUiOiJMb3phbm8iLCJ1c2VyRW1haWwiOiJndXN0YXZvQGdtYWlsLmNvbSJ9.XifH3qwM6y7MCdMbAxr0kIlendSuo1OVH29kU2vAEpM';
 var userToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyRmlyc3ROYW1lIjoiR3VzdGF2byIsInVzZXJMYXN0TmFtZSI6IkxvemFubyIsInVzZXJFbWFpbCI6ImdhbG96YW5vQGtlbGdhbC5jb20iLCJ1c2VyUGFzc3dvcmQiOiJndWFzdGEiLCJpYXQiOjE0MjE3MTY5MDZ9.hP-mpswf2MTU9EehIxJ9dwI7uIgiVXVWrYEXUG4S6kQ';
@@ -12,19 +12,20 @@ var userToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyRmlyc3ROYW1lIjoiR3
 function addUser() {
 
     //var url = 'http://localhost:3000' + configCSM.urls.users.main + configCSM.urls.users.createUser;
-    //var url = 'http://colibri.kelgal.com' + configCSM.urls.users.main + configCSM.urls.users.createUser;
+    var url = 'http://colibri.kelgal.com' + configCSM.urls.users.main + configCSM.urls.users.createUser;
 
     var newUser = {
-        "userFirstName":"Arturo",
-        "userLastName":"Mondragon",
-        "userEmail":"arturo.mondragon@hamburgsud.com",
-        "userPassword":"arturo.12345+"
+        "userFirstName":"Mauricio",
+        "userLastName":"Franco",
+        "userEmail":"mfranco@sprc.com.co",
+        "userPassword":"mau.12345+",
+        "companyId":1
     };
 
     request.post({url:url, form:newUser}, function (err, resp, body) {
 
         console.log(err);
-        console.log(resp);
+        //console.log(resp);
         console.log(body);
     });
 }
@@ -138,4 +139,4 @@ function addTerminalAccess( ) {
 
 //addTerminalAccess();
 //createTerminal();
-//addUser();
+addUser();

@@ -17,11 +17,12 @@
     <div id="page-wrapper">
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="terminals">
-                <div>
+                <div class="row">
                     <h1 class="pull-left">Terminals</h1>
                     <div class="pull-right"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#terminalModal">New Terminal</button></div>
                 </div>
-                <table class="table table-hover">
+                <div class="row">
+                    <table class="table table-hover">
                     <tr ng-repeat="terminal in terminals">
                         <td>
                             <a class="pull-left" href="#/events/{{terminal.terminalId}}">
@@ -43,13 +44,15 @@
                         </td>
                     </tr>
                 </table>
+                </div>
             </div>
             <div role="tabpanel" class="tab-pane" id="berths">
-                <div>
+                <div class="row">
                     <h1 class="pull-left">Berths Schemas</h1>
                     <div class="pull-right"><button type="button" class="btn btn-primary" ng-click="changeToEditMode()" data-toggle="modal" data-target="#berthModal">New Berth Schema</button></div>
                 </div>
-                <table class="table table-hover">
+                <div class="row">
+                    <table class="table table-hover">
                     <tr ng-repeat="berthSchema in berthSchemas">
                         <td>
                             <a class="pull-left" href="" ng-click="viewBerthSchema(berthSchema)" data-toggle="modal" data-target="#berthModal">
@@ -71,13 +74,15 @@
                         </td>
                     </tr>
                 </table>
+                </div>
             </div>
             <div role="tabpanel" class="tab-pane" id="cranes">
-                <div>
+                <div class="row">
                     <h1 class="pull-left">Cranes Schemas</h1>
                     <div class="pull-right"><button type="button" class="btn btn-primary" ng-click="changeToEditMode()" data-toggle="modal" data-target="#craneModal">New Crane Schema</button></div>
                 </div>
-                <table class="table table-hover">
+                <div class="row">
+                    <table class="table table-hover">
                     <tr ng-repeat="craneSchema in cranesSchemas">
                         <td>
                             <a class="pull-left" href="" ng-click="viewCraneSchema(craneSchema)" data-toggle="modal" data-target="#craneModal">
@@ -99,6 +104,7 @@
                         </td>
                     </tr>
                 </table>
+                </div>
             </div>
         </div>
     </div>

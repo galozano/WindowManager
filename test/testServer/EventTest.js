@@ -143,7 +143,7 @@ describe('Test Events', function() {
         });
     });
 
-    describe.only('Edit Events', function() {
+    describe('Edit Events', function() {
 
         var url = 'http://localhost:3000/events/editEvent';
 
