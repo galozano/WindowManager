@@ -15,10 +15,10 @@ function addUser() {
     var url = 'http://colibri.kelgal.com' + configCSM.urls.users.main + configCSM.urls.users.createUser;
 
     var newUser = {
-        "userFirstName":"Mauricio",
-        "userLastName":"Franco",
-        "userEmail":"mfranco@sprc.com.co",
-        "userPassword":"mau.12345+",
+        "userFirstName":"Camila",
+        "userLastName":"Lopez",
+        "userEmail":"camila.lopezz@gmail.com",
+        "userPassword":"gusti",
         "companyId":1
     };
 
